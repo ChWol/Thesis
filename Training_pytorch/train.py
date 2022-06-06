@@ -1,22 +1,33 @@
 import argparse
 import os
 import time
+import csv
+# Todo: explain
 from utee import misc
+# Import Pytorch & Numpy
 import torch
 import torch.optim as optim
 from torch.autograd import Variable
+import numpy as np
+# Todo: explain
 from utee import make_path
-from cifar import dataset
-from cifar import model
 from utee import wage_util
-from datetime import datetime
 from utee import wage_quantizer
 from utee import hook
-import numpy as np
-import csv
+# Import Cifar dataset
+# Todo: Import other datasets
+from cifar import dataset
+from cifar import model
+# Todo: explain
+from modules.quantization_cpu_np_infer import QConv2d,
+#from IPython import embed
+from datetime import datetime
 from subprocess import call
-from modules.quantization_cpu_np_infer import QConv2d,QLinear
+# Import weights and biases
+import wandb
 
+# Parsing training & architecture parameters
+# Todo: Explain each parameter
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
 parser.add_argument('--type', default='cifar10', help='dataset for training')
 parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training (default: 64)')
@@ -27,13 +38,13 @@ parser.add_argument('--log_interval', type=int, default=100,  help='how many bat
 parser.add_argument('--test_interval', type=int, default=1,  help='how many epochs to wait before another test')
 parser.add_argument('--logdir', default='log/default', help='folder to save to the log')
 parser.add_argument('--decreasing_lr', default='200,250', help='decreasing strategy')
-parser.add_argument('--wl_weight', type = int, default=2)
-parser.add_argument('--wl_grad', type = int, default=8)
+parser.add_argument('--wl_weight', type = int, default=5, help='weight precision')
+parser.add_argument('--wl_grad', type = int, default=5, help='gradient precision')
 parser.add_argument('--wl_activate', type = int, default=8)
 parser.add_argument('--wl_error', type = int, default=8)
 parser.add_argument('--inference', default=0)
 parser.add_argument('--onoffratio', default=10)
-parser.add_argument('--cellBit', default=1)
+parser.add_argument('--cellBit', default=5, help='cell precision (cellBit==wl_weight==wl_grad)')
 parser.add_argument('--subArray', default=128)
 parser.add_argument('--ADCprecision', default=5)
 parser.add_argument('--vari', default=0)
@@ -41,28 +52,27 @@ parser.add_argument('--t', default=0)
 parser.add_argument('--v', default=0)
 parser.add_argument('--detect', default=0)
 parser.add_argument('--target', default=0)
-parser.add_argument('--nonlinearityLTP', default=0.01)
-parser.add_argument('--nonlinearityLTD', default=-0.01)
-parser.add_argument('--max_level', default=100)
-parser.add_argument('--d2dVari', default=0)
-parser.add_argument('--c2cVari', default=0)
+parser.add_argument('--nonlinearityLTP', default=1.75, help='nonlinearity in LTP')
+parser.add_argument('--nonlinearityLTD', default=-1.46, help='nonlinearity in LTD (negative if LTP and LTD are asymmetric)')
+parser.add_argument('--max_level', default=32, help='Maximum number of conductance states during weight update (floor(log2(max_level))=cellBit)')
+parser.add_argument('--d2dVari', default=0, help='device-to-device variation')
+parser.add_argument('--c2cVari', default=0.003, help='cycle-to-cycle variation')
 current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
-args.wl_weight = 5            # weight precision
-args.wl_grad = 5              # gradient precision
-args.cellBit = 5              # cell precision (in V2.0, we only support one-cell-per-synapse, i.e. cellBit==wl_weight==wl_grad)
-args.max_level = 32           # Maximum number of conductance states during weight update (floor(log2(max_level))=cellBit) 
-args.c2cVari = 0.003          # cycle-to-cycle variation
-args.d2dVari = 0.0            # device-to-device variation
-args.nonlinearityLTP = 1.75   # nonlinearity in LTP
-args.nonlinearityLTD = 1.46   # nonlinearity in LTD (negative if LTP and LTD are asymmetric)
+# Manually overwriting arguments to match simulator-conditions
+args.wl_weight = args.cellBit            
+args.wl_grad = args.cellBit              
+args.max_level = 2^(args.cellBit)   
+
+# Initializing Weights and Biases
+wandb.init(project='testing', config=args)     
 
 # momentum
 gamma = 0.9
 alpha = 0.1
 
-
+# Output values for simulation/hardware
 NeuroSim_Out = np.array([["L_forward (s)", "L_activation gradient (s)", "L_weight gradient (s)", "L_weight update (s)", 
                           "E_forward (J)", "E_activation gradient (J)", "E_weight gradient (J)", "E_weight update (J)",
                           "L_forward_Peak (s)", "L_activation gradient_Peak (s)", "L_weight gradient_Peak (s)", "L_weight update_Peak (s)", 
@@ -72,24 +82,28 @@ np.savetxt("NeuroSim_Output.csv", NeuroSim_Out, delimiter=",",fmt='%s')
 if not os.path.exists('./NeuroSim_Results_Each_Epoch'):
     os.makedirs('./NeuroSim_Results_Each_Epoch')
 
+# Output values for network
 out = open("PythonWrapper_Output.csv",'ab')
 out_firstline = np.array([["epoch", "average loss", "accuracy"]])
 np.savetxt(out, out_firstline, delimiter=",",fmt='%s')
 
+# Todo: explain
 delta_distribution = open("delta_dist.csv",'ab')
 delta_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", "6_mean", "7_mean", "8_mean", "1_std", "2_std", "3_std", "4_std", "5_std", "6_std", "7_std", "8_std"]])
 np.savetxt(delta_distribution, delta_firstline, delimiter=",",fmt='%s')
 
+# Todo: explain
 weight_distribution = open("weight_dist.csv",'ab')
 weight_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", "6_mean", "7_mean", "8_mean", "1_std", "2_std", "3_std", "4_std", "5_std", "6_std", "7_std", "8_std"]])
 np.savetxt(weight_distribution, weight_firstline, delimiter=",",fmt='%s')
 
+# Todo: explain
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
 args = make_path.makepath(args,['log_interval','test_interval','logdir','epochs'])
 misc.logger.init(args.logdir, 'train_log_' +current_time)
 logger = misc.logger.info
 
-# logger
+# console logger
 misc.ensure_dir(args.logdir)
 logger("=================FLAGS==================")
 for k, v in args.__dict__.items():
@@ -103,14 +117,17 @@ if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
 # data loader and model
+# Todo: Allow changes, add further datasets
 assert args.type in ['cifar10', 'cifar100'], args.type
 train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
 model = model.cifar10(args = args, logger=logger)
 if args.cuda:
     model.cuda()
 
+# Todo: Try different architectures, maybe point to change for different algorithms
 optimizer = optim.SGD(model.parameters(), lr=1)
 
+# Todo: explain
 decreasing_lr = list(map(int, args.decreasing_lr.split(',')))
 logger('decreasing_lr: ' + str(decreasing_lr))
 best_acc, old_file = 0, None
@@ -125,6 +142,7 @@ try:
     paramALTP = {}
     paramALTD = {}
     k=0
+    # Todo: explain
     for layer in list(model.parameters())[::-1]:
         d2dVariation = torch.normal(torch.zeros_like(layer), args.d2dVari*torch.ones_like(layer))
         NL_LTP = torch.ones_like(layer)*args.nonlinearityLTP+d2dVariation
@@ -133,9 +151,11 @@ try:
         paramALTD[k] = wage_quantizer.GetParamA(NL_LTD.cpu().numpy())*args.max_level
         k=k+1
 
+    # Actual training process
     for epoch in range(args.epochs):
         model.train()
         
+        # Todo: explain
         velocity = {}
         i=0
         for layer in list(model.parameters())[::-1]:
@@ -155,7 +175,10 @@ try:
             output = model(data)
             loss = wage_util.SSE(output,target)
 
+            # Backpropagation, possible point of change for different algorithms
             loss.backward()
+
+            # Todo: explain
             # introduce non-ideal property
             j=0
             for name, param in list(model.named_parameters())[::-1]:
@@ -165,8 +188,10 @@ try:
                             torch.from_numpy(paramALTP[j]).cuda(), torch.from_numpy(paramALTD[j]).cuda(), args.max_level, args.max_level)
                 j=j+1
 
+            # Update function
             optimizer.step()
 
+            # Todo: explain
             for name, param in list(model.named_parameters())[::-1]:
                 param.data = wage_quantizer.W(param.data,param.grad.data,args.wl_weight,args.c2cVari)
 
@@ -174,6 +199,7 @@ try:
                 pred = output.data.max(1)[1]  # get the index of the max log-probability
                 correct = pred.cpu().eq(indx_target).sum()
                 acc = float(correct) * 1.0 / len(data)
+                wandb.log({'train_accuracy': acc, 'train_loss': loss})
                 logger('Train Epoch: {} [{}/{}] Loss: {:.6f} Acc: {:.4f} lr: {:.2e}'.format(
                     epoch, batch_idx * len(data), len(train_loader.dataset),
                     loss.data, acc, optimizer.param_groups[0]['lr']))
@@ -185,6 +211,7 @@ try:
         logger("Elapsed {:.2f}s, {:.2f} s/epoch, {:.2f} s/batch, ets {:.2f}s".format(
             elapse_time, speed_epoch, speed_batch, eta))
 
+        # Todo: Check if model saving works 
         misc.model_save(model, os.path.join(args.logdir, 'latest.pth'))
         
         if not os.path.exists('./layer_record'):
@@ -199,6 +226,7 @@ try:
         oldWeight = {}
         k = 0
        
+        # Todo: explain
         for name, param in list(model.named_parameters()):
             oldWeight[k] = param.data + param.grad.data
             k = k+1
@@ -217,6 +245,7 @@ try:
         print("delta distribution")
         print(delta_mean)
 
+        # Todo: explain
         h = 0
         for i, layer in enumerate(model.features.modules()):
             if isinstance(layer, QConv2d) or isinstance(layer,QLinear):
@@ -229,6 +258,9 @@ try:
                 hook.write_matrix_weight( (oldWeight[h]).cpu().data.numpy(),weight_file_name)
                 h = h+1
         
+        # Run tests including hardware simulation
+        # Todo: explain
+        # Todo: extract printed information for WandB
         if epoch % args.test_interval == 0:
             model.eval()
             test_loss = 0
@@ -252,10 +284,11 @@ try:
             
             test_loss = test_loss / len(test_loader) # average over number of mini-batch
             acc = 100. * correct / len(test_loader.dataset)
+            wandb.log({'test_accuracy': acc, 'test_loss': test_loss})
             logger('\tEpoch {} Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
                 epoch, test_loss, correct, len(test_loader.dataset), acc))
             accuracy = acc.cpu().data.numpy()
-            np.savetxt(out, [[epoch, test_loss, accuracy]], delimiter=",",fmt='%f')
+            np.savetxt(out, [[epoch, test_loss.cpu(), accuracy]], delimiter=",",fmt='%f')
             
             if acc > best_acc:
                 new_file = os.path.join(args.logdir, 'best-{}.pth'.format(epoch))
