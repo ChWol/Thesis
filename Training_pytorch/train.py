@@ -19,7 +19,7 @@ from utee import hook
 from cifar import dataset
 from cifar import model
 # Todo: explain
-from modules.quantization_cpu_np_infer import QConv2d,
+from modules.quantization_cpu_np_infer import QConv2d,QLinear
 #from IPython import embed
 from datetime import datetime
 from subprocess import call
@@ -262,7 +262,7 @@ try:
         # Todo: explain
         # Todo: extract printed information for WandB
         # Todo: not only log on last
-        if epoch % args.test_interval == epochs-1:
+        if epoch % args.test_interval == args.epochs-1:
             model.eval()
             test_loss = 0
             correct = 0
