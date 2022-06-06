@@ -261,7 +261,8 @@ try:
         # Run tests including hardware simulation
         # Todo: explain
         # Todo: extract printed information for WandB
-        if epoch % args.test_interval == 0:
+        # Todo: not only log on last
+        if epoch % args.test_interval == epochs-1:
             model.eval()
             test_loss = 0
             correct = 0
