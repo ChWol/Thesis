@@ -79,7 +79,7 @@ if args.cuda:
 	torch.cuda.manual_seed(args.seed)
 
 # Todo: Check if model saving works
-model_path = './log/default/batch_size=200/decreasing_lr=200,250/grad_scale=8/seed=117/type=cifar10/wl_activate=8/wl_error=8/wl_grad=8/wl_weight=8/latest.pth'
+model_path = './log/default/ADCprecision=5/batch_size=200/c2cVari=0.003/cellBit=5/d2dVari=0/decreasing_lr=200,250/detect=0/grad_scale=1/inference=0/max_level=7/nonlinearityLTD=-1.46/nonlinearityLTP=1.75/onoffratio=10/seed=117/subArray=128/t=0/target=0/type=cifar10/v=0/vari=0/wl_activate=8/wl_error=8/wl_grad=5/wl_weight=5/latest.pth'
 
 # data loader and model
 # Todo: Add option to choose different datasets

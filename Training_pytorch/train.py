@@ -62,8 +62,7 @@ current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 args = parser.parse_args()
 # Manually overwriting arguments to match simulator-conditions
 args.wl_weight = args.cellBit            
-args.wl_grad = args.cellBit              
-args.max_level = 2^(args.cellBit)   
+args.wl_grad = args.cellBit                 
 
 # Initializing Weights and Biases
 wandb.init(project='testing', config=args)     
