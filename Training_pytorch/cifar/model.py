@@ -5,7 +5,7 @@ from modules.quantization_cpu_np_infer import QConv2d,  QLinear
 import torch
 
 class CIFAR(nn.Module):
-    def __init__(self, args, features, num_classes,logger, dimensions):
+    def __init__(self, args, dimensions, features, num_classes,logger):
         super(CIFAR, self).__init__()
         assert isinstance(features, nn.Sequential), type(features)
         self.features = features
@@ -66,7 +66,7 @@ cfg_list = {
 def cifar10( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
     layers = make_layers(cfg, args,logger, 3)
-    model = CIFAR(args,layers, num_classes=10,logger = logger, 8192)
+    model = CIFAR(args,8192,layers, num_classes=10,logger = logger)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
@@ -74,7 +74,7 @@ def cifar10( args, logger, pretrained=None):
 def cifar100( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
     layers = make_layers(cfg, args,logger, 3)
-    model = CIFAR(args,layers, num_classes=100,logger = logger, 8192)
+    model = CIFAR(args,8192,layers, num_classes=100,logger = logger)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
@@ -82,7 +82,7 @@ def cifar100( args, logger, pretrained=None):
 def mnist( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
     layers = make_layers(cfg, args,logger, 1)
-    model = CIFAR(args,layers, num_classes=10,logger = logger, 4608)
+    model = CIFAR(args,4608,layers, num_classes=10,logger = logger)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
