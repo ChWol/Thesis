@@ -123,6 +123,19 @@ assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
     model = model.cifar10(args = args, logger=logger)
+
+    classes = ('plane', 'car', 'bird', 'cat',
+               'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+    table_columns = ['image', 'label']
+    table_data = []
+    for i, batch in enumerate(train_loader, 0):
+        inputs, labels = batch[0], batch[1]
+        for j, image in enumerate(inputs, 0):
+            table_data.append([wandb.Image(image), classes[labels[j].item()]])
+        break
+    table = wandb.Table(data=table_data, columns=table_columns)
+    run.log({"cifar10_images": table})
+
 if args.type == 'cifar100':
     train_loader, test_loader = dataset.get100(batch_size=args.batch_size, num_workers=1)
     model = model.cifar100(args=args, logger=logger)
