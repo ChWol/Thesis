@@ -55,7 +55,7 @@ def make_layers(cfg, args, logger, in_dimension):
 
 
 cfg_list = {
-    'cifar10': [('C', 128, 3, 'same', 2.0),
+    'cifar10': [('C', 128, 1, 'same', 2.0),
                 ('M', 2, 2),
                 ('C', 256, 3, 'same', 16.0),
                 ('M', 2, 2),
