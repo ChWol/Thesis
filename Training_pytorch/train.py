@@ -124,6 +124,7 @@ if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
     model = model.cifar10(args = args, logger=logger)
 
+    # Playing around with wandb
     classes = ('plane', 'car', 'bird', 'cat',
                'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
     table_columns = ['image', 'label']
