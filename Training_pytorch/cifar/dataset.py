@@ -81,7 +81,7 @@ def get_mnist(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, v
                 root=data_root, train=True, download=True,
                 transform=transforms.Compose([
                     transforms.Pad(4),
-                    transforms.RandomCrop(32),
+                    transforms.RandomCrop(28),
                     transforms.RandomHorizontalFlip(),
                     transforms.ToTensor(),
                 ])),
@@ -94,7 +94,6 @@ def get_mnist(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, v
                 root=data_root, train=False, download=True,
                 transform=transforms.Compose([
                     # Todo: Resolve the fact that mnist is 28x28p
-                    transforms.RandomCrop(32),
                     transforms.ToTensor(),
                 ])),
             batch_size=batch_size, shuffle=False, **kwargs)
