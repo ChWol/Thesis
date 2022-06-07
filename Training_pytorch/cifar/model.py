@@ -14,6 +14,11 @@ class CIFAR(nn.Module):
                     wl_input = args.wl_activate,wl_activate=-1,wl_error=args.wl_error,
                     wl_weight=args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                     subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target, name='FC1_'))
+            nn.ReLU(inplace=True),
+            QLinear(1024, num_classes, logger=logger,
+                    wl_input = args.wl_activate,wl_activate=-1, wl_error=args.wl_error,
+                    wl_weight=args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
+                    subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,name='FC2_'))
 
         print(self.features)
         print(self.classifier)
@@ -51,13 +56,10 @@ def make_layers(cfg, args, logger ):
 
 cfg_list = {
     'cifar10': [('C', 128, 3, 'same', 2.0),
-                ('C', 128, 3, 'same', 16.0),
                 ('M', 2, 2),
-                ('C', 256, 3, 'same', 16.0),
                 ('C', 256, 3, 'same', 16.0),
                 ('M', 2, 2),
                 ('C', 512, 3, 'same', 16.0),
-                ('C', 512, 3, 'same', 32.0),
                 ('M', 2, 2)]
 }
 
