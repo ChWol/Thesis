@@ -30,7 +30,7 @@ class CIFAR(nn.Module):
         return x
 
 
-def make_layers(cfg, args, logger ):
+def make_layers(cfg, args, logger):
     layers = []
     in_channels = 3
     for i, v in enumerate(cfg):
@@ -46,8 +46,8 @@ def make_layers(cfg, args, logger ):
                              logger=logger,wl_input = args.wl_activate,wl_activate=args.wl_activate,
                              wl_error=args.wl_error,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                              subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
-                             name = 'Conv'+str(i)+'_' )
-            non_linearity_activation =  nn.ReLU()
+                             name = 'Conv'+str(i)+'_')
+            non_linearity_activation = nn.ReLU()
             layers += [conv2d, non_linearity_activation]
             in_channels = out_channels
     return nn.Sequential(*layers)
@@ -67,6 +67,14 @@ def cifar10( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
     layers = make_layers(cfg, args,logger)
     model = CIFAR(args,layers, num_classes=10,logger = logger)
+    if pretrained is not None:
+        model.load_state_dict(torch.load(pretrained))
+    return model
+
+def cifar100( args, logger, pretrained=None):
+    cfg = cfg_list['cifar10']
+    layers = make_layers(cfg, args,logger)
+    model = CIFAR(args,layers, num_classes=100,logger = logger)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
