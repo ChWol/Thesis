@@ -5,12 +5,12 @@ from modules.quantization_cpu_np_infer import QConv2d,  QLinear
 import torch
 
 class CIFAR(nn.Module):
-    def __init__(self, args, features, num_classes,logger):
+    def __init__(self, args, features, num_classes,logger, dimensions):
         super(CIFAR, self).__init__()
         assert isinstance(features, nn.Sequential), type(features)
         self.features = features
         self.classifier = nn.Sequential(
-            QLinear(4608, 1024, logger=logger,
+            QLinear(dimensions, 1024, logger=logger,
                     wl_input = args.wl_activate,wl_activate=args.wl_activate,wl_error=args.wl_error,
                     wl_weight=args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                     subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target, name='FC1_'),
@@ -66,7 +66,7 @@ cfg_list = {
 def cifar10( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
     layers = make_layers(cfg, args,logger, 3)
-    model = CIFAR(args,layers, num_classes=10,logger = logger)
+    model = CIFAR(args,layers, num_classes=10,logger = logger, 8192)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
@@ -74,7 +74,7 @@ def cifar10( args, logger, pretrained=None):
 def cifar100( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
     layers = make_layers(cfg, args,logger, 3)
-    model = CIFAR(args,layers, num_classes=100,logger = logger)
+    model = CIFAR(args,layers, num_classes=100,logger = logger, 8192)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
@@ -82,7 +82,7 @@ def cifar100( args, logger, pretrained=None):
 def mnist( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
     layers = make_layers(cfg, args,logger, 1)
-    model = CIFAR(args,layers, num_classes=10,logger = logger)
+    model = CIFAR(args,layers, num_classes=10,logger = logger, 4608)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
