@@ -30,9 +30,9 @@ class CIFAR(nn.Module):
         return x
 
 
-def make_layers(cfg, args, logger):
+def make_layers(cfg, args, logger, in_dimension):
     layers = []
-    in_channels = 3
+    in_channels = in_dimension
     for i, v in enumerate(cfg):
         if v[0] == 'M':
             layers += [nn.MaxPool2d(kernel_size=v[1], stride=v[2])]
@@ -65,7 +65,7 @@ cfg_list = {
 
 def cifar10( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
-    layers = make_layers(cfg, args,logger)
+    layers = make_layers(cfg, args,logger, 3)
     model = CIFAR(args,layers, num_classes=10,logger = logger)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
@@ -73,7 +73,7 @@ def cifar10( args, logger, pretrained=None):
 
 def cifar100( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
-    layers = make_layers(cfg, args,logger)
+    layers = make_layers(cfg, args,logger, 3)
     model = CIFAR(args,layers, num_classes=100,logger = logger)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
@@ -81,7 +81,7 @@ def cifar100( args, logger, pretrained=None):
 
 def mnist( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
-    layers = make_layers(cfg, args,logger)
+    layers = make_layers(cfg, args,logger, 1)
     model = CIFAR(args,layers, num_classes=10,logger = logger)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
