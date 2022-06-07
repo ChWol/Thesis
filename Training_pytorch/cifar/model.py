@@ -10,7 +10,6 @@ class CIFAR(nn.Module):
         assert isinstance(features, nn.Sequential), type(features)
         self.features = features
         self.classifier = nn.Sequential(
-            # 8192 for Cifar, 4608 for mnist
             QLinear(8192, 1024, logger=logger,
                     wl_input = args.wl_activate,wl_activate=args.wl_activate,wl_error=args.wl_error,
                     wl_weight=args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
