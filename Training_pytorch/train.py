@@ -143,6 +143,20 @@ if args.type == 'cifar100':
 if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     model = model.mnist(args=args, logger=logger)
+
+    # Playing around with wandb
+    classes = ('zero', 'one', 'two', 'three',
+               'four', 'five', 'six', 'seven', 'eight', 'nine')
+    table_columns = ['image', 'label']
+    table_data = []
+    for i, batch in enumerate(train_loader, 0):
+        inputs, labels = batch[0], batch[1]
+        for j, image in enumerate(inputs, 0):
+            table_data.append([wandb.Image(image), classes[labels[j].item()]])
+        break
+    table = wandb.Table(data=table_data, columns=table_columns)
+    wandb.log({"mnist_images": table})
+
 if args.cuda:
     model.cuda()
 
