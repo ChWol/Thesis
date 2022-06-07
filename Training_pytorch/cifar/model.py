@@ -79,4 +79,12 @@ def cifar100( args, logger, pretrained=None):
         model.load_state_dict(torch.load(pretrained))
     return model
 
+def mnist( args, logger, pretrained=None):
+    cfg = cfg_list['cifar10']
+    layers = make_layers(cfg, args,logger)
+    model = CIFAR(args,layers, num_classes=10,logger = logger)
+    if pretrained is not None:
+        model.load_state_dict(torch.load(pretrained))
+    return model
+
 
