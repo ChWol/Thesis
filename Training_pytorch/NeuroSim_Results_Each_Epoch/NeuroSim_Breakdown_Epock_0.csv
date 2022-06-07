@@ -1,0 +1,82 @@
+Total Area(m^2), Total CIM (FW+AG) Area (m^2), Routing Area(m^2), ADC Area(m^2), Accumulation Area(m^2), Other Logic&Storage Area(m^2), Weight Gradient Area(m^2),
+0.000153632,5.79821e-07,2.56408e-05,8.57996e-05,1.9617e-05,1.19747e-05,1.00204e-05
+
+
+layer_number, latency_FW(s), latency_AG(s), latency_WG(s), latency_WU(s), energy_FW(J), energy_AG(J), energy_WG(J), energy_WU(J),Peak_latency_FW(s), Peak_latency_AG(s), Peak_latency_WG(s), Peak_latency_WU(s), Peak_energy_FW(J), Peak_energy_AG(J), Peak_energy_WG(J), Peak_energy_WU(J),, , ADC_latency(s), Accumulation_latency(s), Synaptic Array w/o ADC_latency(s), Buffer_latency(s), IC_latency(s), Weight_gradient_latency(s), Weight_update(s), DRAM_latency(s), ADC_energy(J), Accumulation_energy(J), Synaptic Array w/o ADC_energy(J), Buffer_energy(J), IC_energy(J), Weight_gradient_energy(J), Weight_update_energy(J), DRAM_energy(J)
+1,10.8168,0,2.20464,1.40993e-05,0.115324,0,0.111504,1.82552e-07,0.22542,0,1.23285,0,0.0367426,0,0.0876581,0,, , 0.129544,0.0293418,0.0665337,7.71185,3.87344,1.23285,0,0.000987789,0.0255784,0.00858697,0.00257721,0.00166491,0.0741915,0.0876581,0,0.0585562
+2,24.3318,24.462,12.3806,0.000628529,0.739839,0.747893,3.44751,1.51782e-05,2.58649,2.71667,9.61514,0,0.312198,0.320252,2.57907,1.25436e-08,, , 1.05598,3.67438,0.572793,18.7811,28.466,9.61514,0,0.0155217,0.405169,0.189591,0.037691,0.00876584,0.845776,2.57907,1.25436e-08,0.920125
+3,7.51396,7.57072,7.62229,0.00125706,0.268628,0.272283,2.81811,3.0256e-05,0.752354,0.809113,6.41602,0,0.130971,0.134626,1.08857,2.50872e-08,, , 0.460722,0.851319,0.249426,7.2121,9.49953,6.41602,0,0.0293457,0.174264,0.0749496,0.0163839,0.00791837,0.275326,1.08857,2.50872e-08,1.73961
+4,10.8015,10.9215,8.21877,0.00251411,0.436837,0.445049,5.56198,6.04116e-05,1.15977,1.27976,6.41542,0,0.249898,0.25811,2.10396,5.01743e-08,, , 0.916116,1.03103,0.492387,11.9625,13.0886,6.41542,0,0.0584488,0.329408,0.146059,0.0325403,0.0123097,0.378779,2.10396,5.01743e-08,3.46485
+5,1.70567,1.72653,7.01159,0.00502823,0.155917,0.158836,7.66537,0.000120823,0.214378,0.235234,5.50134,0,0.0930209,0.0959393,0.751535,1.00349e-07,, , 0.168619,0.189372,0.0916197,6.09506,2.30393,5.50134,0,0.116473,0.123333,0.0536544,0.0119729,0.0191524,0.143061,0.751535,1.00349e-07,6.90454
+6,2.69673,2.74076,8.40626,0.0100565,0.276626,0.282894,15.3127,0.000241446,0.373077,0.417105,5.50213,0,0.184764,0.191032,1.4853,2.00697e-07,, , 0.337944,0.271314,0.180924,11.7461,3.61762,5.50213,0,0.232886,0.245973,0.10598,0.0238433,0.0338736,0.222999,1.4853,2.00697e-07,13.8055
+7,0.861372,0.862514,9.57545,0.0342225,0.051314,0.0520036,49.3592,0.000443815,0.797074,0.798216,0.0129523,0,0.0319893,0.0326789,0.196433,7.1359e-07,, , 0.00940997,1.58077,0.00510665,11.9855,0.300017,0.0129523,0,0.827824,0.0228454,0.0394833,0.00233947,0.114727,0.101913,0.196433,7.1359e-07,49.0734
+8,0.047828,0.0479645,0.0209037,4.17756e-05,0.000723401,0.000729528,0.0602466,5.4647e-07,0.00150387,0.00164038,0.00206338,0,9.27131e-05,9.88401e-05,0.000227483,5.57493e-09,, , 0.00115057,0.00134909,0.000644581,0.119896,0.0574226,0.00206338,0,0.00101147,8.26073e-05,9.06637e-05,1.82822e-05,0.000326558,0.00114876,0.000227483,5.57493e-09,0.0599602
+Total,58.7757,48.332,55.4405,0.0537628,2.04521,1.95969,84.3366,0.000912659,6.11007,6.25774,34.6979,0,1.03968,1.03274,8.29276,1.10802e-06,, , 3.07949,7.62888,1.65943,75.6142,61.2066,34.6979,0,1.2825,1.32665,0.618395,0.127366,0.198738,2.04319,8.29276,1.10802e-06,76.0265
+
+
+TOPS/W,FPS,TOPS,Peak TOPS/W,Peak FPS,Peak TOPS,
+2.08623,0.00614999,1.13419,17.7924,0.0212469,3.91838
+Total Area(m^2), Total CIM (FW+AG) Area (m^2), Routing Area(m^2), ADC Area(m^2), Accumulation Area(m^2), Other Logic&Storage Area(m^2), Weight Gradient Area(m^2),
+0.000153632,5.79821e-07,2.56408e-05,8.57996e-05,1.9617e-05,1.19747e-05,1.00204e-05
+
+
+layer_number, latency_FW(s), latency_AG(s), latency_WG(s), latency_WU(s), energy_FW(J), energy_AG(J), energy_WG(J), energy_WU(J),Peak_latency_FW(s), Peak_latency_AG(s), Peak_latency_WG(s), Peak_latency_WU(s), Peak_energy_FW(J), Peak_energy_AG(J), Peak_energy_WG(J), Peak_energy_WU(J),, , ADC_latency(s), Accumulation_latency(s), Synaptic Array w/o ADC_latency(s), Buffer_latency(s), IC_latency(s), Weight_gradient_latency(s), Weight_update(s), DRAM_latency(s), ADC_energy(J), Accumulation_energy(J), Synaptic Array w/o ADC_energy(J), Buffer_energy(J), IC_energy(J), Weight_gradient_energy(J), Weight_update_energy(J), DRAM_energy(J)
+1,10.8168,0,2.20464,1.40993e-05,0.115324,0,0.111504,1.82552e-07,0.22542,0,1.23285,0,0.0367426,0,0.0876581,0,, , 0.129544,0.0293418,0.0665337,7.71185,3.87344,1.23285,0,0.000987789,0.0255784,0.00858697,0.00257721,0.00166491,0.0741915,0.0876581,0,0.0585562
+Total Area(m^2), Total CIM (FW+AG) Area (m^2), Routing Area(m^2), ADC Area(m^2), Accumulation Area(m^2), Other Logic&Storage Area(m^2), Weight Gradient Area(m^2),
+0.000153632,5.79821e-07,2.56408e-05,8.57996e-05,1.9617e-05,1.19747e-05,1.00204e-05
+
+
+layer_number, latency_FW(s), latency_AG(s), latency_WG(s), latency_WU(s), energy_FW(J), energy_AG(J), energy_WG(J), energy_WU(J),Peak_latency_FW(s), Peak_latency_AG(s), Peak_latency_WG(s), Peak_latency_WU(s), Peak_energy_FW(J), Peak_energy_AG(J), Peak_energy_WG(J), Peak_energy_WU(J),, , ADC_latency(s), Accumulation_latency(s), Synaptic Array w/o ADC_latency(s), Buffer_latency(s), IC_latency(s), Weight_gradient_latency(s), Weight_update(s), DRAM_latency(s), ADC_energy(J), Accumulation_energy(J), Synaptic Array w/o ADC_energy(J), Buffer_energy(J), IC_energy(J), Weight_gradient_energy(J), Weight_update_energy(J), DRAM_energy(J)
+1,10.8168,0,2.20464,1.40993e-05,0.115324,0,0.111504,1.82552e-07,0.22542,0,1.23285,0,0.0367426,0,0.0876581,0,, , 0.129544,0.0293418,0.0665337,7.71185,3.87344,1.23285,0,0.000987789,0.0255784,0.00858697,0.00257721,0.00166491,0.0741915,0.0876581,0,0.0585562
+2,24.3308,24.4609,12.3806,0.000628529,0.738371,0.74649,3.44751,1.51782e-05,2.58543,2.71561,9.61507,0,0.31073,0.31885,2.57906,1.25436e-08,, , 1.05386,3.67438,0.572793,18.7811,28.466,9.61507,0,0.0155217,0.402312,0.189591,0.0376775,0.00876584,0.845776,2.57906,1.25436e-08,0.920125
+Total Area(m^2), Total CIM (FW+AG) Area (m^2), Routing Area(m^2), ADC Area(m^2), Accumulation Area(m^2), Other Logic&Storage Area(m^2), Weight Gradient Area(m^2),
+0.000141919,5.79821e-07,2.52674e-05,8.57996e-05,1.6676e-05,9.05336e-06,4.54313e-06
+
+
+layer_number, latency_FW(s), latency_AG(s), latency_WG(s), latency_WU(s), energy_FW(J), energy_AG(J), energy_WG(J), energy_WU(J),Peak_latency_FW(s), Peak_latency_AG(s), Peak_latency_WG(s), Peak_latency_WU(s), Peak_energy_FW(J), Peak_energy_AG(J), Peak_energy_WG(J), Peak_energy_WU(J),, , ADC_latency(s), Accumulation_latency(s), Synaptic Array w/o ADC_latency(s), Buffer_latency(s), IC_latency(s), Weight_gradient_latency(s), Weight_update(s), DRAM_latency(s), ADC_energy(J), Accumulation_energy(J), Synaptic Array w/o ADC_energy(J), Buffer_energy(J), IC_energy(J), Weight_gradient_energy(J), Weight_update_energy(J), DRAM_energy(J)
+Total Area(m^2), Total CIM (FW+AG) Area (m^2), Routing Area(m^2), ADC Area(m^2), Accumulation Area(m^2), Other Logic&Storage Area(m^2), Weight Gradient Area(m^2),
+0.000141919,5.79821e-07,2.52674e-05,8.57996e-05,1.6676e-05,9.05336e-06,4.54313e-06
+
+
+layer_number, latency_FW(s), latency_AG(s), latency_WG(s), latency_WU(s), energy_FW(J), energy_AG(J), energy_WG(J), energy_WU(J),Peak_latency_FW(s), Peak_latency_AG(s), Peak_latency_WG(s), Peak_latency_WU(s), Peak_energy_FW(J), Peak_energy_AG(J), Peak_energy_WG(J), Peak_energy_WU(J),, , ADC_latency(s), Accumulation_latency(s), Synaptic Array w/o ADC_latency(s), Buffer_latency(s), IC_latency(s), Weight_gradient_latency(s), Weight_update(s), DRAM_latency(s), ADC_energy(J), Accumulation_energy(J), Synaptic Array w/o ADC_energy(J), Buffer_energy(J), IC_energy(J), Weight_gradient_energy(J), Weight_update_energy(J), DRAM_energy(J)
+1,8.23832,0,1.83884,2.81768e-05,0.0653038,0,0.0382596,1.80794e-07,0.122014,0,1.35202,0,0.0181586,0,0.0216108,0,, , 0.0648246,0.0146709,0.0425184,6.51674,2.10862,1.35202,0,0.000573474,0.0128074,0.00404261,0.0013086,0.0010647,0.0447443,0.0216108,0,0.0339955
+Total Area(m^2), Total CIM (FW+AG) Area (m^2), Routing Area(m^2), ADC Area(m^2), Accumulation Area(m^2), Other Logic&Storage Area(m^2), Weight Gradient Area(m^2),
+0.000141919,5.79821e-07,2.52674e-05,8.57996e-05,1.6676e-05,9.05336e-06,4.54313e-06
+
+
+layer_number, latency_FW(s), latency_AG(s), latency_WG(s), latency_WU(s), energy_FW(J), energy_AG(J), energy_WG(J), energy_WU(J),Peak_latency_FW(s), Peak_latency_AG(s), Peak_latency_WG(s), Peak_latency_WU(s), Peak_energy_FW(J), Peak_energy_AG(J), Peak_energy_WG(J), Peak_energy_WU(J),, , ADC_latency(s), Accumulation_latency(s), Synaptic Array w/o ADC_latency(s), Buffer_latency(s), IC_latency(s), Weight_gradient_latency(s), Weight_update(s), DRAM_latency(s), ADC_energy(J), Accumulation_energy(J), Synaptic Array w/o ADC_energy(J), Buffer_energy(J), IC_energy(J), Weight_gradient_energy(J), Weight_update_energy(J), DRAM_energy(J)
+1,8.23832,0,1.83884,2.81768e-05,0.0653038,0,0.0382596,1.80794e-07,0.122014,0,1.35202,0,0.0181586,0,0.0216108,0,, , 0.0648246,0.0146709,0.0425184,6.51674,2.10862,1.35202,0,0.000573474,0.0128074,0.00404261,0.0013086,0.0010647,0.0447443,0.0216108,0,0.0339955
+Total Area(m^2), Total CIM (FW+AG) Area (m^2), Routing Area(m^2), ADC Area(m^2), Accumulation Area(m^2), Other Logic&Storage Area(m^2), Weight Gradient Area(m^2),
+0.000141919,5.79821e-07,2.52674e-05,8.57996e-05,1.6676e-05,9.05336e-06,4.54313e-06
+
+
+layer_number, latency_FW(s), latency_AG(s), latency_WG(s), latency_WU(s), energy_FW(J), energy_AG(J), energy_WG(J), energy_WU(J),Peak_latency_FW(s), Peak_latency_AG(s), Peak_latency_WG(s), Peak_latency_WU(s), Peak_energy_FW(J), Peak_energy_AG(J), Peak_energy_WG(J), Peak_energy_WU(J),, , ADC_latency(s), Accumulation_latency(s), Synaptic Array w/o ADC_latency(s), Buffer_latency(s), IC_latency(s), Weight_gradient_latency(s), Weight_update(s), DRAM_latency(s), ADC_energy(J), Accumulation_energy(J), Synaptic Array w/o ADC_energy(J), Buffer_energy(J), IC_energy(J), Weight_gradient_energy(J), Weight_update_energy(J), DRAM_energy(J)
+1,8.23832,0,1.83884,2.81768e-05,0.0653038,0,0.0382596,1.80794e-07,0.122014,0,1.35202,0,0.0181586,0,0.0216108,0,, , 0.0648246,0.0146709,0.0425184,6.51674,2.10862,1.35202,0,0.000573474,0.0128074,0.00404261,0.0013086,0.0010647,0.0447443,0.0216108,0,0.0339955
+2,14.943,14.9936,6.73077,0.00125558,0.383102,0.390965,1.18463,1.50281e-05,1.82528,1.8759,5.30882,0,0.128628,0.136491,0.54876,1.25436e-08,, , 0.521979,2.87833,0.300874,14.5123,14.1387,5.30882,0,0.0111562,0.143638,0.102915,0.018567,0.00499698,0.505425,0.54876,1.25436e-08,0.66134
+2,14.943,14.9936,6.73077,0.00125558,0.383102,0.390965,1.18463,1.50281e-05,1.82528,1.8759,5.30882,0,0.128628,0.136491,0.54876,1.25436e-08,, , 0.521979,2.87833,0.300874,14.5123,14.1387,5.30882,0,0.0111562,0.143638,0.102915,0.018567,0.00499698,0.505425,0.54876,1.25436e-08,0.66134
+3,4.42123,4.44328,4.22579,545.457,0.148523,0.151458,1.52025,inf,0.495727,0.51778,3.54425,545.455,0.0616388,0.064574,0.252199,inf,, , 0.230072,0.652396,0.131039,5.6804,4.8397,3.54425,545.455,0.0214636,0.0792745,0.0387513,0.00818699,0.00520402,0.176219,0.252199,inf,1.27236
+3,4.42123,4.44328,4.22579,545.457,0.148523,0.151458,1.52025,inf,0.495727,0.51778,3.54425,545.455,0.0616388,0.064574,0.252199,inf,, , 0.230072,0.652396,0.131039,5.6804,4.8397,3.54425,545.455,0.0214636,0.0792745,0.0387513,0.00818699,0.00520402,0.176219,0.252199,inf,1.27236
+Total Area(m^2), Total CIM (FW+AG) Area (m^2), Routing Area(m^2), ADC Area(m^2), Accumulation Area(m^2), Other Logic&Storage Area(m^2), Weight Gradient Area(m^2),
+0.000153632,5.79821e-07,2.56408e-05,8.57996e-05,1.9617e-05,1.19747e-05,1.00204e-05
+
+
+layer_number, latency_FW(s), latency_AG(s), latency_WG(s), latency_WU(s), energy_FW(J), energy_AG(J), energy_WG(J), energy_WU(J),Peak_latency_FW(s), Peak_latency_AG(s), Peak_latency_WG(s), Peak_latency_WU(s), Peak_energy_FW(J), Peak_energy_AG(J), Peak_energy_WG(J), Peak_energy_WU(J),, , ADC_latency(s), Accumulation_latency(s), Synaptic Array w/o ADC_latency(s), Buffer_latency(s), IC_latency(s), Weight_gradient_latency(s), Weight_update(s), DRAM_latency(s), ADC_energy(J), Accumulation_energy(J), Synaptic Array w/o ADC_energy(J), Buffer_energy(J), IC_energy(J), Weight_gradient_energy(J), Weight_update_energy(J), DRAM_energy(J)
+1,10.8168,0,2.20464,1.40993e-05,0.115324,0,0.111504,1.82552e-07,0.22542,0,1.23285,0,0.0367426,0,0.0876581,0,, , 0.129544,0.0293418,0.0665337,7.71185,3.87344,1.23285,0,0.000987789,0.0255784,0.00858697,0.00257721,0.00166491,0.0741915,0.0876581,0,0.0585562
+Total Area(m^2), Total CIM (FW+AG) Area (m^2), Routing Area(m^2), ADC Area(m^2), Accumulation Area(m^2), Other Logic&Storage Area(m^2), Weight Gradient Area(m^2),
+0.000153632,5.79821e-07,2.56408e-05,8.57996e-05,1.9617e-05,1.19747e-05,1.00204e-05
+
+
+layer_number, latency_FW(s), latency_AG(s), latency_WG(s), latency_WU(s), energy_FW(J), energy_AG(J), energy_WG(J), energy_WU(J),Peak_latency_FW(s), Peak_latency_AG(s), Peak_latency_WG(s), Peak_latency_WU(s), Peak_energy_FW(J), Peak_energy_AG(J), Peak_energy_WG(J), Peak_energy_WU(J),, , ADC_latency(s), Accumulation_latency(s), Synaptic Array w/o ADC_latency(s), Buffer_latency(s), IC_latency(s), Weight_gradient_latency(s), Weight_update(s), DRAM_latency(s), ADC_energy(J), Accumulation_energy(J), Synaptic Array w/o ADC_energy(J), Buffer_energy(J), IC_energy(J), Weight_gradient_energy(J), Weight_update_energy(J), DRAM_energy(J)
+1,10.8168,0,2.20464,1.40993e-05,0.115324,0,0.111504,1.82552e-07,0.22542,0,1.23285,0,0.0367426,0,0.0876581,0,, , 0.129544,0.0293418,0.0665337,7.71185,3.87344,1.23285,0,0.000987789,0.0255784,0.00858697,0.00257721,0.00166491,0.0741915,0.0876581,0,0.0585562
+Total Area(m^2), Total CIM (FW+AG) Area (m^2), Routing Area(m^2), ADC Area(m^2), Accumulation Area(m^2), Other Logic&Storage Area(m^2), Weight Gradient Area(m^2),
+0.000153632,5.79821e-07,2.56408e-05,8.57996e-05,1.9617e-05,1.19747e-05,1.00204e-05
+
+
+layer_number, latency_FW(s), latency_AG(s), latency_WG(s), latency_WU(s), energy_FW(J), energy_AG(J), energy_WG(J), energy_WU(J),Peak_latency_FW(s), Peak_latency_AG(s), Peak_latency_WG(s), Peak_latency_WU(s), Peak_energy_FW(J), Peak_energy_AG(J), Peak_energy_WG(J), Peak_energy_WU(J),, , ADC_latency(s), Accumulation_latency(s), Synaptic Array w/o ADC_latency(s), Buffer_latency(s), IC_latency(s), Weight_gradient_latency(s), Weight_update(s), DRAM_latency(s), ADC_energy(J), Accumulation_energy(J), Synaptic Array w/o ADC_energy(J), Buffer_energy(J), IC_energy(J), Weight_gradient_energy(J), Weight_update_energy(J), DRAM_energy(J)
+1,10.8168,0,2.20464,1.40993e-05,0.115324,0,0.111504,1.82552e-07,0.22542,0,1.23285,0,0.0367426,0,0.0876581,0,, , 0.129544,0.0293418,0.0665337,7.71185,3.87344,1.23285,0,0.000987789,0.0255784,0.00858697,0.00257721,0.00166491,0.0741915,0.0876581,0,0.0585562
+Total Area(m^2), Total CIM (FW+AG) Area (m^2), Routing Area(m^2), ADC Area(m^2), Accumulation Area(m^2), Other Logic&Storage Area(m^2), Weight Gradient Area(m^2),
+0.000153632,5.79821e-07,2.56408e-05,8.57996e-05,1.9617e-05,1.19747e-05,1.00204e-05
+
+
+layer_number, latency_FW(s), latency_AG(s), latency_WG(s), latency_WU(s), energy_FW(J), energy_AG(J), energy_WG(J), energy_WU(J),Peak_latency_FW(s), Peak_latency_AG(s), Peak_latency_WG(s), Peak_latency_WU(s), Peak_energy_FW(J), Peak_energy_AG(J), Peak_energy_WG(J), Peak_energy_WU(J),, , ADC_latency(s), Accumulation_latency(s), Synaptic Array w/o ADC_latency(s), Buffer_latency(s), IC_latency(s), Weight_gradient_latency(s), Weight_update(s), DRAM_latency(s), ADC_energy(J), Accumulation_energy(J), Synaptic Array w/o ADC_energy(J), Buffer_energy(J), IC_energy(J), Weight_gradient_energy(J), Weight_update_energy(J), DRAM_energy(J)
+1,10.8168,0,2.20464,1.40993e-05,0.115324,0,0.111504,1.82552e-07,0.22542,0,1.23285,0,0.0367426,0,0.0876581,0,, , 0.129544,0.0293418,0.0665337,7.71185,3.87344,1.23285,0,0.000987789,0.0255784,0.00858697,0.00257721,0.00166491,0.0741915,0.0876581,0,0.0585562

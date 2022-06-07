@@ -38,13 +38,13 @@ parser.add_argument('--log_interval', type=int, default=100,  help='how many bat
 parser.add_argument('--test_interval', type=int, default=1,  help='how many epochs to wait before another test')
 parser.add_argument('--logdir', default='log/default', help='folder to save to the log')
 parser.add_argument('--decreasing_lr', default='200,250', help='decreasing strategy')
-parser.add_argument('--wl_weight', type = int, default=5, help='weight precision')
-parser.add_argument('--wl_grad', type = int, default=5, help='gradient precision')
+parser.add_argument('--wl_weight', type = int, default=8, help='weight precision')
+parser.add_argument('--wl_grad', type = int, default=8, help='gradient precision')
 parser.add_argument('--wl_activate', type = int, default=8)
 parser.add_argument('--wl_error', type = int, default=8)
-parser.add_argument('--inference', default=0)
 parser.add_argument('--onoffratio', default=10)
-parser.add_argument('--cellBit', default=5, help='cell precision (cellBit==wl_weight==wl_grad)')
+parser.add_argument('--cellBit', default=8, help='cell precision (cellBit==wl_weight==wl_grad)')
+parser.add_argument('--inference', default=0)
 parser.add_argument('--subArray', default=128)
 parser.add_argument('--ADCprecision', default=5)
 parser.add_argument('--vari', default=0)
@@ -63,6 +63,8 @@ args = parser.parse_args()
 # Manually overwriting arguments to match simulator-conditions
 args.wl_weight = args.cellBit            
 args.wl_grad = args.cellBit                 
+# Todo: Remove later
+args.test_interval = args.epochs
 
 # Initializing Weights and Biases
 wandb.init(project='testing', config=args)     
@@ -261,7 +263,7 @@ try:
         # Todo: explain
         # Todo: extract printed information for WandB
         # Todo: not only log on last
-        if epoch == args.epochs-1:
+        if epoch == args.test_interval-1:
             model.eval()
             test_loss = 0
             correct = 0
