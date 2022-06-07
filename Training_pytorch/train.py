@@ -134,7 +134,7 @@ if args.type == 'cifar10':
             table_data.append([wandb.Image(image), classes[labels[j].item()]])
         break
     table = wandb.Table(data=table_data, columns=table_columns)
-    run.log({"cifar10_images": table})
+    wandb.log({"cifar10_images": table})
 
 if args.type == 'cifar100':
     train_loader, test_loader = dataset.get100(batch_size=args.batch_size, num_workers=1)
