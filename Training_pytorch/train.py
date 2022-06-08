@@ -4,11 +4,12 @@ import time
 import csv
 # Todo: explain
 from utee import misc
-# Import Pytorch & Numpy
+# Import Pytorch & Numpy & Pandas
 import torch
 import torch.optim as optim
 from torch.autograd import Variable
 import numpy as np
+import pandas as pd
 # Todo: explain
 from utee import make_path
 from utee import wage_util
@@ -344,12 +345,7 @@ except Exception as e:
 finally:
     # Todo: Extract information here
     print('#########################################')
-    with open('NeuroSim_Results_Each_Epoch/NeuroSim_Breakdown_Epock_' + str(args.epochs-1) + '.csv', mode='r') as csv_file:
-        csv_reader = csv.DictReader(csv_file)
-        line_count = 0
-        for row in csv_reader:
-            if line_count == 0:
-                print(f'Column names are {", ".join(row)}')
-                line_count += 1
-        print(f'Processed {line_count} lines.')
+    dict_from_csv = pd.read_csv('NeuroSim_Results_Each_Epoch/NeuroSim_Breakdown_Epock_' + str(args.epochs-1) + '.csv',
+                                header=None, index_col=0, squeeze=True).to_dict()
+    print(dict_from_csv)
     logger("Total Elapse: {:.2f}, Best Result: {:.3f}%".format(time.time()-t_begin, best_acc))
