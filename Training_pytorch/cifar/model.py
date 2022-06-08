@@ -14,7 +14,7 @@ class CIFAR(nn.Module):
                     wl_input = args.wl_activate,wl_activate=args.wl_activate,wl_error=args.wl_error,
                     wl_weight=args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                     subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target, name='FC1_'),
-            nn.ReLU(inplace=True),
+            nn.sigmoid(inplace=True),
             QLinear(1024, num_classes, logger=logger,
                     wl_input = args.wl_activate,wl_activate=-1, wl_error=args.wl_error,
                     wl_weight=args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
