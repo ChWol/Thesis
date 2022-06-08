@@ -338,7 +338,14 @@ try:
                 best_acc = acc
                 old_file = new_file
             call(["/bin/bash", "./layer_record/trace_command.sh"])
+            # ToDo: Save csv to wandb
             print('########## TEST ###########')
+            target_path = 'NeuroSim_Results_Each_Epoch/NeuroSim_Breakdown_Epock_' + str(args.epochs - 1) + '.csv'
+            df = pd.read_csv(target_path, usecols=['Total Area(m^2)', ' Total CIM (FW+AG) Area (m^2)', ' Routing Area(m^2)',
+                                                   ' ADC Area(m^2)', ' Accumulation Area(m^2)', ' Other Logic&Storage Area(m^2)',
+                                                   ' Weight Gradient Area(m^2)'])
+            result = df.to_dict(orient='records')
+            print(result)
 
 
 except Exception as e:
