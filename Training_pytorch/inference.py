@@ -58,14 +58,7 @@ current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
 # Set to run inference simulation
-args.inference = 1            
-# Hardware Properties
-# If you do not run the device retention / conductance variation effects, set args.vari=0, args.v=0
-args.vari = 0                 
-args.t = 0                     
-args.v = 0                   
-args.detect = 1               
-args.target = 0.5             
+args.inference = 1
 
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
 args = make_path.makepath(args,['log_interval','test_interval','logdir','epochs','gpu','ngpu','debug'])
