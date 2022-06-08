@@ -58,10 +58,11 @@ current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
 # Set to run inference simulation
-args.inference = 1
+args.inference = 0
 
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
 args = make_path.makepath(args,['log_interval','test_interval','logdir','epochs','gpu','ngpu','debug'])
+args.inference = 1
 
 misc.logger.init(args.logdir, 'test_log' + current_time)
 logger = misc.logger.info
