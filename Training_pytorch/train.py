@@ -342,4 +342,5 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 finally:
+    # Todo: Extract information here
     logger("Total Elapse: {:.2f}, Best Result: {:.3f}%".format(time.time()-t_begin, best_acc))

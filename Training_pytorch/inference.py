@@ -54,7 +54,7 @@ parser.add_argument('--d2dVari', default=0, help='device-to-device variation')
 parser.add_argument('--c2cVari', default=0.003, help='cycle-to-cycle variation')
 parser.add_argument('--momentum', default=0.9)
 parser.add_argument('--network', default='vgg8')
-time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
 # Set to run inference simulation
