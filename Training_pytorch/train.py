@@ -345,8 +345,6 @@ try:
                                                    ' ADC Area(m^2)', ' Accumulation Area(m^2)', ' Other Logic&Storage Area(m^2)',
                                                    ' Weight Gradient Area(m^2)'])
             result = df.to_dict(orient='records')
-            print(result)
-
 
 except Exception as e:
     import traceback
