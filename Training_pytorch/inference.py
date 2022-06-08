@@ -81,7 +81,7 @@ if args.cuda:
 # Todo: Check if model saving works
 print('====================')
 print('Path: {}', args.logdir)
-model_path = './log/default/ADCprecision={}/batch_size={}/decreasing_lr={}/grad_scale={}/seed={}/type={}/wl_activate={}/wl_error={}/wl_grad={}/wl_weight={}/latest.pth'
+model_path = args.logdir + '/latest.pth'
 
 # data loader and model
 # Todo: Add option to choose different datasets
