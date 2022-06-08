@@ -302,7 +302,8 @@ try:
         # Todo: explain
         # Todo: extract printed information for WandB
         # Todo: not only log on last
-        if epoch == args.test_interval:
+        if True:
+        #if epoch == args.test_interval:
             model.eval()
             test_loss = 0
             correct = 0
@@ -337,15 +338,11 @@ try:
                 best_acc = acc
                 old_file = new_file
             call(["/bin/bash", "./layer_record/trace_command.sh"])
+            print('########## TEST ###########')
 
 
 except Exception as e:
     import traceback
     traceback.print_exc()
 finally:
-    # Todo: Extract information here
-    print('#########################################')
-    dict_from_csv = pd.read_csv('NeuroSim_Results_Each_Epoch/NeuroSim_Breakdown_Epock_' + str(args.epochs-1) + '.csv',
-                                header=None, index_col=0, squeeze=True).to_dict()
-    print(dict_from_csv)
     logger("Total Elapse: {:.2f}, Best Result: {:.3f}%".format(time.time()-t_begin, best_acc))
