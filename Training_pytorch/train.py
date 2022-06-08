@@ -72,8 +72,8 @@ args.test_interval = args.epochs
 wandb.init(project='testing', config=args)     
 
 # momentum
-gamma = 0.9
-alpha = 0.1
+gamma = args.momentum
+alpha = 1 - args.momentum
 
 # Output values for simulation/hardware
 NeuroSim_Out = np.array([["L_forward (s)", "L_activation gradient (s)", "L_weight gradient (s)", "L_weight update (s)", 
