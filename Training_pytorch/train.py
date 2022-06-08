@@ -301,7 +301,7 @@ try:
         # Todo: explain
         # Todo: extract printed information for WandB
         # Todo: not only log on last
-        if epoch == args.test_interval-1:
+        if epoch == args.test_interval:
             model.eval()
             test_loss = 0
             correct = 0
