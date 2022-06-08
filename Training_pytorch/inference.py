@@ -61,8 +61,8 @@ args = parser.parse_args()
 args.inference = 0
 
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
-args = make_path.makepath(args,['log_interval','test_interval','logdir','epochs','gpu','ngpu','debug'])
 args.inference = 1
+args = make_path.makepath(args,['log_interval','test_interval','logdir','epochs','gpu','ngpu','debug'])
 
 misc.logger.init(args.logdir, 'test_log' + current_time)
 logger = misc.logger.info
