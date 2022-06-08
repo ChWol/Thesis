@@ -344,7 +344,7 @@ except Exception as e:
 finally:
     # Todo: Extract information here
     print('#########################################')
-    with open('NeuroSim_Output.csv', mode='r') as csv_file:
+    with open('NeuroSim_Results_Each_Epoch/NeuroSim_Breakdown_Epock_' + (args.epochs-1) + '.csv', mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
         line_count = 0
         for row in csv_reader:
