@@ -73,3 +73,18 @@ Total,8.77938,3.58252,inf,inf,0.723543,0.60842,-nan,0.000971064,1.41949,1.42475,
 
 TOPS/W,FPS,TOPS,Peak TOPS/W,Peak FPS,Peak TOPS,
 -nan,0,0,-nan,-nan,-nan
+Total Area(m^2), Total CIM (FW+AG) Area (m^2), Routing Area(m^2), ADC Area(m^2), Accumulation Area(m^2), Other Logic&Storage Area(m^2), Weight Gradient Area(m^2),
+-8610.96,1.5628e-06,0.000139491,0.000231257,3.92734e-05,3.28203e-05,-8610.96
+
+
+layer_number, latency_FW(s), latency_AG(s), latency_WG(s), latency_WU(s), energy_FW(J), energy_AG(J), energy_WG(J), energy_WU(J),Peak_latency_FW(s), Peak_latency_AG(s), Peak_latency_WG(s), Peak_latency_WU(s), Peak_energy_FW(J), Peak_energy_AG(J), Peak_energy_WG(J), Peak_energy_WU(J),, , ADC_latency(s), Accumulation_latency(s), Synaptic Array w/o ADC_latency(s), Buffer_latency(s), IC_latency(s), Weight_gradient_latency(s), Weight_update(s), DRAM_latency(s), ADC_energy(J), Accumulation_energy(J), Synaptic Array w/o ADC_energy(J), Buffer_energy(J), IC_energy(J), Weight_gradient_energy(J), Weight_update_energy(J), DRAM_energy(J)
+1,5.27233,0,inf,inf,0.12562,0,-nan,1.47006e-07,0.07022,0,inf,-nan,0.0223679,0,-nan,0,, , 0.0419812,0.00558424,0.0226545,4.69215,0.816964,inf,-nan,0.000368842,0.0124366,0.0073844,0.00254697,0.0031495,0.0992891,-nan,0,0.021865
+2,2.30208,2.34376,inf,inf,0.362357,0.368168,-nan,7.35585e-05,0.772554,0.814229,inf,-nan,0.125277,0.131088,-nan,5.52713e-08,, , 0.159882,1.32587,0.10103,3.7056,0.608542,inf,-nan,0.0117625,0.151528,0.0872245,0.0176128,0.0149351,0.471871,-nan,5.52713e-08,0.697283
+3,0.78499,0.816814,inf,inf,0.194309,0.198507,-nan,0.000292908,0.22275,0.254574,inf,-nan,0.104012,0.10821,-nan,2.21085e-07,, , 0.125494,0.278811,0.0730199,4.69201,0.331666,inf,-nan,0.0465954,0.148731,0.0505749,0.0129164,0.0323023,0.199106,-nan,2.21085e-07,2.76217
+4,0.404521,0.406281,inf,inf,0.0400959,0.0405705,-nan,0.00060312,0.352339,0.354099,inf,-nan,0.0219693,0.022444,-nan,9.82601e-07,, , 0.00768583,0.694688,0.004065,6.36414,0.0754272,inf,-nan,0.186261,0.0250564,0.0177567,0.00160022,0.109182,0.0732655,-nan,9.82601e-07,11.0415
+5,0.0154518,0.0156686,inf,inf,0.00116122,0.00117476,-nan,1.33129e-06,0.00162713,0.00184397,inf,-nan,0.000190459,0.000203998,-nan,2.4565e-08,, , 0.000971654,0.0019882,0.000511249,0.0589175,0.00371851,inf,-nan,0.000404684,0.000168387,0.000186042,4.00272e-05,0.000628315,0.00163356,-nan,2.4565e-08,0.0239897
+Total,8.77938,3.58252,inf,inf,0.723543,0.60842,-nan,0.000971064,1.41949,1.42475,inf,-nan,0.273816,0.261946,-nan,1.28352e-06,, , 0.336014,2.30694,0.201281,19.5128,1.83632,inf,-nan,0.245392,0.33792,0.163127,0.0347164,0.160197,0.845165,-nan,1.28352e-06,14.5468
+
+
+TOPS/W,FPS,TOPS,Peak TOPS/W,Peak FPS,Peak TOPS,
+-nan,0,0,-nan,-nan,-nan
