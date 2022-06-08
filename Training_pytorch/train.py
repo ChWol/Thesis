@@ -57,6 +57,8 @@ parser.add_argument('--nonlinearityLTD', default=-1.46, help='nonlinearity in LT
 parser.add_argument('--max_level', default=32, help='Maximum number of conductance states during weight update (floor(log2(max_level))=cellBit)')
 parser.add_argument('--d2dVari', default=0, help='device-to-device variation')
 parser.add_argument('--c2cVari', default=0.003, help='cycle-to-cycle variation')
+parser.add_argument('--momentum', default=0.9)
+parser.add_argument('--network', default='vgg8')
 current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
@@ -120,6 +122,7 @@ if args.cuda:
 # data loader and model
 # Todo: Allow changes, add further datasets
 assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
+assert args.network in ['vgg8', 'vgg16', 'alexnet', 'resnet34', 'lenet5'], args.network
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
     model = model.cifar10(args = args, logger=logger)
