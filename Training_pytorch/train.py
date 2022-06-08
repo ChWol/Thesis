@@ -301,7 +301,7 @@ try:
         # Todo: explain
         # Todo: extract printed information for WandB
         # Todo: not only log on last
-        if epoch == args.test_interval-1:
+        if epoch == args.test_interval:
             model.eval()
             test_loss = 0
             correct = 0
@@ -343,4 +343,13 @@ except Exception as e:
     traceback.print_exc()
 finally:
     # Todo: Extract information here
+    print('#########################################')
+    with open('NeuroSim_Output.csv', mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        line_count = 0
+        for row in csv_reader:
+            if line_count == 0:
+                print(f'Column names are {", ".join(row)}')
+                line_count += 1
+        print(f'Processed {line_count} lines.')
     logger("Total Elapse: {:.2f}, Best Result: {:.3f}%".format(time.time()-t_begin, best_acc))
