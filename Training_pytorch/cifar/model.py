@@ -53,7 +53,6 @@ def build_csv(layers, linear_dimension, input_depth=3):
                     ifm_depth = linear_dimension
                     once = True
                 row = [1, 1, ifm_depth, 1, 1, layers[i][1], 0, 1]
-            print(row)
             ifm_depth = layers[i][1]
             writer.writerow(row)
 

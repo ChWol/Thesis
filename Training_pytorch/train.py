@@ -125,7 +125,7 @@ if args.cuda:
 # data loader and model
 # Todo: Allow changes, add further datasets
 assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
-assert args.network in ['vgg8', 'vgg16', 'alexnet'], args.network
+assert args.network in ['speed', 'vgg8', 'vgg16', 'alexnet'], args.network
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
     model = model.cifar10(args = args, logger=logger)
