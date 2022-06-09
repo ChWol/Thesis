@@ -31,10 +31,10 @@ import wandb
 # Todo: Explain each parameter
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
 parser.add_argument('--type', default='cifar10', help='dataset for training')
-parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training (default: 64)')
-parser.add_argument('--epochs', type=int, default=257, help='number of epochs to train (default: 10)')
+parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training')
+parser.add_argument('--epochs', type=int, default=257, help='number of epochs to train')
 parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
-parser.add_argument('--seed', type=int, default=117, help='random seed (default: 1)')
+parser.add_argument('--seed', type=int, default=117, help='random seed')
 parser.add_argument('--log_interval', type=int, default=100,  help='how many batches to wait before logging training status')
 parser.add_argument('--test_interval', type=int, default=1,  help='how many epochs to wait before another test')
 parser.add_argument('--logdir', default='log/default', help='folder to save to the log')
@@ -123,7 +123,7 @@ if args.cuda:
 # data loader and model
 # Todo: Allow changes, add further datasets
 assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
-assert args.network in ['vgg8', 'vgg16', 'alexnet', 'resnet34', 'lenet5'], args.network
+assert args.network in ['vgg8', 'vgg16', 'alexnet'], args.network
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
     model = model.cifar10(args = args, logger=logger)
@@ -302,8 +302,12 @@ try:
         # Todo: explain
         # Todo: extract printed information for WandB
         # Todo: not only log on last
+<<<<<<< HEAD
         
         if epoch == args.test_interval-1:
+=======
+        if epoch == args.test_interval:
+>>>>>>> fb86c98c3b9f55171d809d507e7714e1def3c97e
             model.eval()
             test_loss = 0
             correct = 0
@@ -340,11 +344,11 @@ try:
             call(["/bin/bash", "./layer_record/trace_command.sh"])
             # ToDo: Save csv to wandb
             print('########## TEST ###########')
-            target_path = 'NeuroSim_Results_Each_Epoch/NeuroSim_Breakdown_Epock_' + str(args.epochs - 1) + '.csv'
-            df = pd.read_csv(target_path, usecols=['Total Area(m^2)', ' Total CIM (FW+AG) Area (m^2)', ' Routing Area(m^2)',
-                                                   ' ADC Area(m^2)', ' Accumulation Area(m^2)', ' Other Logic&Storage Area(m^2)',
-                                                   ' Weight Gradient Area(m^2)'])
-            result = df.to_dict(orient='records')
+            #target_path = 'NeuroSim_Results_Each_Epoch/NeuroSim_Breakdown_Epock_' + str(args.epochs - 1) + '.csv'
+            #df = pd.read_csv(target_path, usecols=['Total Area(m^2)', ' Total CIM (FW+AG) Area (m^2)', ' Routing Area(m^2)',
+            #                                       ' ADC Area(m^2)', ' Accumulation Area(m^2)', ' Other Logic&Storage Area(m^2)',
+            #                                       ' Weight Gradient Area(m^2)'])
+            #result = df.to_dict(orient='records')
 
 except Exception as e:
     import traceback
