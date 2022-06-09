@@ -31,19 +31,20 @@ class CIFAR(nn.Module):
         return x
 
 def build_csv(layers, ifm_dimension=32, input_depth=3):
-    f = open('test.csv', 'w')
-    writer = csv.writer(f)
-    ifm_depth = input_depth
-    for i in range(len(layers)):
-        pooling = 0
-        if layers[i][0] == 'M':
-            continue
-        if i < len(layers)-1 and layers[i+1][0] == 'M':
-            pooling = 1
-        row = [ifm_dimension, ifm_dimension, ifm_depth, layers[i][2], layers[i][2], layers[i][1], pooling, 1]
-        ifm_depth = layers[i][1]
-        writer.writerow(row)
-    f.close()
+    print('################ TESTING ################')
+    with open('test.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        ifm_depth = input_depth
+        for i in range(len(layers)):
+            pooling = 0
+            if layers[i][0] == 'M':
+                continue
+            if i < len(layers)-1 and layers[i+1][0] == 'M':
+                pooling = 1
+            row = [ifm_dimension, ifm_dimension, ifm_depth, layers[i][2], layers[i][2], layers[i][1], pooling, 1]
+            print(row)
+            ifm_depth = layers[i][1]
+            writer.writerow(row)
 
 # Todo: Same for linear layers
 def make_layers(cfg, args, logger, in_dimension):
