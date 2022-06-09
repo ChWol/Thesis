@@ -70,8 +70,8 @@ args.wl_grad = args.cellBit
 args.test_interval = args.epochs
 
 # Initializing Weights and Biases
-wandb.init(project='ParameterTuning', config=args)
-wandb.run.name = (args.type + ' - ' + args.run + '({})').format(wandb.run.id)
+wandb.init(project=args.type, config=args)
+wandb.run.name = (args.network + ' - ' + args.run + ' ({})').format(wandb.run.id)
 wandb.run.save()
 
 # momentum
