@@ -85,7 +85,7 @@ def make_layers(cfg, args, logger, in_dimension):
 
 # Todo: Use more semantic notation
 cfg_list = {
-    'cifar10': [('C', 128, 3, 'same'),
+    'speed': [('C', 128, 3, 'same'),
                 ('M', 2, 2),
                 ('C', 256, 3, 'same'),
                 ('M', 2, 2),
@@ -138,7 +138,7 @@ cfg_list = {
 
 # Todo: Merge to one method
 def cifar10( args, logger, pretrained=None):
-    cfg = cfg_list['cifar10']
+    cfg = cfg_list[args.network]
     build_csv(cfg, 8192, 32, 3)
     layers = make_layers(cfg, args,logger, 3)
     model = CIFAR(args,8192,layers, num_classes=10,logger = logger)
@@ -147,7 +147,7 @@ def cifar10( args, logger, pretrained=None):
     return model
 
 def cifar100( args, logger, pretrained=None):
-    cfg = cfg_list['cifar10']
+    cfg = cfg_list[args.network]
     build_csv(cfg, 8192, 32, 3)
     layers = make_layers(cfg, args,logger, 3)
     model = CIFAR(args,8192,layers, num_classes=100,logger = logger)
@@ -156,7 +156,7 @@ def cifar100( args, logger, pretrained=None):
     return model
 
 def mnist( args, logger, pretrained=None):
-    cfg = cfg_list['cifar10']
+    cfg = cfg_list[args.network]
     build_csv(cfg, 4608, 32, 1)
     layers = make_layers(cfg, args,logger, 1)
     model = CIFAR(args,4608,layers, num_classes=10,logger = logger)
