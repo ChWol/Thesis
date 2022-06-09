@@ -32,8 +32,7 @@ class CIFAR(nn.Module):
         x = self.classifier(x)
         return x
 
-def build_csv(layers, linear_dimension, input_dimension=32, input_depth=3):
-    ifm_dimension = input_dimension
+def build_csv(layers, linear_dimension, input_depth=3):
     once = False
     current_dir = os.path.dirname(__file__)
     path = os.path.join(current_dir, '../NeuroSIM/NetWork.csv')
@@ -48,8 +47,7 @@ def build_csv(layers, linear_dimension, input_dimension=32, input_depth=3):
             if layers[i][0] == 'C':
                 if layers[i+1][0] == 'M':
                     pooling = 1
-                row = [ifm_dimension, ifm_dimension, ifm_depth, layers[i][2], layers[i][2], layers[i][1], pooling, 1]
-                ifm_dimension = ifm_dimension//2
+                row = [layers[i][4], layers[i][4], ifm_depth, layers[i][2], layers[i][2], layers[i][1], pooling, 1]
             if layers[i][0] == 'L':
                 if not once:
                     ifm_depth = linear_dimension
@@ -85,61 +83,61 @@ def make_layers(cfg, args, logger, in_dimension):
 
 # Todo: Use more semantic notation
 cfg_list = {
-    'speed': [('C', 128, 3, 'same'),
+    'speed':    [('C', 128, 3, 'same', 32),
                 ('M', 2, 2),
-                ('C', 256, 3, 'same'),
+                ('C', 256, 3, 'same', 16),
                 ('M', 2, 2),
-                ('C', 512, 3, 'same'),
+                ('C', 512, 3, 'same', 8),
                 ('M', 2, 2),
-                ('L', 1024, 1, 'same'),
-                ('L', 10, 1, 'same')],
-    'alexnet':  [('C', 96, 11, 'same'),
+                ('L', 1024, 1, 'same', 1),
+                ('L', 10, 1, 'same', 1)],
+    'alexnet':  [('C', 96, 11, 'same', 32),
                 ('M', 3, 2),
-                ('C', 256, 5, 'same'),
+                ('C', 256, 5, 'same', 16),
                 ('M', 3, 2),
-                ('C', 384, 3, 'same'),
-                ('C', 384, 3, 'same'),
-                ('C', 256, 3, 'same'),
+                ('C', 384, 3, 'same', 8),
+                ('C', 384, 3, 'same', 8),
+                ('C', 256, 3, 'same', 8),
                 ('M', 3, 2),
-                ('L', 1024, 1, 'same'),
-                ('L', 10, 1, 'same')],
-    'vgg8':     [('C', 128, 3, 'same'),
-                ('C', 128, 3, 'same'),
+                ('L', 1024, 1, 'same', 1),
+                ('L', 10, 1, 'same', 1)],
+    'vgg8':     [('C', 128, 3, 'same', 32),
+                ('C', 128, 3, 'same', 32),
                 ('M', 2, 2),
-                ('C', 256, 3, 'same'),
-                ('C', 256, 3, 'same'),
+                ('C', 256, 3, 'same', 16),
+                ('C', 256, 3, 'same', 16),
                 ('M', 2, 2),
-                ('C', 512, 3, 'same'),
-                ('C', 512, 3, 'same'),
+                ('C', 512, 3, 'same', 8),
+                ('C', 512, 3, 'same', 8),
                 ('M', 2, 2),
-                ('L', 1024, 1, 'same'),
-                ('L', 10, 1, 'same')],
-    'vgg16':    [('C', 64, 3, 'same'),
-                ('C', 64, 3, 'same'),
+                ('L', 1024, 1, 'same', 1),
+                ('L', 10, 1, 'same', 1)],
+    'vgg16':    [('C', 64, 3, 'same', 32),
+                ('C', 64, 3, 'same', 32),
                 ('M', 2, 2),
-                ('C', 128, 3, 'same'),
-                ('C', 128, 3, 'same'),
+                ('C', 128, 3, 'same', 16),
+                ('C', 128, 3, 'same', 16),
                 ('M', 2, 2),
-                ('C', 256, 3, 'same'),
-                ('C', 256, 3, 'same'),
-                ('C', 256, 3, 'same'),
+                ('C', 256, 3, 'same', 16),
+                ('C', 256, 3, 'same', 16),
+                ('C', 256, 3, 'same', 16),
                 ('M', 2, 2),
-                ('C', 512, 3, 'same'),
-                ('C', 512, 3, 'same'),
-                ('C', 512, 3, 'same'),
+                ('C', 512, 3, 'same', 8),
+                ('C', 512, 3, 'same', 8),
+                ('C', 512, 3, 'same', 8),
                 ('M', 2, 2),
-                ('C', 512, 3, 'same'),
-                ('C', 512, 3, 'same'),
-                ('C', 512, 3, 'same'),
+                ('C', 512, 3, 'same', 4),
+                ('C', 512, 3, 'same', 4),
+                ('C', 512, 3, 'same', 4),
                 ('M', 2, 2),
-                ('L', 1024, 1, 'same'),
-                ('L', 10, 1, 'same')]
+                ('L', 1024, 1, 'same', 1),
+                ('L', 10, 1, 'same', 1)]
 }
 
 # Todo: Merge to one method
 def cifar10( args, logger, pretrained=None):
     cfg = cfg_list[args.network]
-    build_csv(cfg, 8192, 32, 3)
+    build_csv(cfg, 8192, 3)
     layers = make_layers(cfg, args,logger, 3)
     model = CIFAR(args,8192,layers, num_classes=10,logger = logger)
     if pretrained is not None:
@@ -148,7 +146,7 @@ def cifar10( args, logger, pretrained=None):
 
 def cifar100( args, logger, pretrained=None):
     cfg = cfg_list[args.network]
-    build_csv(cfg, 8192, 32, 3)
+    build_csv(cfg, 8192, 3)
     layers = make_layers(cfg, args,logger, 3)
     model = CIFAR(args,8192,layers, num_classes=100,logger = logger)
     if pretrained is not None:
@@ -157,7 +155,7 @@ def cifar100( args, logger, pretrained=None):
 
 def mnist( args, logger, pretrained=None):
     cfg = cfg_list[args.network]
-    build_csv(cfg, 4608, 32, 1)
+    build_csv(cfg, 4608, 1)
     layers = make_layers(cfg, args,logger, 1)
     model = CIFAR(args,4608,layers, num_classes=10,logger = logger)
     if pretrained is not None:
