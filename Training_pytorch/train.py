@@ -9,7 +9,6 @@ import torch
 import torch.optim as optim
 from torch.autograd import Variable
 import numpy as np
-import pandas as pd
 # Todo: explain
 from utee import make_path
 from utee import wage_util
@@ -302,12 +301,7 @@ try:
         # Todo: explain
         # Todo: extract printed information for WandB
         # Todo: not only log on last
-<<<<<<< HEAD
-        
         if epoch == args.test_interval-1:
-=======
-        if epoch == args.test_interval:
->>>>>>> fb86c98c3b9f55171d809d507e7714e1def3c97e
             model.eval()
             test_loss = 0
             correct = 0
