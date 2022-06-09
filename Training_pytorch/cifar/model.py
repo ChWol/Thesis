@@ -34,6 +34,10 @@ def build_csv(layers, linear_dimension, input_dimension=32, input_depth=3):
     print('################ TESTING ################')
     ifm_dimension = input_dimension
     once = False
+    #if not os.path.exists('./layer_record'):
+     #   os.makedirs('./layer_record')
+    #if os.path.exists('./layer_record/trace_command.sh'):
+    #    os.remove('./layer_record/trace_command.sh')
     with open('test.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         ifm_depth = input_depth
@@ -135,7 +139,7 @@ cfg_list = {
 # Todo: Merge to one method
 def cifar10( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
-    build_csv(cfg, 32, 3, 8192)
+    build_csv(cfg, 8192, 32, 3)
     layers = make_layers(cfg, args,logger, 3)
     model = CIFAR(args,8192,layers, num_classes=10,logger = logger)
     if pretrained is not None:
@@ -144,7 +148,7 @@ def cifar10( args, logger, pretrained=None):
 
 def cifar100( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
-    build_csv(cfg, 32, 3)
+    build_csv(cfg, 8192, 32, 3)
     layers = make_layers(cfg, args,logger, 3)
     model = CIFAR(args,8192,layers, num_classes=100,logger = logger)
     if pretrained is not None:
@@ -153,7 +157,7 @@ def cifar100( args, logger, pretrained=None):
 
 def mnist( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
-    build_csv(cfg, 32, 1, 4608)
+    build_csv(cfg, 4608, 32, 1)
     layers = make_layers(cfg, args,logger, 1)
     model = CIFAR(args,4608,layers, num_classes=10,logger = logger)
     if pretrained is not None:
