@@ -38,12 +38,12 @@ parser.add_argument('--log_interval', type=int, default=100,  help='how many bat
 parser.add_argument('--test_interval', type=int, default=1,  help='how many epochs to wait before another test')
 parser.add_argument('--logdir', default='log/default', help='folder to save to the log')
 parser.add_argument('--decreasing_lr', default='200,250', help='decreasing strategy')
-parser.add_argument('--wl_weight', type = int, default=8, help='weight precision')
-parser.add_argument('--wl_grad', type = int, default=8, help='gradient precision')
+parser.add_argument('--wl_weight', type = int, default=6, help='weight precision')
+parser.add_argument('--wl_grad', type = int, default=6, help='gradient precision')
 parser.add_argument('--wl_activate', type = int, default=8)
 parser.add_argument('--wl_error', type = int, default=8)
 parser.add_argument('--onoffratio', type = int, default=10)
-parser.add_argument('--cellBit', type = int, default=8, help='cell precision (cellBit==wl_weight==wl_grad)')
+parser.add_argument('--cellBit', type = int, default=6, help='cell precision (cellBit==wl_weight==wl_grad)')
 parser.add_argument('--inference', default=0)
 parser.add_argument('--subArray', type = int, default=128)
 parser.add_argument('--ADCprecision', type = int, default=5)
@@ -72,7 +72,6 @@ args.test_interval = args.epochs
 # Initializing Weights and Biases
 wandb.init(project=args.type, config=args)
 wandb.run.name = (args.network + ' - ' + args.run + ' ({})').format(wandb.run.id)
-wandb.run.save()
 
 # momentum
 gamma = args.momentum
