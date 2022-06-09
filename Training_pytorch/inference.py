@@ -57,16 +57,14 @@ parser.add_argument('--network', default='vgg8')
 current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
-# Set to run inference simulation
 args.inference = 0
-
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
-args.inference = 1
 args = make_path.makepath(args,['log_interval','test_interval','logdir','epochs','gpu','ngpu','debug'])
 
 misc.logger.init(args.logdir, 'test_log' + current_time)
 logger = misc.logger.info
 
+args.inference = 1
 misc.ensure_dir(args.logdir)
 logger("=================FLAGS==================")
 for k, v in args.__dict__.items():
@@ -81,7 +79,10 @@ if args.cuda:
 
 # Todo: Check if model saving works
 print('====================')
-print('Path: {}', args.logdir)
+print('Path', args.logdir)
+print(args.logdir)
+
+# /home/chwolters/Thesis/Training_pytorch/log/default/ADCprecision=5/batch_size=200/c2cVari=0.003/cellBit=8/d2dVari=0/decreasing_lr=200,250/detect=0/grad_scale=1/inference=0/max_level=32/momentum=0.9/network=vgg8/nonlinearityLTD=-1.46/nonlinearityLTP=1.75/onoffratio=10/seed=117/subArray=128/t=0/target=0/type=mnist/v=0/vari=0/wl_activate=8/wl_error=8/wl_grad=8/wl_weight=8/best-0.pth
 # Temporary solution
 model_path = '/home/chwolters/Thesis/Training_pytorch/log/default/ADCprecision=8/batch_size=200/c2cVari=0.003/cellBit=8/d2dVari=0/decreasing_lr=200,250/detect=0/grad_scale=1/inference=0/max_level=32/momentum=0.9/network=vgg8/nonlinearityLTD=-1.46/nonlinearityLTP=1.75/onoffratio=10/seed=117/subArray=128/t=0/target=0/type=mnist/v=0/vari=0/wl_activate=8/wl_error=8/wl_grad=8/wl_weight=8/best-4.pth'
 
