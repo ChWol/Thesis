@@ -3,6 +3,7 @@ print = misc.logger.info
 import torch.nn as nn
 from modules.quantization_cpu_np_infer import QConv2d,  QLinear
 import torch
+import csv
 
 class CIFAR(nn.Module):
     def __init__(self, args, dimensions, features, num_classes,logger):
@@ -29,6 +30,21 @@ class CIFAR(nn.Module):
         x = self.classifier(x)
         return x
 
+def build_csv(layers, ifm_dimension=32, input_depth=3):
+    f = open('test.csv', 'w')
+    writer = csv.writer(f)
+    ifm_depth = input_depth
+    for i in range(len(layers)):
+        pooling = 0
+        if layers[i][0] == 'M':
+            continue
+        if i < len(layers)-1 and layers[i+1][0] == 'M':
+            pooling = 1
+        row = [ifm_dimension, ifm_dimension, ifm_depth, layers[i][2], layers[i][2], layers[i][1], pooling, 1]
+        ifm_depth = layers[i][1]
+        writer.writerow(row)
+    f.close()
+
 # Todo: Same for linear layers
 def make_layers(cfg, args, logger, in_dimension):
     layers = []
@@ -53,7 +69,7 @@ def make_layers(cfg, args, logger, in_dimension):
     return nn.Sequential(*layers)
 
 
-
+# Todo: Use more semantic notation
 cfg_list = {
     'cifar10': [('C', 128, 3, 'same', 2.0),
                 ('M', 2, 2),
@@ -98,8 +114,10 @@ cfg_list = {
                 ('M', 2, 2)]
 }
 
+# Todo: Merge to one method
 def cifar10( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
+    build_csv(cfg, 32, 3)
     layers = make_layers(cfg, args,logger, 3)
     model = CIFAR(args,8192,layers, num_classes=10,logger = logger)
     if pretrained is not None:
@@ -108,6 +126,7 @@ def cifar10( args, logger, pretrained=None):
 
 def cifar100( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
+    build_csv(cfg, 32, 3)
     layers = make_layers(cfg, args,logger, 3)
     model = CIFAR(args,8192,layers, num_classes=100,logger = logger)
     if pretrained is not None:
@@ -116,6 +135,7 @@ def cifar100( args, logger, pretrained=None):
 
 def mnist( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
+    build_csv(cfg, 28, 1)
     layers = make_layers(cfg, args,logger, 1)
     model = CIFAR(args,4608,layers, num_classes=10,logger = logger)
     if pretrained is not None:

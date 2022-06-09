@@ -59,6 +59,7 @@ parser.add_argument('--d2dVari', type = float, default=0, help='device-to-device
 parser.add_argument('--c2cVari', type = float, default=0.003, help='cycle-to-cycle variation')
 parser.add_argument('--momentum', type = float, default=0.9)
 parser.add_argument('--network', default='vgg8')
+parser.add_argument('--run', default='')
 current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
@@ -70,7 +71,7 @@ args.test_interval = args.epochs
 
 # Initializing Weights and Biases
 wandb.init(project='ParameterTuning', config=args)
-wandb.run.name = (args.type + '({})').format(wandb.run.id)
+wandb.run.name = (args.type + ' - ' + args.run + '({})').format(wandb.run.id)
 wandb.run.save()
 
 # momentum
@@ -310,7 +311,7 @@ try:
             logger("testing phase")
             for i, (data, target) in enumerate(test_loader):
                 if i==0:
-                    hook_handle_list = hook.hardware_evaluation(model,args.wl_weight,args.wl_activate,epoch)
+                    hook_handle_list = hook.hardware_evaluation(model,args.cellBit,args.wl_weight,args.wl_activate,epoch)
                 indx_target = target.clone()
                 if args.cuda:
                     data, target = data.cuda(), target.cuda()
