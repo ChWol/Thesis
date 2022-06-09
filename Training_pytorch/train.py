@@ -59,6 +59,7 @@ parser.add_argument('--d2dVari', default=0, help='device-to-device variation')
 parser.add_argument('--c2cVari', default=0.003, help='cycle-to-cycle variation')
 parser.add_argument('--momentum', default=0.9)
 parser.add_argument('--network', default='vgg8')
+parser.add_argument('--run', default='')
 current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
@@ -69,7 +70,8 @@ args.wl_grad = args.cellBit
 args.test_interval = args.epochs
 
 # Initializing Weights and Biases
-wandb.init(project='testing', config=args)     
+wandb.init(project='ParameterTuning', config=args)
+wandb.run.name = args.type + ' - ' + args.run
 
 # momentum
 gamma = args.momentum
