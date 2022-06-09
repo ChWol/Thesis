@@ -44,7 +44,7 @@ parser.add_argument('--wl_grad', type = int, default=8, help='gradient precision
 parser.add_argument('--wl_activate', type = int, default=8)
 parser.add_argument('--wl_error', type = int, default=8)
 parser.add_argument('--onoffratio', default=10)
-parser.add_argument('--cellBit', default=8, help='cell precision (cellBit==wl_weight==wl_grad)')
+parser.add_argument('--cellBit', default=8, type = int, help='cell precision (cellBit==wl_weight==wl_grad)')
 parser.add_argument('--inference', default=0)
 parser.add_argument('--subArray', default=128)
 parser.add_argument('--ADCprecision', default=5)
@@ -302,8 +302,8 @@ try:
         # Todo: explain
         # Todo: extract printed information for WandB
         # Todo: not only log on last
-        if True:
-        #if epoch == args.test_interval:
+        
+        if epoch == args.test_interval-1:
             model.eval()
             test_loss = 0
             correct = 0
