@@ -87,9 +87,16 @@ model_path = '/home/chwolters/Thesis/Training_pytorch/log/default/ADCprecision=8
 
 # data loader and model
 # Todo: Add option to choose different datasets
-assert args.type in ['cifar10', 'cifar100'], args.type
-train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
-modelCF = model.cifar10(args = args, logger=logger, pretrained = model_path)
+assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
+if args.type == 'cifar10':
+	train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
+	modelCF = model.cifar10(args = args, logger=logger, pretrained = model_path)
+if args.type == 'cifar100':
+	train_loader, test_loader = dataset.get100(batch_size=args.batch_size, num_workers=1)
+	modelCF = model.cifar100(args=args, logger=logger, pretrained=model_path)
+if args.type == 'mnist':
+	train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
+	modelCF = model.mnist(args=args, logger=logger, pretrained=model_path)
 print(args.cuda)
 if args.cuda:
 	modelCF.cuda()
