@@ -35,7 +35,10 @@ class CIFAR(nn.Module):
 def build_csv(layers, linear_dimension, input_dimension=32, input_depth=3):
     ifm_dimension = input_dimension
     once = False
-    with open('../NeuroSIM/NetWork.csv', 'w', newline='') as f:
+    current_dir = os.path.dirname(__file__)
+    path = os.path.join(current_dir, '../NeuroSIM/NetWork.csv')
+    print(path)
+    with open(path, 'w', newline='') as f:
         writer = csv.writer(f)
         ifm_depth = input_depth
         for i in range(len(layers)):
