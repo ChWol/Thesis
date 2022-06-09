@@ -30,8 +30,10 @@ class CIFAR(nn.Module):
         x = self.classifier(x)
         return x
 
-def build_csv(layers, ifm_dimension=32, input_depth=3):
+def build_csv(layers, linear_dimension, input_dimension=32, input_depth=3):
     print('################ TESTING ################')
+    ifm_dimension = input_dimension
+    once = False
     with open('test.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         ifm_depth = input_depth
@@ -43,7 +45,11 @@ def build_csv(layers, ifm_dimension=32, input_depth=3):
                 if layers[i+1][0] == 'M':
                     pooling = 1
                 row = [ifm_dimension, ifm_dimension, ifm_depth, layers[i][2], layers[i][2], layers[i][1], pooling, 1]
+                ifm_dimension = ifm_dimension/2
             if layers[i][0] == 'L':
+                if not once:
+                    ifm_depth = linear_dimension
+                    once = True
                 row = [1, 1, ifm_depth, 1, 1, layers[i][1], 0, 1]
             print(row)
             ifm_depth = layers[i][1]
@@ -129,7 +135,7 @@ cfg_list = {
 # Todo: Merge to one method
 def cifar10( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
-    build_csv(cfg, 32, 3)
+    build_csv(cfg, 32, 3, 8192)
     layers = make_layers(cfg, args,logger, 3)
     model = CIFAR(args,8192,layers, num_classes=10,logger = logger)
     if pretrained is not None:
@@ -147,7 +153,7 @@ def cifar100( args, logger, pretrained=None):
 
 def mnist( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
-    build_csv(cfg, 32, 1)
+    build_csv(cfg, 32, 1, 4608)
     layers = make_layers(cfg, args,logger, 1)
     model = CIFAR(args,4608,layers, num_classes=10,logger = logger)
     if pretrained is not None:
