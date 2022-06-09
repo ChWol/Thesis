@@ -39,9 +39,12 @@ def build_csv(layers, ifm_dimension=32, input_depth=3):
             pooling = 0
             if layers[i][0] == 'M':
                 continue
-            if i < len(layers)-1 and layers[i+1][0] == 'M':
-                pooling = 1
-            row = [ifm_dimension, ifm_dimension, ifm_depth, layers[i][2], layers[i][2], layers[i][1], pooling, 1]
+            if layers[i][0] == 'C':
+                if layers[i+1][0] == 'M':
+                    pooling = 1
+                row = [ifm_dimension, ifm_dimension, ifm_depth, layers[i][2], layers[i][2], layers[i][1], pooling, 1]
+            if layers[i][0] == 'L':
+                row = [1, 1, ifm_depth, 1, 1, layers[i][1], 0, 1]
             print(row)
             ifm_depth = layers[i][1]
             writer.writerow(row)
@@ -72,47 +75,55 @@ def make_layers(cfg, args, logger, in_dimension):
 
 # Todo: Use more semantic notation
 cfg_list = {
-    'cifar10': [('C', 128, 3, 'same', 2.0),
+    'cifar10': [('C', 128, 3, 'same'),
                 ('M', 2, 2),
-                ('C', 256, 3, 'same', 16.0),
+                ('C', 256, 3, 'same'),
                 ('M', 2, 2),
-                ('C', 512, 3, 'same', 16.0),
-                ('M', 2, 2)],
-    'alexnet':  [('C', 96, 11, 'same', 2.0),
+                ('C', 512, 3, 'same'),
+                ('M', 2, 2),
+                ('L', 1024, 1, 'same'),
+                ('L', 10, 1, 'same')],
+    'alexnet':  [('C', 96, 11, 'same'),
                 ('M', 3, 2),
-                ('C', 256, 5, 'same', 16.0),
+                ('C', 256, 5, 'same'),
                 ('M', 3, 2),
-                ('C', 384, 3, 'same', 16.0),
-                ('C', 384, 3, 'same', 16.0),
-                ('C', 256, 3, 'same', 16.0),
-                ('M', 3, 2)],
-    'vgg8':     [('C', 128, 3, 'same', 2.0),
-                ('C', 128, 3, 'same', 16.0),
+                ('C', 384, 3, 'same'),
+                ('C', 384, 3, 'same'),
+                ('C', 256, 3, 'same'),
+                ('M', 3, 2),
+                ('L', 1024, 1, 'same'),
+                ('L', 10, 1, 'same')],
+    'vgg8':     [('C', 128, 3, 'same'),
+                ('C', 128, 3, 'same'),
                 ('M', 2, 2),
-                ('C', 256, 3, 'same', 16.0),
-                ('C', 256, 3, 'same', 16.0),
+                ('C', 256, 3, 'same'),
+                ('C', 256, 3, 'same'),
                 ('M', 2, 2),
-                ('C', 512, 3, 'same', 16.0),
-                ('C', 512, 3, 'same', 32.0),
-                ('M', 2, 2)],
-    'vgg16':    [('C', 64, 3, 'same', 2.0),
-                ('C', 64, 3, 'same', 16.0),
+                ('C', 512, 3, 'same'),
+                ('C', 512, 3, 'same'),
                 ('M', 2, 2),
-                ('C', 128, 3, 'same', 16.0),
-                ('C', 128, 3, 'same', 16.0),
+                ('L', 1024, 1, 'same'),
+                ('L', 10, 1, 'same')],
+    'vgg16':    [('C', 64, 3, 'same'),
+                ('C', 64, 3, 'same'),
                 ('M', 2, 2),
-                ('C', 256, 3, 'same', 16.0),
-                ('C', 256, 3, 'same', 32.0),
-                ('C', 256, 3, 'same', 32.0),
+                ('C', 128, 3, 'same'),
+                ('C', 128, 3, 'same'),
                 ('M', 2, 2),
-                ('C', 512, 3, 'same', 16.0),
-                ('C', 512, 3, 'same', 32.0),
-                ('C', 512, 3, 'same', 32.0),
+                ('C', 256, 3, 'same'),
+                ('C', 256, 3, 'same'),
+                ('C', 256, 3, 'same'),
                 ('M', 2, 2),
-                ('C', 512, 3, 'same', 16.0),
-                ('C', 512, 3, 'same', 32.0),
-                ('C', 512, 3, 'same', 32.0),
-                ('M', 2, 2)]
+                ('C', 512, 3, 'same'),
+                ('C', 512, 3, 'same'),
+                ('C', 512, 3, 'same'),
+                ('M', 2, 2),
+                ('C', 512, 3, 'same'),
+                ('C', 512, 3, 'same'),
+                ('C', 512, 3, 'same'),
+                ('M', 2, 2),
+                ('L', 1024, 1, 'same'),
+                ('L', 10, 1, 'same')]
 }
 
 # Todo: Merge to one method
@@ -136,7 +147,7 @@ def cifar100( args, logger, pretrained=None):
 
 def mnist( args, logger, pretrained=None):
     cfg = cfg_list['cifar10']
-    build_csv(cfg, 28, 1)
+    build_csv(cfg, 32, 1)
     layers = make_layers(cfg, args,logger, 1)
     model = CIFAR(args,4608,layers, num_classes=10,logger = logger)
     if pretrained is not None:
