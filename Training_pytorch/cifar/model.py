@@ -1,3 +1,5 @@
+import os.path
+
 from utee import misc
 print = misc.logger.info
 import torch.nn as nn
@@ -31,14 +33,9 @@ class CIFAR(nn.Module):
         return x
 
 def build_csv(layers, linear_dimension, input_dimension=32, input_depth=3):
-    print('################ TESTING ################')
     ifm_dimension = input_dimension
     once = False
-    #if not os.path.exists('./layer_record'):
-     #   os.makedirs('./layer_record')
-    #if os.path.exists('./layer_record/trace_command.sh'):
-    #    os.remove('./layer_record/trace_command.sh')
-    with open('test.csv', 'w', newline='') as f:
+    with open('../NeuroSIM/NetWork.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         ifm_depth = input_depth
         for i in range(len(layers)):
@@ -49,7 +46,7 @@ def build_csv(layers, linear_dimension, input_dimension=32, input_depth=3):
                 if layers[i+1][0] == 'M':
                     pooling = 1
                 row = [ifm_dimension, ifm_dimension, ifm_depth, layers[i][2], layers[i][2], layers[i][1], pooling, 1]
-                ifm_dimension = ifm_dimension/2
+                ifm_dimension = ifm_dimension//2
             if layers[i][0] == 'L':
                 if not once:
                     ifm_depth = linear_dimension
