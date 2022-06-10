@@ -74,8 +74,14 @@ int main(int argc, char * argv[]) {
 	param->numBitInput = atoi(argv[4]);            		 // precision of input neural activation
 	param->batchSize = atoi(argv[5]);
 
-	cout << "Nummer: " << argv[5];
-	
+	cout << "Test"
+	cout << argv[0]
+	cout << argv[1]
+	cout << argv[2]
+	cout << argv[3]
+	cout << argv[4]
+	cout << argv[5]
+
 	if (param->cellBit > param->synapseBit) {
 		cout << "ERROR!: Memory precision is even higher than synapse precision, please modify 'cellBit' in Param.cpp!" << endl;
 		param->cellBit = param->synapseBit;
@@ -333,9 +339,9 @@ int main(int argc, char * argv[]) {
 		for (int i=0; i<netStructure.size(); i++) {
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
 			
-			param->activityRowReadWG = atof(argv[4*i+8]);
-                        param->activityRowWriteWG = atof(argv[4*i+8]);
-                        param->activityColWriteWG = atof(argv[4*i+8]);
+			param->activityRowReadWG = atof(argv[4*i+9]);
+                        param->activityRowWriteWG = atof(argv[4*i+9]);
+                        param->activityColWriteWG = atof(argv[4*i+9]);
 			
 			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[4*i+4], argv[4*i+6], argv[4*i+7], netStructure[i][6],
 						netStructure, markNM, numTileEachLayer, utilizationEachLayer, speedUpEachLayer, tileLocaEachLayer,
