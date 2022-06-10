@@ -320,7 +320,7 @@ try:
             logger("testing phase")
             for i, (data, target) in enumerate(test_loader):
                 if i == 0:
-                    hook_handle_list = hook.hardware_evaluation(model, args.cellBit, args.wl_weight, args.wl_activate,
+                    hook_handle_list = hook.hardware_evaluation(model, args.wl_weight, args.wl_activate,
                                                                 epoch)
                 indx_target = target.clone()
                 if args.cuda:
