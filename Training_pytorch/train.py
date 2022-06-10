@@ -63,12 +63,17 @@ parser.add_argument('--c2cVari', type=float, default=0.003, help='cycle-to-cycle
 parser.add_argument('--momentum', type=float, default=0.9)
 parser.add_argument('--network', default='speed')
 parser.add_argument('--run', default='')
+parser.add_argument('--technode', type=int, default='32')
 current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
 # Manually overwriting arguments to match simulator-conditions
 args.wl_weight = args.cellBit
 args.wl_grad = args.cellBit
+
+technode_to_width = { 7: 14, 10: 14, 14: 22, 22: 32, 32: 40, 45: 50, 65: 100, 90: 200, 130: 200 }
+args.wireWidth = technode_to_width[args.technode]
+
 # Todo: Remove later
 args.test_interval = args.epochs
 
@@ -321,7 +326,7 @@ try:
             for i, (data, target) in enumerate(test_loader):
                 if i == 0:
                     hook_handle_list = hook.hardware_evaluation(model, args.wl_weight, args.wl_activate,
-                                                                epoch, args.batch_size)
+                                                                epoch, args.batch_size, args.cellBit, args.technode)
                 indx_target = target.clone()
                 if args.cuda:
                     data, target = data.cuda(), target.cuda()
