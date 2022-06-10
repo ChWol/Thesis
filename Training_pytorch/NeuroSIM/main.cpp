@@ -75,9 +75,17 @@ int main(int argc, char * argv[]) {
 	param->batchSize = atoi(argv[5]);
 	param->cellBit = atoi(argv[6]);
 	param->technode = atoi(argv[7]);
+	param->wireWidth = atoi(argv[8]);
+	param->reLu = atoi(argv[9]);
+	param->memcelltype = atoi(argv[10]);
+	param->levelOutput = atoi(argv[11]);
+	param->resistanceOff = 240e3*atoi(argv[12]);
 
+    // Todo: Change in parse in train.py, pass to hook.py, pass to main.cpp, change offset down there, try printing in some other file
+    // Todo: Remove from Param.cpp
+    // Todo: IMPORTANT to check all other occurances of the parameter
 
-	// memcelltype
+	// memcelltype: IMPORTANT -> lots of calculations based on this in Param.cpp
 	// reLu - change in network as well
 	// technode -> change wireWidth accordingly
 	// leveloutput corresponding to ADCprecision
@@ -340,11 +348,11 @@ int main(int argc, char * argv[]) {
 		for (int i=0; i<netStructure.size(); i++) {
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
 
-			param->activityRowReadWG = atof(argv[4*i+11]);
-                        param->activityRowWriteWG = atof(argv[4*i+11]);
-                        param->activityColWriteWG = atof(argv[4*i+11]);
+			param->activityRowReadWG = atof(argv[4*i+61]);
+                        param->activityRowWriteWG = atof(argv[4*i+16]);
+                        param->activityColWriteWG = atof(argv[4*i+16]);
 
-			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[4*i+8], argv[4*i+9], argv[4*i+10], netStructure[i][6],
+			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[4*i+13], argv[4*i+14], argv[4*i+15], netStructure[i][6],
 						netStructure, markNM, numTileEachLayer, utilizationEachLayer, speedUpEachLayer, tileLocaEachLayer,
 						numPENM, desiredPESizeNM, desiredTileSizeCM, desiredPESizeCM, CMTileheight, CMTilewidth, NMTileheight, NMTilewidth, numArrayWriteParallel,
 						&layerReadLatency, &layerReadDynamicEnergy, &tileLeakage, &layerReadLatencyAG, &layerReadDynamicEnergyAG, &layerReadLatencyWG, &layerReadDynamicEnergyWG,
@@ -498,10 +506,10 @@ int main(int argc, char * argv[]) {
 
 		for (int i=0; i<netStructure.size(); i++) {
 
-            param->activityRowReadWG = atof(argv[4*i+11]);
-            param->activityRowWriteWG = atof(argv[4*i+11]);
-            param->activityColWriteWG = atof(argv[4*i+11]);
-			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[4*i+8], argv[4*i+9], argv[4*i+10], netStructure[i][6],
+            param->activityRowReadWG = atof(argv[4*i+16]);
+            param->activityRowWriteWG = atof(argv[4*i+16]);
+            param->activityColWriteWG = atof(argv[4*i+16]);
+			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[4*i+13], argv[4*i+14], argv[4*i+15], netStructure[i][6],
 						netStructure, markNM, numTileEachLayer, utilizationEachLayer, speedUpEachLayer, tileLocaEachLayer,
 						numPENM, desiredPESizeNM, desiredTileSizeCM, desiredPESizeCM, CMTileheight, CMTilewidth, NMTileheight, NMTilewidth, numArrayWriteParallel,
 						&layerReadLatency, &layerReadDynamicEnergy, &tileLeakage, &layerReadLatencyAG, &layerReadDynamicEnergyAG, &layerReadLatencyWG, &layerReadDynamicEnergyWG, &layerWriteLatencyWU, &layerWriteDynamicEnergyWU,

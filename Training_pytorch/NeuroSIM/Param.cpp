@@ -119,7 +119,7 @@ Param::Param() {
 	// technode: 22      --> wireWidth: 32
 	// technode: 14      --> wireWidth: 22
 	// technode: 10, 7   --> wireWidth: 14
-	technode = 90;                      // Technology
+	//technode = 90;                      // Technology
 	featuresize = 40e-9;                // Wire width for subArray simulation
 	wireWidth = 200;                     // wireWidth of the cell for Accuracy calculation
 	globalBusDelayTolerance = 0.1;      // to relax bus delay for global H-Tree (chip level: communication among tiles), if tolerance is 0.1, the latency will be relax to (1+0.1)*optimalLatency (trade-off with energy)
@@ -136,7 +136,7 @@ Param::Param() {
 	
 	numColMuxed = 8;                    // How many columns share 1 ADC (for eNVM and FeFET) or parallel SRAM
 	levelOutput = 64;                  // # of levels of the multilevelSenseAmp output, should be in 2^N forms; e.g. 32 levels --> 5-bit ADC
-	cellBit = 5;                       // precision of memory device 
+	//cellBit = 5;                       // precision of memory device
 	
 	/*** parameters for SRAM ***/
 	// due the scaling, suggested SRAM cell size above 22nm: 160F^2
@@ -209,7 +209,7 @@ Param::Param() {
 	/***************************************** Initialization of parameters NO need to modify *****************************************/
 	
 	if (memcelltype == 1) {
-		cellBit = 1;             // force cellBit = 1 for all SRAM cases
+		//cellBit = 1;             // force cellBit = 1 for all SRAM cases
 	} 
 	
 	/*** initialize operationMode as default ***/
