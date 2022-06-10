@@ -575,8 +575,9 @@ int main(int argc, char * argv[]) {
 		chipReadLatencyPeakAG = systemClockPeakAG;
 
 		for (int i=0; i<netStructure.size(); i++) {
-			
+
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
+
 			cout << "layer" << i+1 << "'s readLatency is: " << readLatencyPerLayer[i]*1e9 << "ns" << endl;
 			cout << "layer" << i+1 << "'s readDynamicEnergy is: " << readDynamicEnergyPerLayer[i]*1e12 << "pJ" << endl;
 			cout << "layer" << i+1 << "'s readLatency of Activation Gradient is: " << readLatencyPerLayerAG[i]*1e9 << "ns" << endl;
@@ -620,9 +621,9 @@ int main(int argc, char * argv[]) {
 			cout << endl;
 			cout << "************************ Breakdown of Latency and Dynamic Energy *************************" << endl;
 			cout << endl;
-			
+
 			chipLeakageEnergy += leakagePowerPerLayer[i] * ((systemClock-readLatencyPerLayer[i]) + (systemClockAG-readLatencyPerLayerAG[i]));
-			
+
 			if (breakdownfile.is_open()) {
 				breakdownfile << i+1 << "," << readLatencyPerLayer[i] << "," << readLatencyPerLayerAG[i] << "," << readLatencyPerLayerWG[i] << "," << writeLatencyPerLayerWU[i] << ",";
 				breakdownfile << readDynamicEnergyPerLayer[i] << "," << readDynamicEnergyPerLayerAG[i] << "," << readDynamicEnergyPerLayerWG[i] << "," << writeDynamicEnergyPerLayerWU[i] << ",";
@@ -635,7 +636,7 @@ int main(int argc, char * argv[]) {
 			}
 		}
 	}
-	
+
 	if (breakdownfile.is_open()) {
 		breakdownfile << "Total" << "," << chipReadLatency << "," << chipReadLatencyAG << "," << chipReadLatencyWG << "," << chipWriteLatencyWU << ",";
 		breakdownfile << chipReadDynamicEnergy << "," << chipReadDynamicEnergyAG << "," << chipReadDynamicEnergyWG << "," << chipWriteDynamicEnergyWU << ",";
@@ -655,19 +656,9 @@ int main(int argc, char * argv[]) {
 	} else {
 		cout << "Error: the breakdown file cannot be opened!" << endl;
 	}
+
 	breakdownfile.close();
 
-    // This is where I edited the output
-	offstream outputFile;
-	outputFile.open("Summary_Output.csv", ios::app);
-	outputFile << chipArea*1e12 << "um^2" << ","
-	    << chipAreaArray*1e12 << "um^2" << ","
-	    << chipAreaIC*1e12 << "um^2" << ","
-	    << chipAreaADC*1e12 << "um^2" << ","
-	    << chipAreaAccum*1e12 << "um^2" << ","
-	    << chipAreaOther*1e12 << "um^2" << ","
-	    << chipAreaWG*1e12 << "um^2" << ",";
-	
 	cout << "------------------------------ Summary --------------------------------" <<  endl;
 	cout << endl;
 	cout << "ChipArea : " << chipArea*1e12 << "um^2" << endl;
@@ -738,7 +729,7 @@ int main(int argc, char * argv[]) {
 	} else {
 		cout << "--------------------------------------Chip pipeline Performance---------------------------------" << endl;
 	}
-	
+
 	cout << "Energy Efficiency TOPS/W: " << numComputation/((chipReadDynamicEnergy+chipLeakageEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*1e12) << endl;
 	cout << "Throughput TOPS: " << numComputation/(chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU)*1e-12 << endl;
 	cout << "Throughput FPS: " << 1/(chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU) << endl;
@@ -746,7 +737,7 @@ int main(int argc, char * argv[]) {
 	cout << "Peak Energy Efficiency TOPS/W: " << numComputation/((chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*1e12) << endl;
 	cout << "Peak Throughput TOPS: " << numComputation/(chipReadLatencyPeakFW+chipReadLatencyPeakAG+chipReadLatencyPeakWG+chipWriteLatencyPeakWU)*1e-12 << endl;
 	cout << "Peak Throughput FPS: " << 1/(chipReadLatencyPeakFW+chipReadLatencyPeakAG+chipReadLatencyPeakWG+chipWriteLatencyPeakWU) << endl;
-	
+
 	cout << "-------------------------------------- Hardware Performance Done --------------------------------------" <<  endl;
 	cout << endl;
 	auto stop = chrono::high_resolution_clock::now();
@@ -754,8 +745,6 @@ int main(int argc, char * argv[]) {
     cout << "------------------------------ Simulation Performance --------------------------------" <<  endl;
 	cout << "Total Run-time of NeuroSim: " << duration.count() << " seconds" << endl;
 	cout << "------------------------------ Simulation Performance --------------------------------" <<  endl;
-
-	outputFile.close()
 
 	// save results to top level csv file (only total results)
 	ofstream outfile;
