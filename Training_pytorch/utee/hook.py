@@ -107,7 +107,7 @@ def remove_hook_list(hook_handle_list):
     for handle in hook_handle_list:
         handle.remove()
 
-def hardware_evaluation(model,wl_weight,wl_activation,numEpoch,batchSize):
+def hardware_evaluation(model,wl_weight,wl_activation,numEpoch):
     hook_handle_list = []
     if not os.path.exists('./layer_record'):
         os.makedirs('./layer_record')
