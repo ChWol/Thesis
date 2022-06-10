@@ -1010,7 +1010,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		*dramDynamicEnergy = (dRAM->readDynamicEnergy)*6*((layerNumber!=0)==true? 6:4);
 		
 		// since for each iteration, need *batchSize computation
-		cout << param->batchSize;
 		*readLatency *= param->batchSize;
 		*readDynamicEnergy *= param->batchSize;
 		*readLatencyAG *= param->batchSize;

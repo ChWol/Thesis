@@ -331,11 +331,11 @@ int main(int argc, char * argv[]) {
 		for (int i=0; i<netStructure.size(); i++) {
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
 
-			param->activityRowReadWG = atof(argv[5*i+9]);
-                        param->activityRowWriteWG = atof(argv[5*i+9]);
-                        param->activityColWriteWG = atof(argv[5*i+9]);
+			param->activityRowReadWG = atof(argv[4*i+9]);
+                        param->activityRowWriteWG = atof(argv[4*i+9]);
+                        param->activityColWriteWG = atof(argv[4*i+9]);
 
-			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[5*i+6], argv[5*i+7], argv[5*i+8], netStructure[i][6],
+			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[4*i+6], argv[4*i+7], argv[4*i+8], netStructure[i][6],
 						netStructure, markNM, numTileEachLayer, utilizationEachLayer, speedUpEachLayer, tileLocaEachLayer,
 						numPENM, desiredPESizeNM, desiredTileSizeCM, desiredPESizeCM, CMTileheight, CMTilewidth, NMTileheight, NMTilewidth, numArrayWriteParallel,
 						&layerReadLatency, &layerReadDynamicEnergy, &tileLeakage, &layerReadLatencyAG, &layerReadDynamicEnergyAG, &layerReadLatencyWG, &layerReadDynamicEnergyWG,
@@ -489,10 +489,10 @@ int main(int argc, char * argv[]) {
 
 		for (int i=0; i<netStructure.size(); i++) {
 
-            param->activityRowReadWG = atof(argv[5*i+9]);
-            param->activityRowWriteWG = atof(argv[5*i+9]);
-            param->activityColWriteWG = atof(argv[5*i+9]);
-			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[5*i+6], argv[5*i+7], argv[5*i+8], netStructure[i][6],
+            param->activityRowReadWG = atof(argv[4*i+9]);
+            param->activityRowWriteWG = atof(argv[4*i+9]);
+            param->activityColWriteWG = atof(argv[4*i+9]);
+			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[4*i+6], argv[4*i+7], argv[4*i+8], netStructure[i][6],
 						netStructure, markNM, numTileEachLayer, utilizationEachLayer, speedUpEachLayer, tileLocaEachLayer,
 						numPENM, desiredPESizeNM, desiredTileSizeCM, desiredPESizeCM, CMTileheight, CMTilewidth, NMTileheight, NMTilewidth, numArrayWriteParallel,
 						&layerReadLatency, &layerReadDynamicEnergy, &tileLeakage, &layerReadLatencyAG, &layerReadDynamicEnergyAG, &layerReadLatencyWG, &layerReadDynamicEnergyWG, &layerWriteLatencyWU, &layerWriteDynamicEnergyWU,
