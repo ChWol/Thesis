@@ -72,13 +72,12 @@ int main(int argc, char * argv[]) {
 	// define weight/input/memory precision from wrapper
 	param->synapseBit = atoi(argv[3]);             		 // precision of synapse weight
 	param->numBitInput = atoi(argv[4]);            		 // precision of input neural activation
-	//param->batchSize = atoi(argv[5]);
 
 	if (param->cellBit > param->synapseBit) {
 		cout << "ERROR!: Memory precision is even higher than synapse precision, please modify 'cellBit' in Param.cpp!" << endl;
 		param->cellBit = param->synapseBit;
 	}
-	
+
 	/*** initialize operationMode as default ***/
 	param->conventionalParallel = 0;
 	param->conventionalSequential = 0;
@@ -87,16 +86,16 @@ int main(int argc, char * argv[]) {
 	param->XNORsequentialMode = 0;           // Use several multi-bit RRAM as one synapse
 	param->XNORparallelMode = 0;         // Use several multi-bit RRAM as one synapse
 	switch(param->operationmode) {
-		case 6:	    param->XNORparallelMode = 1;               break;     
-		case 5:	    param->XNORsequentialMode = 1;             break;     
-		case 4:	    param->BNNparallelMode = 1;                break;     
-		case 3:	    param->BNNsequentialMode = 1;              break;    
-		case 2:	    param->conventionalParallel = 1;           break;     
-		case 1:	    param->conventionalSequential = 1;         break;    
+		case 6:	    param->XNORparallelMode = 1;               break;
+		case 5:	    param->XNORsequentialMode = 1;             break;
+		case 4:	    param->BNNparallelMode = 1;                break;
+		case 3:	    param->BNNsequentialMode = 1;              break;
+		case 2:	    param->conventionalParallel = 1;           break;
+		case 1:	    param->conventionalSequential = 1;         break;
 		case -1:	break;
 		default:	exit(-1);
 	}
-	
+
 	if (param->XNORparallelMode || param->XNORsequentialMode) {
 		param->numRowPerSynapse = 2;
 	} else {
@@ -107,9 +106,9 @@ int main(int argc, char * argv[]) {
 	} else if (param->XNORparallelMode || param->XNORsequentialMode || param->BNNsequentialMode) {
 		param->numColPerSynapse = 1;
 	} else {
-		param->numColPerSynapse = ceil((double)param->synapseBit/(double)param->cellBit); 
+		param->numColPerSynapse = ceil((double)param->synapseBit/(double)param->cellBit);
 	}
-	
+
 	switch(param->transistortype) {
 		case 3:	    inputParameter.transistorType = TFET;          break;
 		case 2:	    inputParameter.transistorType = FET_2D;        break;
@@ -117,14 +116,14 @@ int main(int argc, char * argv[]) {
 		case -1:	break;
 		default:	exit(-1);
 	}
-	
+
 	switch(param->deviceroadmap) {
 		case 2:	    inputParameter.deviceRoadmap = LSTP;  break;
 		case 1:	    inputParameter.deviceRoadmap = HP;    break;
 		case -1:	break;
 		default:	exit(-1);
 	}
-	
+
 	/* Create SubArray object and link the required global objects (not initialization) */
 	inputParameter.temperature = param->temp;   // Temperature (K)
 	inputParameter.processNode = param->technode;    // Technology node
@@ -135,32 +134,32 @@ int main(int argc, char * argv[]) {
 	vector<int> pipelineSpeedUp;
 	markNM = ChipDesignInitialize(inputParameter, tech, cell, false, netStructure, &maxPESizeNM, &maxTileSizeCM, &numPENM);
 	pipelineSpeedUp = ChipDesignInitialize(inputParameter, tech, cell, true, netStructure, &maxPESizeNM, &maxTileSizeCM, &numPENM);
-	
+
 	double desiredNumTileNM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM;
 	int numTileRow, numTileCol;
 	int numArrayWriteParallel;
-	
+
 	vector<vector<double> > numTileEachLayer;
 	vector<vector<double> > utilizationEachLayer;
 	vector<vector<double> > speedUpEachLayer;
 	vector<vector<double> > tileLocaEachLayer;
-	
-	numTileEachLayer = ChipFloorPlan(true, false, false, netStructure, markNM, 
-					maxPESizeNM, maxTileSizeCM, numPENM, pipelineSpeedUp,
-					&desiredNumTileNM, &desiredPESizeNM, &desiredNumTileCM, &desiredTileSizeCM, &desiredPESizeCM, &numTileRow, &numTileCol);	
-	
-	utilizationEachLayer = ChipFloorPlan(false, true, false, netStructure, markNM, 
+
+	numTileEachLayer = ChipFloorPlan(true, false, false, netStructure, markNM,
 					maxPESizeNM, maxTileSizeCM, numPENM, pipelineSpeedUp,
 					&desiredNumTileNM, &desiredPESizeNM, &desiredNumTileCM, &desiredTileSizeCM, &desiredPESizeCM, &numTileRow, &numTileCol);
-	
+
+	utilizationEachLayer = ChipFloorPlan(false, true, false, netStructure, markNM,
+					maxPESizeNM, maxTileSizeCM, numPENM, pipelineSpeedUp,
+					&desiredNumTileNM, &desiredPESizeNM, &desiredNumTileCM, &desiredTileSizeCM, &desiredPESizeCM, &numTileRow, &numTileCol);
+
 	speedUpEachLayer = ChipFloorPlan(false, false, true, netStructure, markNM,
 					maxPESizeNM, maxTileSizeCM, numPENM, pipelineSpeedUp,
 					&desiredNumTileNM, &desiredPESizeNM, &desiredNumTileCM, &desiredTileSizeCM, &desiredPESizeCM, &numTileRow, &numTileCol);
-					
+
 	tileLocaEachLayer = ChipFloorPlan(false, false, false, netStructure, markNM,
 					maxPESizeNM, maxTileSizeCM, numPENM, pipelineSpeedUp,
 					&desiredNumTileNM, &desiredPESizeNM, &desiredNumTileCM, &desiredTileSizeCM, &desiredPESizeCM, &numTileRow, &numTileCol);
-	
+
 	cout << "------------------------------ FloorPlan --------------------------------" <<  endl;
 	cout << endl;
 	cout << "Tile and PE size are optimized to maximize memory utilization ( = memory mapped by synapse / total memory on chip)" << endl;
@@ -188,7 +187,7 @@ int main(int argc, char * argv[]) {
 		cout << "layer" << i+1 << ": " << speedUpEachLayer[0][i] * speedUpEachLayer[1][i] << endl;
 	}
 	cout << endl;
-	
+
 	cout << "----------------- Utilization of each layer ------------------" <<  endl;
 	double realMappedMemory = 0;
 	for (int i=0; i<netStructure.size(); i++) {
@@ -201,30 +200,30 @@ int main(int argc, char * argv[]) {
 	cout << endl;
 	cout << endl;
 	cout << endl;
-	
+
 	double numComputation = 0;
 	for (int i=0; i<netStructure.size(); i++) {
 		numComputation += 2*(netStructure[i][0] * netStructure[i][1] * netStructure[i][2] * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	}
-	
+
 	if (param->trainingEstimation) {
 		numComputation *= 3;  // forward, computation of activation gradient, weight gradient
 		numComputation -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);  //L-1 does not need AG
 		numComputation *= param->batchSize * param->numIteration;  // count for one epoch
 	}
-		
+
 	ChipInitialize(inputParameter, tech, cell, netStructure, markNM, numTileEachLayer,
 					numPENM, desiredNumTileNM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow, numTileCol, &numArrayWriteParallel);
-	
+
 	double chipHeight, chipWidth, chipArea, chipAreaIC, chipAreaADC, chipAreaAccum, chipAreaOther, chipAreaWG, chipAreaArray;
 	double CMTileheight = 0;
 	double CMTilewidth = 0;
 	double NMTileheight = 0;
 	double NMTilewidth = 0;
 	vector<double> chipAreaResults;
-				
-	chipAreaResults = ChipCalculateArea(inputParameter, tech, cell, desiredNumTileNM, numPENM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow, 
-					&chipHeight, &chipWidth, &CMTileheight, &CMTilewidth, &NMTileheight, &NMTilewidth);		
+
+	chipAreaResults = ChipCalculateArea(inputParameter, tech, cell, desiredNumTileNM, numPENM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow,
+					&chipHeight, &chipWidth, &CMTileheight, &CMTilewidth, &NMTileheight, &NMTilewidth);
 	chipArea = chipAreaResults[0];
 	chipAreaIC = chipAreaResults[1];
 	chipAreaADC = chipAreaResults[2];
@@ -241,7 +240,7 @@ int main(int argc, char * argv[]) {
 	double chipReadDynamicEnergyWG = 0;
 	double chipWriteLatencyWU = 0;
 	double chipWriteDynamicEnergyWU = 0;
-	
+
 	double chipReadLatencyPeakFW = 0;
 	double chipReadDynamicEnergyPeakFW = 0;
 	double chipReadLatencyPeakAG = 0;
@@ -250,24 +249,24 @@ int main(int argc, char * argv[]) {
 	double chipReadDynamicEnergyPeakWG = 0;
 	double chipWriteLatencyPeakWU = 0;
 	double chipWriteDynamicEnergyPeakWU = 0;
-	
+
 	double chipLeakageEnergy = 0;
 	double chipLeakage = 0;
 	double chipbufferLatency = 0;
 	double chipbufferReadDynamicEnergy = 0;
 	double chipicLatency = 0;
 	double chipicReadDynamicEnergy = 0;
-	
+
 	double chipLatencyADC = 0;
 	double chipLatencyAccum = 0;
 	double chipLatencyOther = 0;
 	double chipEnergyADC = 0;
 	double chipEnergyAccum = 0;
 	double chipEnergyOther = 0;
-	
+
 	double chipDRAMLatency = 0;
 	double chipDRAMDynamicEnergy = 0;
-	
+
 	double layerReadLatency = 0;
 	double layerReadDynamicEnergy = 0;
 	double layerReadLatencyAG = 0;
@@ -276,7 +275,7 @@ int main(int argc, char * argv[]) {
 	double layerReadDynamicEnergyWG = 0;
 	double layerWriteLatencyWU = 0;
 	double layerWriteDynamicEnergyWU = 0;
-	
+
 	double layerReadLatencyPeakFW = 0;
 	double layerReadDynamicEnergyPeakFW = 0;
 	double layerReadLatencyPeakAG = 0;
@@ -285,26 +284,26 @@ int main(int argc, char * argv[]) {
 	double layerReadDynamicEnergyPeakWG = 0;
 	double layerWriteLatencyPeakWU = 0;
 	double layerWriteDynamicEnergyPeakWU = 0;
-	
+
 	double layerDRAMLatency = 0;
 	double layerDRAMDynamicEnergy = 0;
-	
+
 	double tileLeakage = 0;
 	double layerbufferLatency = 0;
 	double layerbufferDynamicEnergy = 0;
 	double layericLatency = 0;
 	double layericDynamicEnergy = 0;
-	
+
 	double coreLatencyADC = 0;
 	double coreLatencyAccum = 0;
 	double coreLatencyOther = 0;
 	double coreEnergyADC = 0;
 	double coreEnergyAccum = 0;
 	double coreEnergyOther = 0;
-	
-	
+
+
 	cout << "-------------------------------------- Hardware Performance --------------------------------------" <<  endl;
-	
+
 	// save breakdown results of each layer to csv files
 	ofstream breakdownfile;
 	string breakdownfile_name = "./NeuroSim_Results_Each_Epoch/NeuroSim_Breakdown_Epock_";
@@ -324,35 +323,35 @@ int main(int argc, char * argv[]) {
 	} else {
 		cout << "Error: the breakdown file cannot be opened!" << endl;
 	}
-	
+
 	if (! param->pipeline) {
 		// layer-by-layer process
 		// show the detailed hardware performance for each layer
 		for (int i=0; i<netStructure.size(); i++) {
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
-			
+
 			param->activityRowReadWG = atof(argv[4*i+8]);
                         param->activityRowWriteWG = atof(argv[4*i+8]);
                         param->activityColWriteWG = atof(argv[4*i+8]);
-			
-			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[4*i+4], argv[4*i+6], argv[4*i+7], netStructure[i][6],
+
+			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[4*i+5], argv[4*i+6], argv[4*i+7], netStructure[i][6],
 						netStructure, markNM, numTileEachLayer, utilizationEachLayer, speedUpEachLayer, tileLocaEachLayer,
 						numPENM, desiredPESizeNM, desiredTileSizeCM, desiredPESizeCM, CMTileheight, CMTilewidth, NMTileheight, NMTilewidth, numArrayWriteParallel,
-						&layerReadLatency, &layerReadDynamicEnergy, &tileLeakage, &layerReadLatencyAG, &layerReadDynamicEnergyAG, &layerReadLatencyWG, &layerReadDynamicEnergyWG, 
+						&layerReadLatency, &layerReadDynamicEnergy, &tileLeakage, &layerReadLatencyAG, &layerReadDynamicEnergyAG, &layerReadLatencyWG, &layerReadDynamicEnergyWG,
 						&layerWriteLatencyWU, &layerWriteDynamicEnergyWU, &layerbufferLatency, &layerbufferDynamicEnergy, &layericLatency, &layericDynamicEnergy,
 						&coreLatencyADC, &coreLatencyAccum, &coreLatencyOther, &coreEnergyADC, &coreEnergyAccum, &coreEnergyOther, &layerDRAMLatency, &layerDRAMDynamicEnergy,
 						&layerReadLatencyPeakFW, &layerReadDynamicEnergyPeakFW, &layerReadLatencyPeakAG, &layerReadDynamicEnergyPeakAG,
 						&layerReadLatencyPeakWG, &layerReadDynamicEnergyPeakWG, &layerWriteLatencyPeakWU, &layerWriteDynamicEnergyPeakWU);
-			
+
 			double numTileOtherLayer = 0;
-			double layerLeakageEnergy = 0;		
+			double layerLeakageEnergy = 0;
 			for (int j=0; j<netStructure.size(); j++) {
 				if (j != i) {
 					numTileOtherLayer += numTileEachLayer[0][j] * numTileEachLayer[1][j];
 				}
 			}
 			layerLeakageEnergy = numTileOtherLayer*tileLeakage*(layerReadLatency+layerReadLatencyAG);
-			
+
 			cout << "layer" << i+1 << "'s readLatency of Forward is: " << layerReadLatency*1e9 << "ns" << endl;
 			cout << "layer" << i+1 << "'s readDynamicEnergy of Forward is: " << layerReadDynamicEnergy*1e12 << "pJ" << endl;
 			cout << "layer" << i+1 << "'s readLatency of Activation Gradient is: " << layerReadLatencyAG*1e9 << "ns" << endl;
@@ -395,11 +394,11 @@ int main(int argc, char * argv[]) {
 			cout << "----------- Weight Update writeDynamicEnergy is : " << layerWriteDynamicEnergyPeakWU*1e12 << "pJ" << endl;
 			cout << "----------- DRAM data transfer Energy is : " << layerDRAMDynamicEnergy*1e12 << "pJ" << endl;
 			cout << endl;
-			
+
 			cout << "************************ Breakdown of Latency and Dynamic Energy *************************" << endl;
 			cout << endl;
-			
-			
+
+
 			if (breakdownfile.is_open()) {
 				breakdownfile << i+1 << "," << layerReadLatency << "," << layerReadLatencyAG << "," << layerReadLatencyWG << "," << layerWriteLatencyWU << ",";
 				breakdownfile << layerReadDynamicEnergy << "," << layerReadDynamicEnergyAG << "," << layerReadDynamicEnergyWG << "," << layerWriteDynamicEnergyWU << ",";
@@ -410,7 +409,7 @@ int main(int argc, char * argv[]) {
 			} else {
 				cout << "Error: the breakdown file cannot be opened!" << endl;
 			}
-			
+
 			chipReadLatency += layerReadLatency;
 			chipReadDynamicEnergy += layerReadDynamicEnergy;
 			chipReadLatencyAG += layerReadLatencyAG;
@@ -421,7 +420,7 @@ int main(int argc, char * argv[]) {
 			chipWriteDynamicEnergyWU += layerWriteDynamicEnergyWU;
 			chipDRAMLatency += layerDRAMLatency;
 			chipDRAMDynamicEnergy += layerDRAMDynamicEnergy;
-			
+
 			chipReadLatencyPeakFW += layerReadLatencyPeakFW;
 			chipReadDynamicEnergyPeakFW += layerReadDynamicEnergyPeakFW;
 			chipReadLatencyPeakAG += layerReadLatencyPeakAG;
@@ -430,14 +429,14 @@ int main(int argc, char * argv[]) {
 			chipReadDynamicEnergyPeakWG += layerReadDynamicEnergyPeakWG;
 			chipWriteLatencyPeakWU += layerWriteLatencyPeakWU;
 			chipWriteDynamicEnergyPeakWU += layerWriteDynamicEnergyPeakWU;
-			
+
 			chipLeakageEnergy += layerLeakageEnergy;
 			chipLeakage += tileLeakage*numTileEachLayer[0][i] * numTileEachLayer[1][i];
 			chipbufferLatency += layerbufferLatency;
 			chipbufferReadDynamicEnergy += layerbufferDynamicEnergy;
 			chipicLatency += layericLatency;
 			chipicReadDynamicEnergy += layericDynamicEnergy;
-			
+
 			chipLatencyADC += coreLatencyADC;
 			chipLatencyAccum += coreLatencyAccum;
 			chipLatencyOther += coreLatencyOther;
@@ -452,7 +451,7 @@ int main(int argc, char * argv[]) {
 		double systemClockAG = 0;
 		double systemClockPeakFW = 0;
 		double systemClockPeakAG = 0;
-		
+
 		vector<double> readLatencyPerLayer;
 		vector<double> readDynamicEnergyPerLayer;
 		vector<double> readLatencyPerLayerAG;
@@ -461,7 +460,7 @@ int main(int argc, char * argv[]) {
 		vector<double> readDynamicEnergyPerLayerWG;
 		vector<double> writeLatencyPerLayerWU;
 		vector<double> writeDynamicEnergyPerLayerWU;
-		
+
 		vector<double> readLatencyPerLayerPeakFW;
 		vector<double> readDynamicEnergyPerLayerPeakFW;
 		vector<double> readLatencyPerLayerPeakAG;
@@ -470,29 +469,29 @@ int main(int argc, char * argv[]) {
 		vector<double> readDynamicEnergyPerLayerPeakWG;
 		vector<double> writeLatencyPerLayerPeakWU;
 		vector<double> writeDynamicEnergyPerLayerPeakWU;
-		
+
 		vector<double> dramLatencyPerLayer;
 		vector<double> dramDynamicEnergyPerLayer;
-		
+
 		vector<double> leakagePowerPerLayer;
 		vector<double> bufferLatencyPerLayer;
 		vector<double> bufferEnergyPerLayer;
 		vector<double> icLatencyPerLayer;
 		vector<double> icEnergyPerLayer;
-		
+
 		vector<double> coreLatencyADCPerLayer;
 		vector<double> coreEnergyADCPerLayer;
 		vector<double> coreLatencyAccumPerLayer;
 		vector<double> coreEnergyAccumPerLayer;
 		vector<double> coreLatencyOtherPerLayer;
 		vector<double> coreEnergyOtherPerLayer;
-		
+
 		for (int i=0; i<netStructure.size(); i++) {
-			
+
             param->activityRowReadWG = atof(argv[4*i+8]);
             param->activityRowWriteWG = atof(argv[4*i+8]);
             param->activityColWriteWG = atof(argv[4*i+8]);
-			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[4*i+4], argv[4*i+6], argv[4*i+7], netStructure[i][6],
+			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[4*i+5], argv[4*i+6], argv[4*i+7], netStructure[i][6],
 						netStructure, markNM, numTileEachLayer, utilizationEachLayer, speedUpEachLayer, tileLocaEachLayer,
 						numPENM, desiredPESizeNM, desiredTileSizeCM, desiredPESizeCM, CMTileheight, CMTilewidth, NMTileheight, NMTilewidth, numArrayWriteParallel,
 						&layerReadLatency, &layerReadDynamicEnergy, &tileLeakage, &layerReadLatencyAG, &layerReadDynamicEnergyAG, &layerReadLatencyWG, &layerReadDynamicEnergyWG, &layerWriteLatencyWU, &layerWriteDynamicEnergyWU,
@@ -500,8 +499,8 @@ int main(int argc, char * argv[]) {
 						&coreLatencyADC, &coreLatencyAccum, &coreLatencyOther, &coreEnergyADC, &coreEnergyAccum, &coreEnergyOther, &layerDRAMLatency, &layerDRAMDynamicEnergy,
 						&layerReadLatencyPeakFW, &layerReadDynamicEnergyPeakFW, &layerReadLatencyPeakAG, &layerReadDynamicEnergyPeakAG,
 						&layerReadLatencyPeakWG, &layerReadDynamicEnergyPeakWG, &layerWriteLatencyPeakWU, &layerWriteDynamicEnergyPeakWU);
-						
-			
+
+
 			systemClock = MAX(systemClock, layerReadLatency);
 			systemClockAG = MAX(systemClockAG, layerReadLatencyAG);
 			systemClockPeakFW = MAX(systemClockPeakFW, layerReadLatencyPeakFW);
@@ -509,7 +508,7 @@ int main(int argc, char * argv[]) {
 			chipLatencyADC = MAX(chipLatencyADC, coreLatencyADCPerLayer[i]);
 			chipLatencyAccum = MAX(chipLatencyAccum, coreLatencyAccumPerLayer[i]);
 			chipLatencyOther = MAX(chipLatencyOther, coreLatencyOtherPerLayer[i]);
-			
+
 			readLatencyPerLayer.push_back(layerReadLatency);
 			readDynamicEnergyPerLayer.push_back(layerReadDynamicEnergy);
 			readLatencyPerLayerAG.push_back(layerReadLatencyAG);
@@ -520,7 +519,7 @@ int main(int argc, char * argv[]) {
 			writeDynamicEnergyPerLayerWU.push_back(layerWriteDynamicEnergyWU);
 			dramLatencyPerLayer.push_back(layerDRAMLatency);
 			dramDynamicEnergyPerLayer.push_back(layerDRAMDynamicEnergy);
-			
+
 			readLatencyPerLayerPeakFW.push_back(layerReadLatencyPeakFW);
 			readDynamicEnergyPerLayerPeakFW.push_back(layerReadDynamicEnergyPeakFW);
 			readLatencyPerLayerPeakAG.push_back(layerReadLatencyPeakAG);
@@ -529,20 +528,20 @@ int main(int argc, char * argv[]) {
 			readDynamicEnergyPerLayerPeakWG.push_back(layerReadDynamicEnergyPeakWG);
 			writeLatencyPerLayerPeakWU.push_back(layerWriteLatencyPeakWU);
 			writeDynamicEnergyPerLayerPeakWU.push_back(layerWriteDynamicEnergyPeakWU);
-			
+
 			leakagePowerPerLayer.push_back(numTileEachLayer[0][i] * numTileEachLayer[1][i] * tileLeakage);
 			bufferLatencyPerLayer.push_back(layerbufferLatency);
 			bufferEnergyPerLayer.push_back(layerbufferDynamicEnergy);
 			icLatencyPerLayer.push_back(layericLatency);
 			icEnergyPerLayer.push_back(layericDynamicEnergy);
-			
+
 			coreLatencyADCPerLayer.push_back(coreLatencyADC);
 			coreEnergyADCPerLayer.push_back(coreEnergyADC);
 			coreLatencyAccumPerLayer.push_back(coreLatencyAccum);
 			coreEnergyAccumPerLayer.push_back(coreEnergyAccum);
 			coreLatencyOtherPerLayer.push_back(coreLatencyOther);
 			coreEnergyOtherPerLayer.push_back(coreEnergyOther);
-			
+
 			chipReadDynamicEnergy += layerReadDynamicEnergy;
 			chipReadDynamicEnergyAG += layerReadDynamicEnergyAG;
 			chipReadDynamicEnergyWG += layerReadDynamicEnergyWG;
@@ -550,15 +549,15 @@ int main(int argc, char * argv[]) {
 			// since Weight Gradient and Weight Update have limitation on hardware resource, do not implement pipeline
 			chipReadLatencyWG += layerReadLatencyWG;
 			chipWriteLatencyWU += layerWriteLatencyWU;
-			
+
 			chipReadDynamicEnergyPeakFW += layerReadDynamicEnergyPeakFW;
 			chipReadDynamicEnergyPeakAG += layerReadDynamicEnergyPeakAG;
 			chipReadDynamicEnergyPeakWG += layerReadDynamicEnergyPeakWG;
 			chipWriteDynamicEnergyPeakWU += layerWriteDynamicEnergyPeakWU;
-			
+
 			chipDRAMLatency += layerDRAMLatency;
 			chipDRAMDynamicEnergy += layerDRAMDynamicEnergy;
-			
+
 			chipLeakage += numTileEachLayer[0][i] * numTileEachLayer[1][i] * tileLeakage;
 			chipbufferLatency = MAX(chipbufferLatency, layerbufferLatency);
 			chipbufferReadDynamicEnergy += layerbufferDynamicEnergy;
@@ -567,7 +566,7 @@ int main(int argc, char * argv[]) {
 			chipEnergyADC += coreEnergyADC;
 			chipEnergyAccum += coreEnergyAccum;
 			chipEnergyOther += coreEnergyOther;
-			
+
 		}
 		chipReadLatency = systemClock;
 		chipReadLatencyAG = systemClockAG;
@@ -762,8 +761,6 @@ int main(int argc, char * argv[]) {
 		cout << "Error: the output file cannot be opened!" << endl;
 	}
 	outfile.close();
-
-	// own csv file
 	
 	
 	return 0;
