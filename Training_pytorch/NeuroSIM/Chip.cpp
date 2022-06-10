@@ -89,22 +89,22 @@ vector<int> ChipDesignInitialize(InputParameter& inputParameter, Technology& tec
 	weightGradientUnit = new WeightGradientUnit(inputParameter, tech, cell);
 	gradientAccum = new Adder(inputParameter, tech, cell);
 
-	cout << '\n #-#-#-#-#-#-#-#-#-#-#-#-# \n'
-	cout << '\n'
-	cout << param->cellBit
-	cout << '\n'
-	cout << param->technode
-	cout << '\n'
-	cout << param->wireWidth
-	cout << '\n'
-	cout << param->reLu
-	cout << '\n'
-	cout << param->memcelltype
-	cout << '\n'
-	cout << param->levelOutput
-	cout << '\n'
-	cout << param->resistanceOff
-	cout << '\n'
+	cout << '\n #-#-#-#-#-#-#-#-#-#-#-#-# \n';
+	cout << '\n';
+	cout << param->cellBit;
+	cout << '\n';
+	cout << param->technode;
+	cout << '\n';
+	cout << param->wireWidth;
+	cout << '\n';
+	cout << param->reLu;
+	cout << '\n';
+	cout << param->memcelltype;
+	cout << '\n';
+	cout << param->levelOutput;
+	cout << '\n';
+	cout << param->resistanceOff;
+	cout << '\n';
 	
 	int numRowPerSynapse, numColPerSynapse;
 	numRowPerSynapse = param->numRowPerSynapse;
