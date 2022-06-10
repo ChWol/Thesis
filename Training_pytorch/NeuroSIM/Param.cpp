@@ -87,7 +87,7 @@ Param::Param() {
 	chipActivation = true;      // false: activation (reLu/sigmoid) inside Tile
 								// true: activation outside Tile
 								
-	reLu = true;                // false: sigmoid
+	//reLu = true;                // false: sigmoid
 								// true: reLu
 								
 	novelMapping = true;        // false: conventional mapping
@@ -135,7 +135,7 @@ Param::Param() {
 	relaxArrayCellWidth = 0;            // relax ArrayCellWidth or not
 	
 	numColMuxed = 8;                    // How many columns share 1 ADC (for eNVM and FeFET) or parallel SRAM
-	levelOutput = 64;                  // # of levels of the multilevelSenseAmp output, should be in 2^N forms; e.g. 32 levels --> 5-bit ADC
+	//levelOutput = 64;                  // # of levels of the multilevelSenseAmp output, should be in 2^N forms; e.g. 32 levels --> 5-bit ADC
 	//cellBit = 5;                       // precision of memory device
 	
 	/*** parameters for SRAM ***/
@@ -208,9 +208,9 @@ Param::Param() {
 	
 	/***************************************** Initialization of parameters NO need to modify *****************************************/
 	
-	if (memcelltype == 1) {
+	//if (memcelltype == 1) {
 		//cellBit = 1;             // force cellBit = 1 for all SRAM cases
-	} 
+	//}
 	
 	/*** initialize operationMode as default ***/
 	conventionalParallel = 0;

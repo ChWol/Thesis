@@ -70,6 +70,8 @@ current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
 # Manually overwriting arguments to match simulator-conditions
+if args.memcelltype == 1:
+    args.cellBit = 1
 args.wl_weight = args.cellBit
 args.wl_grad = args.cellBit
 
