@@ -762,6 +762,8 @@ int main(int argc, char * argv[]) {
 		cout << "Error: the output file cannot be opened!" << endl;
 	}
 	outfile.close();
+
+	// own csv file
 	
 	
 	return 0;
