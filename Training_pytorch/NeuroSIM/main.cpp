@@ -337,7 +337,7 @@ int main(int argc, char * argv[]) {
                         param->activityRowWriteWG = atof(argv[5*i+8]);
                         param->activityColWriteWG = atof(argv[5*i+8]);
 
-			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[5*i+5], argv[5*i+6], argv[5*i+7], netStructure[i][6],
+			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[5*i+6], argv[5*i+7], argv[5*i+8], netStructure[i][6],
 						netStructure, markNM, numTileEachLayer, utilizationEachLayer, speedUpEachLayer, tileLocaEachLayer,
 						numPENM, desiredPESizeNM, desiredTileSizeCM, desiredPESizeCM, CMTileheight, CMTilewidth, NMTileheight, NMTilewidth, numArrayWriteParallel,
 						&layerReadLatency, &layerReadDynamicEnergy, &tileLeakage, &layerReadLatencyAG, &layerReadDynamicEnergyAG, &layerReadLatencyWG, &layerReadDynamicEnergyWG,
@@ -494,7 +494,7 @@ int main(int argc, char * argv[]) {
             param->activityRowReadWG = atof(argv[5*i+8]);
             param->activityRowWriteWG = atof(argv[5*i+8]);
             param->activityColWriteWG = atof(argv[5*i+8]);
-			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[5*i+5], argv[5*i+6], argv[5*i+7], netStructure[i][6],
+			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[5*i+6], argv[5*i+7], argv[5*i+8], netStructure[i][6],
 						netStructure, markNM, numTileEachLayer, utilizationEachLayer, speedUpEachLayer, tileLocaEachLayer,
 						numPENM, desiredPESizeNM, desiredTileSizeCM, desiredPESizeCM, CMTileheight, CMTilewidth, NMTileheight, NMTilewidth, numArrayWriteParallel,
 						&layerReadLatency, &layerReadDynamicEnergy, &tileLeakage, &layerReadLatencyAG, &layerReadDynamicEnergyAG, &layerReadLatencyWG, &layerReadDynamicEnergyWG, &layerWriteLatencyWU, &layerWriteDynamicEnergyWU,
