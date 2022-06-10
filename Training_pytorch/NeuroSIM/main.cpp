@@ -58,11 +58,6 @@
 
 using namespace std;
 
-extern Param *param;
-
-cout << "TESTSTTETWETETWET \n"
-cout << param->memcelltype
-
 vector<vector<double> > getNetStructure(const string &inputfile);
 
 int main(int argc, char * argv[]) {   

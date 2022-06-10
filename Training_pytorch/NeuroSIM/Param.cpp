@@ -52,6 +52,11 @@
 
 using namespace std;
 
+extern Param *param;
+
+cout << "TESTSTTETWETETWET \n"
+cout << param->memcelltype
+
 Param::Param() {
 	/***************************************** user defined design options and parameters *****************************************/
 	operationmode = 2;     		// 1: conventionalSequential (Use several multi-bit RRAM as one synapse)
