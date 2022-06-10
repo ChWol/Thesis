@@ -54,8 +54,8 @@ using namespace std;
 
 extern Param *param;
 
-cout << "TESTSTTETWETETWET \n"
-cout << param->memcelltype
+cout << "TESTSTTETWETETWET \n";
+cout << param->memcelltype;
 
 Param::Param() {
 	/***************************************** user defined design options and parameters *****************************************/
