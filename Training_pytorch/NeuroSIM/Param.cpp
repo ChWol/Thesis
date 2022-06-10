@@ -52,14 +52,11 @@
 
 using namespace std;
 
-extern Param *param;
-
 Param::Param() {
 	/***************************************** user defined design options and parameters *****************************************/
 	operationmode = 2;     		// 1: conventionalSequential (Use several multi-bit RRAM as one synapse)
 								// 2: conventionalParallel (Use several multi-bit RRAM as one synapse)
-	cout << "TESTSTTETWETETWET \n";
-    cout << param->memcelltype;
+
 	memcelltype = 3;        	// 1: cell.memCellType = Type::SRAM
 								// 2: cell.memCellType = Type::RRAM
 								// 3: cell.memCellType = Type::FeFET
