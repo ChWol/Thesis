@@ -74,7 +74,7 @@ int main(int argc, char * argv[]) {
 	param->numBitInput = atoi(argv[4]);            		 // precision of input neural activation
 	param->batchSize = atoi(argv[5]);
 
-	cout << "Nummer: " << argv[5]
+	cout << "Nummer: " << argv[5];
 	
 	if (param->cellBit > param->synapseBit) {
 		cout << "ERROR!: Memory precision is even higher than synapse precision, please modify 'cellBit' in Param.cpp!" << endl;
