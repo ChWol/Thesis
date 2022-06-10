@@ -117,7 +117,7 @@ def remove_hook_list(hook_handle_list):
         handle.remove()
 
 
-def hardware_evaluation(model, wl_weight, wl_activation, numEpoch):
+def hardware_evaluation(model, wl_weight, wl_activation, numEpoch, batchSize):
     hook_handle_list = []
     if not os.path.exists('./layer_record'):
         os.makedirs('./layer_record')
@@ -125,7 +125,7 @@ def hardware_evaluation(model, wl_weight, wl_activation, numEpoch):
         os.remove('./layer_record/trace_command.sh')
     f = open('./layer_record/trace_command.sh', "w")
     f.write('./NeuroSIM/main ' + str(numEpoch) + ' ./NeuroSIM/NetWork.csv ' + str(wl_weight) + ' ' + str(
-        wl_activation) + ' ')
+        wl_activation) + ' ' + str(batchSize) + ' ')
     for i, layer in enumerate(model.features.modules()):
         if isinstance(layer, QConv2d) or isinstance(layer, QLinear):
             hook_handle_list.append(layer.register_forward_hook(Neural_Sim))
