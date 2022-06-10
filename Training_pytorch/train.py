@@ -64,6 +64,8 @@ parser.add_argument('--momentum', type=float, default=0.9)
 parser.add_argument('--network', default='speed')
 parser.add_argument('--run', default='')
 parser.add_argument('--technode', type=int, default='32')
+parser.add_argument('--memcelltype', type=int, default=3)
+parser.add_argument('--relu', default=1)
 current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
@@ -327,7 +329,7 @@ try:
                 if i == 0:
                     hook_handle_list = hook.hardware_evaluation(model, args.wl_weight, args.wl_activate,
                                                                 epoch, args.batch_size, args.cellBit, args.technode,
-                                                                args.wireWidth, args.relu, args.memcelltype, 2**(args.ADCprecision),
+                                                                args.wireWidth, args.relu, args.memcelltype, 2 ** args.ADCprecision,
                                                                 args.onoffratio)
                 indx_target = target.clone()
                 if args.cuda:
