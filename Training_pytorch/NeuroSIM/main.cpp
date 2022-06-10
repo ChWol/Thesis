@@ -573,11 +573,10 @@ int main(int argc, char * argv[]) {
 		chipReadLatencyAG = systemClockAG;
 		chipReadLatencyPeakFW = systemClockPeakFW;
 		chipReadLatencyPeakAG = systemClockPeakAG;
-		
+
 		for (int i=0; i<netStructure.size(); i++) {
 			
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
-
 			cout << "layer" << i+1 << "'s readLatency is: " << readLatencyPerLayer[i]*1e9 << "ns" << endl;
 			cout << "layer" << i+1 << "'s readDynamicEnergy is: " << readDynamicEnergyPerLayer[i]*1e12 << "pJ" << endl;
 			cout << "layer" << i+1 << "'s readLatency of Activation Gradient is: " << readLatencyPerLayerAG[i]*1e9 << "ns" << endl;
@@ -656,8 +655,22 @@ int main(int argc, char * argv[]) {
 	} else {
 		cout << "Error: the breakdown file cannot be opened!" << endl;
 	}
-	
 	breakdownfile.close();
+
+
+	outfile << chipReadLatency << "," << chipReadLatencyAG << "," << chipReadLatencyWG << "," << chipWriteLatencyWU << ",";
+		endl;
+
+    // This is where I edited the output
+	std::offstream outputFile;
+	outputFile.open("Summary_Output.csv", ios::app);
+	outputFile << chipArea*1e12 << "um^2" << ","
+	    << chipAreaArray*1e12 << "um^2" << ","
+	    << chipAreaIC*1e12 << "um^2" << ","
+	    << chipAreaADC*1e12 << "um^2" << ","
+	    << chipAreaAccum*1e12 << "um^2" << ","
+	    << chipAreaOther*1e12 << "um^2" << ","
+	    << chipAreaWG*1e12 << "um^2" << ",";
 	
 	cout << "------------------------------ Summary --------------------------------" <<  endl;
 	cout << endl;
@@ -745,7 +758,9 @@ int main(int argc, char * argv[]) {
     cout << "------------------------------ Simulation Performance --------------------------------" <<  endl;
 	cout << "Total Run-time of NeuroSim: " << duration.count() << " seconds" << endl;
 	cout << "------------------------------ Simulation Performance --------------------------------" <<  endl;
-	
+
+	outputFile.close()
+
 	// save results to top level csv file (only total results)
 	ofstream outfile;
 	outfile.open ("NeuroSim_Output.csv", ios::app);
