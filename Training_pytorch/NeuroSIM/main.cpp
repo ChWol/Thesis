@@ -657,12 +657,8 @@ int main(int argc, char * argv[]) {
 	}
 	breakdownfile.close();
 
-
-	outfile << chipReadLatency << "," << chipReadLatencyAG << "," << chipReadLatencyWG << "," << chipWriteLatencyWU << ",";
-		endl;
-
     // This is where I edited the output
-	std::offstream outputFile;
+	offstream outputFile;
 	outputFile.open("Summary_Output.csv", ios::app);
 	outputFile << chipArea*1e12 << "um^2" << ","
 	    << chipAreaArray*1e12 << "um^2" << ","
