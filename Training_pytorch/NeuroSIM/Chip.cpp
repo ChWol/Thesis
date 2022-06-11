@@ -89,7 +89,7 @@ vector<int> ChipDesignInitialize(InputParameter& inputParameter, Technology& tec
 	weightGradientUnit = new WeightGradientUnit(inputParameter, tech, cell);
 	gradientAccum = new Adder(inputParameter, tech, cell);
 
-	cout << '\n #-#-#-#-#-#-#-#-#-#-#-#-# \n';
+	cout << "\n #-#-#-#-#-#-#-#-#-#-#-#-# \n";
 	cout << '\n';
 	cout << param->cellBit;
 	cout << '\n';
