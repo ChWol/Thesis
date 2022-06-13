@@ -690,7 +690,7 @@ int main(int argc, char * argv[]) {
 
     ofstream summaryfile;
     summaryfile.open("Summary.csv", ios::out);
-    summaryfile << "Chip area, Chip total CIM, Total IC Area on Chip, Total ADC, Total Accumulation Circuits, " +
+    summaryfile << "Chip area, Chip total CIM, Total IC Area on Chip, Total ADC, Total Accumulation Circuits, " <<
         "Weight Gradient Calculation, Chip total Latency, Chip total Energy, Chip leakage energy, Chip leakage power" << endl;
 
 	cout << "------------------------------ Summary --------------------------------" <<  endl;
