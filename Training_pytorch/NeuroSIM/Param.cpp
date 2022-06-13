@@ -255,7 +255,7 @@ void Param::recalculate_Params(int wireWidth, int memcelltype) {
 		wireResistanceCol = 0;
 	} else {
 
-		 =  Rho / ( wireWidth*1e-9 * wireWidth*1e-9 * AR );
+		unitLengthWireResistance =  Rho / ( wireWidth*1e-9 * wireWidth*1e-9 * AR );
 		wireResistanceRow = unitLengthWireResistance * wireLengthRow;
 		wireResistanceCol = unitLengthWireResistance * wireLengthCol;
 	}
