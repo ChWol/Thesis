@@ -688,6 +688,8 @@ int main(int argc, char * argv[]) {
 
 	breakdownfile.close();
 
+    ofstream summaryfile;
+	summaryfile.open ("Summary.csv", ios::app);
 	cout << "------------------------------ Summary --------------------------------" <<  endl;
 	cout << endl;
 	cout << "ChipArea : " << chipArea*1e12 << "um^2" << endl;
@@ -774,6 +776,8 @@ int main(int argc, char * argv[]) {
     cout << "------------------------------ Simulation Performance --------------------------------" <<  endl;
 	cout << "Total Run-time of NeuroSim: " << duration.count() << " seconds" << endl;
 	cout << "------------------------------ Simulation Performance --------------------------------" <<  endl;
+
+	summaryfile.close()
 
 	// save results to top level csv file (only total results)
 	ofstream outfile;
