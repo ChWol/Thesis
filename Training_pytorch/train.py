@@ -363,10 +363,7 @@ try:
             call(["/bin/bash", "./layer_record/trace_command.sh"])
             # ToDo: Save csv to wandb
             print('########## TEST ###########')
-            df = pd.read_csv("Summary.csv", usecols=["Chip area", "Chip total CIM", "Total IC Area on Chip",
-                                                     "Total ADC", "Total Accumulation Circuits", "Weight Gradient Calculation",
-                                                     "Chip total Latency", "Chip total Energy", "Chip leakage energy",
-                                                     "Chip leakage power"])
+            df = pd.read_csv("Summary.csv", header=None, index_row=0).to_dict()
             result = df.to_dict(orient='records')
             print(result["Chip area"])
 
