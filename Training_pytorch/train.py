@@ -65,7 +65,7 @@ parser.add_argument('--network', default='speed')
 parser.add_argument('--run', default='')
 parser.add_argument('--technode', type=int, default='32')
 parser.add_argument('--memcelltype', type=int, default=3)
-parser.add_argument('--relu', default=1)
+parser.add_argument('--relu', type=int, default=1)
 current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
