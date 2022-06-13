@@ -690,19 +690,25 @@ int main(int argc, char * argv[]) {
 
     ofstream summaryfile;
     summaryfile.open("Summary.csv", ios::out);
-    summaryfile << "Christopher Wolters" << ",";
-
+    summaryfile << "Chip area, Chip total CIM, Total IC Area on Chip, Total ADC, Total Accumulation Circuits, " +
+        "Weight Gradient Calculation, Chip total Latency, Chip total Energy, Chip leakage energy, Chip leakage power" << endl;
 
 	cout << "------------------------------ Summary --------------------------------" <<  endl;
 	cout << endl;
 	cout << "ChipArea : " << chipArea*1e12 << "um^2" << endl;
-	summaryfile << chipArea*1e12 << "," << endl;
+	summaryfile << chipArea*1e12 << ",";
 	cout << "Chip total CIM (Forward+Activation Gradient) array : " << chipAreaArray*1e12 << "um^2" << endl;
+	summaryfile << chipAreaArray*1e12 << ",";
 	cout << "Total IC Area on chip (Global and Tile/PE local): " << chipAreaIC*1e12 << "um^2" << endl;
+	summaryfile << chipAreaIC*1e12 << ",";
 	cout << "Total ADC (or S/As and precharger for SRAM) Area on chip : " << chipAreaADC*1e12 << "um^2" << endl;
+	summaryfile << chipAreaADC*1e12 << ",";
 	cout << "Total Accumulation Circuits (subarray level: adders, shiftAdds; PE/Tile/Global level: accumulation units) on chip : " << chipAreaAccum*1e12 << "um^2" << endl;
+	summaryfile << chipAreaAccum*1e12 << ",";
 	cout << "Other Peripheries (e.g. decoders, mux, switchmatrix, buffers, pooling and activation units) : " << chipAreaOther*1e12 << "um^2" << endl;
+	summaryfile << chipAreaOther*1e12 << ",";
 	cout << "Weight Gradient Calculation : " << chipAreaWG*1e12 << "um^2" << endl;
+	summaryfile << chipAreaWG*1e12 << ",";
 	cout << endl;
 	if (! param->pipeline) {
 		cout << "-----------------------------------Chip layer-by-layer Estimation---------------------------------" << endl;
@@ -719,7 +725,9 @@ int main(int argc, char * argv[]) {
 	cout << "Chip writeDynamicEnergy of Weight Update (per epoch) is: " << chipWriteDynamicEnergyWU*1e12 << "pJ" << endl;
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 	cout << "Chip total Latency (per epoch) is: " << (chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU)*1e9 << "ns" << endl;
+	summaryfile << (chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU)*1e9 << ",";
 	cout << "Chip total Energy (per epoch) is: " << (chipReadDynamicEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*1e12 << "pJ" << endl;
+	summaryfile << (chipReadDynamicEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*1e12 << ",";
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 	cout << "Chip PEAK readLatency of Forward (per epoch) is: " << chipReadLatencyPeakFW*1e9 << "ns" << endl;
 	cout << "Chip PEAK readDynamicEnergy of Forward (per epoch) is: " << chipReadDynamicEnergyPeakFW*1e12 << "pJ" << endl;
@@ -734,7 +742,9 @@ int main(int argc, char * argv[]) {
 	cout << "Chip PEAK total Energy (per epoch) is: " << (chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*1e12 << "pJ" << endl;
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 	cout << "Chip leakage Energy is: " << chipLeakageEnergy*1e12 << "pJ" << endl;
+	summaryfile << chipLeakageEnergy*1e12 << ",";
 	cout << "Chip leakage Power is: " << chipLeakage*1e6 << "uW" << endl;
+	summaryfile << chipLeakage*1e6 << endl;
 	cout << endl;
 	cout << "************************ Breakdown of Latency and Dynamic Energy *************************" << endl;
 	cout << endl;
