@@ -9,6 +9,7 @@ import torch
 import torch.optim as optim
 from torch.autograd import Variable
 import numpy as np
+import pandas as pd
 # Todo: explain
 from utee import make_path
 from utee import wage_util
@@ -362,11 +363,12 @@ try:
             call(["/bin/bash", "./layer_record/trace_command.sh"])
             # ToDo: Save csv to wandb
             print('########## TEST ###########')
-            # target_path = 'NeuroSim_Results_Each_Epoch/NeuroSim_Breakdown_Epock_' + str(args.epochs - 1) + '.csv'
-            # df = pd.read_csv(target_path, usecols=['Total Area(m^2)', ' Total CIM (FW+AG) Area (m^2)', ' Routing Area(m^2)',
-            #                                       ' ADC Area(m^2)', ' Accumulation Area(m^2)', ' Other Logic&Storage Area(m^2)',
-            #                                       ' Weight Gradient Area(m^2)'])
-            # result = df.to_dict(orient='records')
+            df = pd.read_csv("Summary.csv", usecols=["Chip area", "Chip total CIM", "Total IC Area on Chip",
+                                                     "Total ADC", "Total Accumulation Circuits", "Weight Gradient Calculation",
+                                                     "Chip total Latency", "Chip total Energy", "Chip leakage energy",
+                                                     "Chip leakage power"])
+            result = df.to_dict(orient='records')
+            print(result["Chip area"])
 
 except Exception as e:
     import traceback
