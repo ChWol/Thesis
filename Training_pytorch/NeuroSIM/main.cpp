@@ -690,11 +690,8 @@ int main(int argc, char * argv[]) {
 
     ofstream summaryfile;
     summaryfile.open("Summary.csv", ios::out);
-    if (summaryfile.is_open()) {
-        summaryfile << "Test" << ",";
-	} else {
-		cout << "Error: the summary file cannot be opened!" << endl;
-	}
+    summaryfile << "Christopher Wolters" << ",";
+
 
 	cout << "------------------------------ Summary --------------------------------" <<  endl;
 	cout << endl;
