@@ -43,6 +43,8 @@ class Param {
 public:
 	Param();
 
+	void recalculate_Params(int wireWidth, int memcelltype);
+
 	int operationmode, operationmodeBack, memcelltype, accesstype, transistortype, deviceroadmap;      		
 	
 	double heightInFeatureSizeSRAM, widthInFeatureSizeSRAM, widthSRAMCellNMOS, widthSRAMCellPMOS, widthAccessCMOS, minSenseVoltage;

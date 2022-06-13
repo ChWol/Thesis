@@ -81,6 +81,8 @@ int main(int argc, char * argv[]) {
 	param->levelOutput = atoi(argv[11]);
 	param->resistanceOff = 240e3*atoi(argv[12]);
 
+	param->recalculate_Params(param->wireWidth, param->memcelltype);
+
     // Todo: Change in parse in train.py, pass to hook.py, pass to main.cpp, change offset down there, try printing in some other file
     // Todo: Remove from Param.cpp
     // Todo: IMPORTANT to check all other occurances of the parameter
