@@ -14,7 +14,7 @@ class CIFAR(nn.Module):
         if args.relu == 1:
             activation = nn.ReLU(inplace=True)
         else:
-            activation = nn.Sigmoid(inplace=True)
+            activation = nn.Sigmoid()
         self.features = features
         self.classifier = nn.Sequential(
             QLinear(dimensions, 1024, logger=logger,
