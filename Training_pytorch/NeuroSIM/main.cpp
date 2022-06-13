@@ -690,10 +690,16 @@ int main(int argc, char * argv[]) {
 
     ofstream summaryfile;
     summaryfile.open("Summary.csv", ios::out);
+    if (summaryfile.is_open()) {
+        summaryfile << "Test" << ",";
+	} else {
+		cout << "Error: the summary file cannot be opened!" << endl;
+	}
+
 	cout << "------------------------------ Summary --------------------------------" <<  endl;
 	cout << endl;
 	cout << "ChipArea : " << chipArea*1e12 << "um^2" << endl;
-	summaryfile << chipArea*1e12 << ",";
+	summaryfile << chipArea*1e12 << "," << endl;
 	cout << "Chip total CIM (Forward+Activation Gradient) array : " << chipAreaArray*1e12 << "um^2" << endl;
 	cout << "Total IC Area on chip (Global and Tile/PE local): " << chipAreaIC*1e12 << "um^2" << endl;
 	cout << "Total ADC (or S/As and precharger for SRAM) Area on chip : " << chipAreaADC*1e12 << "um^2" << endl;
