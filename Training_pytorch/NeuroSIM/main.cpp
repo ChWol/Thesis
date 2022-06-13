@@ -693,6 +693,7 @@ int main(int argc, char * argv[]) {
 	cout << "------------------------------ Summary --------------------------------" <<  endl;
 	cout << endl;
 	cout << "ChipArea : " << chipArea*1e12 << "um^2" << endl;
+	summaryfile << chipArea*1e12 << ",";
 	cout << "Chip total CIM (Forward+Activation Gradient) array : " << chipAreaArray*1e12 << "um^2" << endl;
 	cout << "Total IC Area on chip (Global and Tile/PE local): " << chipAreaIC*1e12 << "um^2" << endl;
 	cout << "Total ADC (or S/As and precharger for SRAM) Area on chip : " << chipAreaADC*1e12 << "um^2" << endl;
