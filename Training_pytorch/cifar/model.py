@@ -11,13 +11,17 @@ class CIFAR(nn.Module):
     def __init__(self, args, dimensions, features, num_classes,logger):
         super(CIFAR, self).__init__()
         assert isinstance(features, nn.Sequential), type(features)
+        if args.relu == 1:
+            activation = nn.ReLU(inplace=True)
+        else:
+            activation = nn.Sigmoid(inplace=True)
         self.features = features
         self.classifier = nn.Sequential(
             QLinear(dimensions, 1024, logger=logger,
                     wl_input = args.wl_activate,wl_activate=args.wl_activate,wl_error=args.wl_error,
                     wl_weight=args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                     subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target, name='FC1_'),
-            nn.ReLU(inplace=True),
+            activation,
             QLinear(1024, num_classes, logger=logger,
                     wl_input = args.wl_activate,wl_activate=-1, wl_error=args.wl_error,
                     wl_weight=args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,

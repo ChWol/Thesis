@@ -250,6 +250,9 @@ Param::Param() {
 		case -1:	break;	// Ignore wire resistance or user define
 		default:	exit(-1); puts("Wire width out of range"); 
 	}
+
+	// crosssbarsize, cell resolution, temperature, frequency
+	// energy, area, latency, accuracy with noise
 	
 	if (memcelltype == 1) {
 		wireLengthRow = wireWidth * 1e-9 * heightInFeatureSizeSRAM;
