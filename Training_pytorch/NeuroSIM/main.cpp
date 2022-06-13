@@ -688,7 +688,9 @@ int main(int argc, char * argv[]) {
 
 	breakdownfile.close();
 
-
+    ofstream summaryfile;
+    summaryfile.open("Summary.csv", ios::out);
+    summaryfile.close();
 	cout << "------------------------------ Summary --------------------------------" <<  endl;
 	cout << endl;
 	cout << "ChipArea : " << chipArea*1e12 << "um^2" << endl;
