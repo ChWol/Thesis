@@ -57,7 +57,7 @@ Param::Param() {
 	operationmode = 2;     		// 1: conventionalSequential (Use several multi-bit RRAM as one synapse)
 								// 2: conventionalParallel (Use several multi-bit RRAM as one synapse)
 
-	memcelltype = 3;        	// 1: cell.memCellType = Type::SRAM
+	//memcelltype = 3;        	// 1: cell.memCellType = Type::SRAM
 								// 2: cell.memCellType = Type::RRAM
 								// 3: cell.memCellType = Type::FeFET
 	
@@ -87,9 +87,6 @@ Param::Param() {
 	chipActivation = true;      // false: activation (reLu/sigmoid) inside Tile
 								// true: activation outside Tile
 								
-	//reLu = true;                // false: sigmoid
-								// true: reLu
-								
 	novelMapping = true;        // false: conventional mapping
 								// true: novel mapping
 	
@@ -112,16 +109,7 @@ Param::Param() {
 	/*** conventional hardware design options ***/
 	clkFreq = 1e9;                      // Clock frequency
 	temp = 300;                         // Temperature (K)
-	// technode: 130, 90 --> wireWidth: 200
-	// technode: 65      --> wireWidth: 100
-	// technode: 45      --> wireWidth: 50
-	// technode: 32      --> wireWidth: 40
-	// technode: 22      --> wireWidth: 32
-	// technode: 14      --> wireWidth: 22
-	// technode: 10, 7   --> wireWidth: 14
-	//technode = 90;                      // Technology
 	featuresize = 40e-9;                // Wire width for subArray simulation
-	//wireWidth = 200;                     // wireWidth of the cell for Accuracy calculation
 	globalBusDelayTolerance = 0.1;      // to relax bus delay for global H-Tree (chip level: communication among tiles), if tolerance is 0.1, the latency will be relax to (1+0.1)*optimalLatency (trade-off with energy)
 	localBusDelayTolerance = 0.1;       // to relax bus delay for global H-Tree (tile level: communication among PEs), if tolerance is 0.1, the latency will be relax to (1+0.1)*optimalLatency (trade-off with energy)
 	treeFoldedRatio = 4;                // the H-Tree is assumed to be able to folding in layout (save area)
@@ -135,8 +123,6 @@ Param::Param() {
 	relaxArrayCellWidth = 0;            // relax ArrayCellWidth or not
 	
 	numColMuxed = 8;                    // How many columns share 1 ADC (for eNVM and FeFET) or parallel SRAM
-	//levelOutput = 64;                  // # of levels of the multilevelSenseAmp output, should be in 2^N forms; e.g. 32 levels --> 5-bit ADC
-	//cellBit = 5;                       // precision of memory device
 	
 	/*** parameters for SRAM ***/
 	// due the scaling, suggested SRAM cell size above 22nm: 160F^2
@@ -208,10 +194,6 @@ Param::Param() {
 	
 	/***************************************** Initialization of parameters NO need to modify *****************************************/
 	
-	//if (memcelltype == 1) {
-		//cellBit = 1;             // force cellBit = 1 for all SRAM cases
-	//}
-	
 	/*** initialize operationMode as default ***/
 	conventionalParallel = 0;
 	conventionalSequential = 0;
@@ -237,48 +219,11 @@ Param::Param() {
 	} else {
 		parallelRead = 0;
 	}
-	
-	/*** Initialize interconnect wires ***/
-	/*switch(wireWidth) {
-		case 200: 	AR = 2.10; Rho = 2.42e-8; break;  // for technode: 130, 90
-		case 100:	AR = 2.30; Rho = 2.73e-8; break;  // for technode: 65
-		case 50:	AR = 2.34; Rho = 3.91e-8; break;  // for technode: 45
-		case 40:	AR = 1.90; Rho = 4.03e-8; break;  // for technode: 32
-		case 32:	AR = 1.90; Rho = 4.51e-8; break;  // for technode: 22
-		case 22:	AR = 2.00; Rho = 5.41e-8; break;  // for technode: 14, 10
-		case 14:	AR = 2.10; Rho = 7.43e-8; break;  // for technode: 7
-		case -1:	break;	// Ignore wire resistance or user define
-		default:	exit(-1); puts("Wire width out of range"); 
-	}*/
-
-	/*
-	if (memcelltype == 1) {
-		wireLengthRow = wireWidth * 1e-9 * heightInFeatureSizeSRAM;
-		wireLengthCol = wireWidth * 1e-9 * widthInFeatureSizeSRAM;
-	} else {
-		if (accesstype == 1) {
-			wireLengthRow = wireWidth * 1e-9 * heightInFeatureSize1T1R;
-			wireLengthCol = wireWidth * 1e-9 * widthInFeatureSize1T1R;
-		} else {
-			wireLengthRow = wireWidth * 1e-9 * heightInFeatureSizeCrossbar;
-			wireLengthCol = wireWidth * 1e-9 * widthInFeatureSizeCrossbar;
-		}
-	}
-	Rho *= (1+0.00451*abs(temp-300));
-	if (wireWidth == -1) {
-		unitLengthWireResistance = 1.0;	// Use a small number to prevent numerical error for NeuroSim
-		wireResistanceRow = 0;
-		wireResistanceCol = 0;
-	} else {
-		unitLengthWireResistance =  Rho / ( wireWidth*1e-9 * wireWidth*1e-9 * AR );
-		wireResistanceRow = unitLengthWireResistance * wireLengthRow;
-		wireResistanceCol = unitLengthWireResistance * wireLengthCol;
-	}
-	*/
 	/***************************************** Initialization of parameters NO need to modify *****************************************/
 }
 
 void Param::recalculate_Params(int wireWidth, int memcelltype) {
+    /*** Initialize interconnect wires ***/
     switch(wireWidth) {
 		case 200: 	AR = 2.10; Rho = 2.42e-8; break;  // for technode: 130, 90
 		case 100:	AR = 2.30; Rho = 2.73e-8; break;  // for technode: 65
@@ -309,7 +254,8 @@ void Param::recalculate_Params(int wireWidth, int memcelltype) {
 		wireResistanceRow = 0;
 		wireResistanceCol = 0;
 	} else {
-		unitLengthWireResistance =  Rho / ( wireWidth*1e-9 * wireWidth*1e-9 * AR );
+
+		 =  Rho / ( wireWidth*1e-9 * wireWidth*1e-9 * AR );
 		wireResistanceRow = unitLengthWireResistance * wireLengthRow;
 		wireResistanceCol = unitLengthWireResistance * wireLengthCol;
 	}
