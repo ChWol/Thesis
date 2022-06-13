@@ -364,8 +364,7 @@ try:
             # ToDo: Save csv to wandb
             print('########## TEST ###########')
             df = pd.read_csv("Summary.csv").to_dict()
-            result = df.to_dict(orient='records')
-            print(result["Chip area"])
+            print(df["Chip area"])
 
 except Exception as e:
     import traceback
