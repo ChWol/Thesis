@@ -84,9 +84,13 @@ int main(int argc, char * argv[]) {
 	param->recalculate_Params(param->wireWidth, param->memcelltype);
 
 	cout <<"Hier gehts zum Test\n";
+	cout <<"\nWire\n";
 	cout << param->wireWidth;
+	cout <<"\nAR\n";
 	cout << param->AR;
+	cout <<"\nRho\n";
 	cout << param->Rho;
+	cout <<"\nunit\n";
 	cout << param->unitLengthWireResistance;
 
     // Todo: Change in parse in train.py, pass to hook.py, pass to main.cpp, change offset down there, try printing in some other file
