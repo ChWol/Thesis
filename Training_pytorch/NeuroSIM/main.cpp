@@ -83,7 +83,7 @@ int main(int argc, char * argv[]) {
 
 	param->recalculate_Params(param->wireWidth, param->memcelltype);
 
-	cout <<"Hier gehts zum Test\n"
+	cout <<"Hier gehts zum Test\n";
 	cout << param->wireWidth;
 	cout << param->AR;
 	cout << param->Rho;
