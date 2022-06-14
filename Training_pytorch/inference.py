@@ -99,20 +99,20 @@ model_path = (args.logdir + '/best-{}.pth').format(args.epochs - 1)
 assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
-    modelCF = model.cifar10(args=args, logger=logger, pretrained=model_path)
+    model = model.cifar10(args=args, logger=logger, pretrained=model_path)
 if args.type == 'cifar100':
     train_loader, test_loader = dataset.get100(batch_size=args.batch_size, num_workers=1)
-    modelCF = model.cifar100(args=args, logger=logger, pretrained=model_path)
+    model = model.cifar100(args=args, logger=logger, pretrained=model_path)
 if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
-    modelCF = model.mnist(args=args, logger=logger, pretrained=model_path)
+    model = model.mnist(args=args, logger=logger, pretrained=model_path)
 print(args.cuda)
 if args.cuda:
-    modelCF.cuda()
+    model.cuda()
 best_acc, old_file = 0, None
 t_begin = time.time()
 # ready to go
-modelCF.eval()
+model.eval()
 test_loss = 0
 correct = 0
 trained_with_quantization = True
@@ -129,7 +129,7 @@ for i, (data, target) in enumerate(test_loader):
         data, target = data.cuda(), target.cuda()
     with torch.no_grad():
         data, target = Variable(data), Variable(target)
-        output = modelCF(data)
+        output = model(data)
         test_loss += F.cross_entropy(output, target).data
         pred = output.data.max(1)[1]  # get the index of the max log-probability
         correct += pred.cpu().eq(indx_target).sum()
