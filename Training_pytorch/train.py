@@ -334,10 +334,10 @@ try:
             layer_out = pd.read_csv("Layer.csv").to_dict()
             for key, value in layer_out.items():
                 for layer, result in value.items():
-                    wandb.log({"Layer {}: {}".format(layer+1, key): result})
+                    wandb.log({'epoch': epoch, "Layer {}: {}".format(layer+1, key): result})
             df = pd.read_csv("Summary.csv").to_dict()
             for key, value in df.items():
-                wandb.log({key: value[0]})
+                wandb.log({'epoch': epoch, key: value[0]})
 
 except Exception as e:
     import traceback
