@@ -79,9 +79,6 @@ args.wl_grad = args.cellBit
 technode_to_width = { 7: 14, 10: 14, 14: 22, 22: 32, 32: 40, 45: 50, 65: 100, 90: 200, 130: 200 }
 args.wireWidth = technode_to_width[args.technode]
 
-# Todo: Remove later
-args.test_interval = args.epochs
-
 # Initializing Weights and Biases
 wandb.init(project=args.type, config=args)
 wandb.run.name = (args.network + ' - ' + args.run + ' ({})').format(wandb.run.id)
@@ -361,14 +358,15 @@ try:
                 best_acc = acc
                 old_file = new_file
             call(["/bin/bash", "./layer_record/trace_command.sh"])
-            df = pd.read_csv("Summary.csv").to_dict()
-            for key, value in df.items():
-                print(key, '->', value[0])
-                wandb.log({key: value[0]})
+            # Loop over layer estimation, add index to key and read out corresponding dictionary value
 
 except Exception as e:
     import traceback
 
     traceback.print_exc()
 finally:
+    df = pd.read_csv("Summary.csv").to_dict()
+    for key, value in df.items():
+        print(key, '->', value[0])
+        wandb.log({key: value[0]})
     logger("Total Elapse: {:.2f}, Best Result: {:.3f}%".format(time.time() - t_begin, best_acc))

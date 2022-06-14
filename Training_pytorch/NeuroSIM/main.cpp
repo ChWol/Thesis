@@ -604,7 +604,7 @@ int main(int argc, char * argv[]) {
 		chipReadLatencyPeakAG = systemClockPeakAG;
 
 		for (int i=0; i<netStructure.size(); i++) {
-
+            // Build layer estimation csv file, one row for each layer
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
 
 			cout << "layer" << i+1 << "'s readLatency is: " << readLatencyPerLayer[i]*1e9 << "ns" << endl;
