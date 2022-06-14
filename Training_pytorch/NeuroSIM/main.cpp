@@ -603,50 +603,95 @@ int main(int argc, char * argv[]) {
 		chipReadLatencyPeakFW = systemClockPeakFW;
 		chipReadLatencyPeakAG = systemClockPeakAG;
 
+        ofstream layerfile;
+        layerfile.open("Layer.csv", ios::out);
+        layerfile << "readLatency, readDynamicEnergy, readLatency of Activation Gradient, readDynamicEnergy of Activation Gradient, " <<
+        "readLatency of Weight Gradient, readDynamicEnergy of Weight Gradient, writeLatency of Weight Update, writeDynamicEnergy of Weight Update, " <<
+        "PEAK readLatency, PEAK readDynamicEnergy, PEAK readLatency of Activation Gradient, PEAK readDynamicEnergy of Activation Gradient, " <<
+        "PEAK readLatency of Weight Gradient, PEAK readDynamicEnergy of Weight Gradient, PEAK writeLatency of Weight Update, " <<
+        "PEAK writeDynamicEnergy of Weight Update, leakagePower, leakageEnergy, ADC readLatency, Accumulation Circuits readLatency, " <<
+        "Synaptic Array w/o ADC readLatency, Buffer latency, Interconnect latency, Weight Gradient Calculation readLatencyWeight Gradient Calculation readLatency, " <<
+        "Weight Update writeLatency, DRAM data transfer Latency, ADC readDynamicEnergy, Accumulation Circuits readDynamicEnergy, " <<
+        "Synaptic Array w/o ADC readDynamicEnergy, Buffer readDynamicEnergy, Interconnect readDynamicEnergy, Weight Gradient Calculation readDynamicEnergy, " <<
+        "Weight Update writeDynamicEnergy, DRAM data transfer DynamicEnergy" << endl;
 		for (int i=0; i<netStructure.size(); i++) {
             // Build layer estimation csv file, one row for each layer
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
 
 			cout << "layer" << i+1 << "'s readLatency is: " << readLatencyPerLayer[i]*1e9 << "ns" << endl;
+			layerfile << readLatencyPerLayer[i]*1e9 << ",";
 			cout << "layer" << i+1 << "'s readDynamicEnergy is: " << readDynamicEnergyPerLayer[i]*1e12 << "pJ" << endl;
+			layerfile << readDynamicEnergyPerLayer[i]*1e12 << ",";
 			cout << "layer" << i+1 << "'s readLatency of Activation Gradient is: " << readLatencyPerLayerAG[i]*1e9 << "ns" << endl;
+			layerfile << readLatencyPerLayerAG[i]*1e9 << ",";
 			cout << "layer" << i+1 << "'s readDynamicEnergy of Activation Gradient is: " << readDynamicEnergyPerLayerAG[i]*1e12 << "pJ" << endl;
+			layerfile << readDynamicEnergyPerLayerAG[i]*1e12 << ",";
 			cout << "layer" << i+1 << "'s readLatency of Weight Gradient is: " << readLatencyPerLayerWG[i]*1e9 << "ns" << endl;
+			layerfile << readLatencyPerLayerWG[i]*1e9 << ",";
 			cout << "layer" << i+1 << "'s readDynamicEnergy of Weight Gradient is: " << readDynamicEnergyPerLayerWG[i]*1e12 << "pJ" << endl;
+			layerfile << readDynamicEnergyPerLayerWG[i]*1e12 << ",";
 			cout << "layer" << i+1 << "'s writeLatency of Weight Update is: " << writeLatencyPerLayerWU[i]*1e9 << "ns" << endl;
+			layerfile << writeLatencyPerLayerWU[i]*1e9 << ",";
 			cout << "layer" << i+1 << "'s writeDynamicEnergy of Weight Update is: " << writeDynamicEnergyPerLayerWU[i]*1e12 << "pJ" << endl;
+			layerfile << writeDynamicEnergyPerLayerWU[i]*1e12 << ",";
 			cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 			cout << "layer" << i+1 << "'s PEAK readLatency is: " << readLatencyPerLayerPeakFW[i]*1e9 << "ns" << endl;
+			layerfile << readLatencyPerLayerPeakFW[i]*1e9 << ",";
 			cout << "layer" << i+1 << "'s PEAK readDynamicEnergy is: " << readDynamicEnergyPerLayerPeakFW[i]*1e12 << "pJ" << endl;
+			layerfile << readDynamicEnergyPerLayerPeakFW[i]*1e12 << ",";
 			cout << "layer" << i+1 << "'s PEAK readLatency of Activation Gradient is: " << readLatencyPerLayerPeakAG[i]*1e9 << "ns" << endl;
+			layerfile << readLatencyPerLayerPeakAG[i]*1e9 << ",";
 			cout << "layer" << i+1 << "'s PEAK readDynamicEnergy of Activation Gradient is: " << readDynamicEnergyPerLayerPeakAG[i]*1e12 << "pJ" << endl;
+			layerfile << readDynamicEnergyPerLayerPeakAG[i]*1e12 << ",";
 			cout << "layer" << i+1 << "'s PEAK readLatency of Weight Gradient is: " << readLatencyPerLayerPeakWG[i]*1e9 << "ns" << endl;
+			layerfile << readLatencyPerLayerPeakWG[i]*1e9 << ",";
 			cout << "layer" << i+1 << "'s PEAK readDynamicEnergy of Weight Gradient is: " << readDynamicEnergyPerLayerPeakWG[i]*1e12 << "pJ" << endl;
+			layerfile << readDynamicEnergyPerLayerPeakWG[i]*1e12 << ",";
 			cout << "layer" << i+1 << "'s PEAK writeLatency of Weight Update is: " << writeLatencyPerLayerPeakWU[i]*1e9 << "ns" << endl;
+			layerfile << writeLatencyPerLayerPeakWU[i]*1e9 << ",";
 			cout << "layer" << i+1 << "'s PEAK writeDynamicEnergy of Weight Update is: " << writeDynamicEnergyPerLayerPeakWU[i]*1e12 << "pJ" << endl;
+			layerfile << writeDynamicEnergyPerLayerPeakWU[i]*1e12 << ",";
 			cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 			cout << "layer" << i+1 << "'s leakagePower is: " << leakagePowerPerLayer[i]*1e6 << "uW" << endl;
+			layerfile << leakagePowerPerLayer[i]*1e6 << ",";
 			cout << "layer" << i+1 << "'s leakageEnergy is: " << leakagePowerPerLayer[i] * (systemClock-readLatencyPerLayer[i]) *1e12 << "pJ" << endl;
+			layerfile << leakagePowerPerLayer[i] * (systemClock-readLatencyPerLayer[i]) *1e12 << ",";
 			cout << endl;
 			cout << "************************ Breakdown of Latency and Dynamic Energy *************************" << endl;
 			cout << endl;
 			cout << "----------- ADC (or S/As and precharger for SRAM) readLatency is : " << coreLatencyADCPerLayer[i]*1e9 << "ns" << endl;
+			layerfile << coreLatencyADCPerLayer[i]*1e9 << ",";
 			cout << "----------- Accumulation Circuits (subarray level: adders, shiftAdds; PE/Tile/Global level: accumulation units) readLatency is : " << coreLatencyAccumPerLayer[i]*1e9 << "ns" << endl;
+			layerfile << coreLatencyAccumPerLayer[i]*1e9 << ",";
 			cout << "----------- Synaptic Array w/o ADC (Forward + Activate Gradient) readLatency is : " << coreLatencyOtherPerLayer[i]*1e9 << "ns" << endl;
+			layerfile << coreLatencyOtherPerLayer[i]*1e9 << ",";
 			cout << "----------- Buffer latency is: " << bufferLatencyPerLayer[i]*1e9 << "ns" << endl;
+			layerfile << bufferLatencyPerLayer[i]*1e9 << ",";
 			cout << "----------- Interconnect latency is: " << icLatencyPerLayer[i]*1e9 << "ns" << endl;
+			layerfile << icLatencyPerLayer[i]*1e9 << ",";
 			cout << "----------- Weight Gradient Calculation readLatency is : " << readLatencyPerLayerPeakWG[i]*1e9 << "ns" << endl;
+			layerfile << readLatencyPerLayerPeakWG[i]*1e9 << ",";
 			cout << "----------- Weight Update writeLatency is : " << writeLatencyPerLayerPeakWU[i]*1e9 << "ns" << endl;
+			layerfile << writeLatencyPerLayerPeakWU[i]*1e9 << ",";
 			cout << "----------- DRAM data transfer Latency is : " << dramLatencyPerLayer[i]*1e9 << "ns" << endl;
+			layerfile << dramLatencyPerLayer[i]*1e9 << ",";
 			cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 			cout << "----------- ADC (or S/As and precharger for SRAM) readDynamicEnergy is : " << coreEnergyADCPerLayer[i]*1e12 << "pJ" << endl;
+			layerfile << coreEnergyADCPerLayer[i]*1e12 << ",";
 			cout << "----------- Accumulation Circuits (subarray level: adders, shiftAdds; PE/Tile/Global level: accumulation units) readDynamicEnergy is : " << coreEnergyAccumPerLayer[i]*1e12 << "pJ" << endl;
+			layerfile << coreEnergyAccumPerLayer[i]*1e12 << ",";
 			cout << "----------- Synaptic Array w/o ADC (Forward + Activate Gradient) readDynamicEnergy is : " << coreEnergyOtherPerLayer[i]*1e12 << "pJ" << endl;
+			layerfile << coreEnergyOtherPerLayer[i]*1e12 << ",";
 			cout << "----------- Buffer readDynamicEnergy is: " << bufferEnergyPerLayer[i]*1e12 << "pJ" << endl;
+			layerfile << bufferEnergyPerLayer[i]*1e12 << ",";
 			cout << "----------- Interconnect readDynamicEnergy is: " << icEnergyPerLayer[i]*1e12 << "pJ" << endl;
+			layerfile << icEnergyPerLayer[i]*1e12 << ",";
 			cout << "----------- Weight Gradient Calculation readDynamicEnergy is : " << readDynamicEnergyPerLayerPeakWG[i]*1e12 << "pJ" << endl;
+			layerfile << readDynamicEnergyPerLayerPeakWG[i]*1e12 << ",";
 			cout << "----------- Weight Update writeDynamicEnergy is : " << writeDynamicEnergyPerLayerPeakWU[i]*1e12 << "pJ" << endl;
+			layerfile << writeDynamicEnergyPerLayerPeakWU[i]*1e12 << ",";
 			cout << "----------- DRAM data transfer DynamicEnergy is : " << dramDynamicEnergyPerLayer[i]*1e12 << "pJ" << endl;
+			layerfile << dramDynamicEnergyPerLayer[i]*1e12 << endl;
 			cout << endl;
 			cout << "************************ Breakdown of Latency and Dynamic Energy *************************" << endl;
 			cout << endl;
@@ -664,6 +709,7 @@ int main(int argc, char * argv[]) {
 				cout << "Error: the breakdown file cannot be opened!" << endl;
 			}
 		}
+		layerfile.close()
 	}
 
 	if (breakdownfile.is_open()) {

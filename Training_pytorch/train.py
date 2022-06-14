@@ -359,6 +359,9 @@ try:
                 old_file = new_file
             call(["/bin/bash", "./layer_record/trace_command.sh"])
             # Loop over layer estimation, add index to key and read out corresponding dictionary value
+            layer_out = pd.read_csv("Layer.csv").to_dict()
+            for key, value in layer_out.items():
+                print(key, '->', value)
 
 except Exception as e:
     import traceback
@@ -366,8 +369,6 @@ except Exception as e:
     traceback.print_exc()
 finally:
     df = pd.read_csv("Summary.csv").to_dict()
-    print(df)
     for key, value in df.items():
-        print(key, '->', value[0])
         wandb.log({key: value[0]})
     logger("Total Elapse: {:.2f}, Best Result: {:.3f}%".format(time.time() - t_begin, best_acc))
