@@ -361,10 +361,9 @@ try:
                 best_acc = acc
                 old_file = new_file
             call(["/bin/bash", "./layer_record/trace_command.sh"])
-            # ToDo: Save csv to wandb
-            print('########## TEST ###########')
             df = pd.read_csv("Summary.csv").to_dict()
-            print(df)
+            for key, value in df.items():
+                print(key, '->', value[0])
 
 except Exception as e:
     import traceback
