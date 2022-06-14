@@ -359,7 +359,7 @@ int main(int argc, char * argv[]) {
 		// show the detailed hardware performance for each layer
 		for (int i=0; i<netStructure.size(); i++) {
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
-
+            cout << "TESTSTETETETETET HIER";
 			param->activityRowReadWG = atof(argv[4*i+16]);
                         param->activityRowWriteWG = atof(argv[4*i+16]);
                         param->activityColWriteWG = atof(argv[4*i+16]);
