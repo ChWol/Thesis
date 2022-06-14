@@ -349,7 +349,7 @@ int main(int argc, char * argv[]) {
 		// show the detailed hardware performance for each layer
 		ofstream layerfile;
             layerfile.open("Layer.csv", ios::out);
-            layerfile << "readLatency of Forward, readDynamicEnergy of Forward, readLatency of Activation Gradient, " <<
+            layerfile << "# of Tiles, Speedup, Utilization, readLatency of Forward, readDynamicEnergy of Forward, readLatency of Activation Gradient, " <<
             "readDynamicEnergy of Activation Gradient, readLatency of Weight Gradient, readDynamicEnergy of Weight Gradient, " <<
             "writeLatency of Weight Update, writeDynamicEnergy of Weight Update, PEAK readLatency of Forward, PEAK readDynamicEnergy of Forward, " <<
             "PEAK readLatency of Activation Gradient, PEAK readDynamicEnergy of Activation Gradient, PEAK readLatency of Weight Gradient, " <<
@@ -383,6 +383,9 @@ int main(int argc, char * argv[]) {
 			}
 			layerLeakageEnergy = numTileOtherLayer*tileLeakage*(layerReadLatency+layerReadLatencyAG);
 
+            layerfile << numTileEachLayer[0][i] * numTileEachLayer[1][i] << ", ";
+            layerfile << speedUpEachLayer[0][i] * speedUpEachLayer[1][i] << ", ";
+            layerfile << utilizationEachLayer[i][0] << ", ";
 			cout << "layer" << i+1 << "'s readLatency of Forward is: " << layerReadLatency*1e9 << "ns" << endl;
 			layerfile << layerReadLatency*1e9 << ",";
 			cout << "layer" << i+1 << "'s readDynamicEnergy of Forward is: " << layerReadDynamicEnergy*1e12 << "pJ" << endl;
@@ -641,7 +644,7 @@ int main(int argc, char * argv[]) {
 
         ofstream layerfile;
         layerfile.open("Layer.csv", ios::out);
-        layerfile << "readLatency, readDynamicEnergy, readLatency of Activation Gradient, readDynamicEnergy of Activation Gradient, " <<
+        layerfile << "# of Tiles, Speedup, Utilization, readLatency, readDynamicEnergy, readLatency of Activation Gradient, readDynamicEnergy of Activation Gradient, " <<
         "readLatency of Weight Gradient, readDynamicEnergy of Weight Gradient, writeLatency of Weight Update, writeDynamicEnergy of Weight Update, " <<
         "PEAK readLatency, PEAK readDynamicEnergy, PEAK readLatency of Activation Gradient, PEAK readDynamicEnergy of Activation Gradient, " <<
         "PEAK readLatency of Weight Gradient, PEAK readDynamicEnergy of Weight Gradient, PEAK writeLatency of Weight Update, " <<
@@ -654,6 +657,9 @@ int main(int argc, char * argv[]) {
             // Build layer estimation csv file, one row for each layer
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
 
+            layerfile << numTileEachLayer[0][i] * numTileEachLayer[1][i] << ", ";
+            layerfile << speedUpEachLayer[0][i] * speedUpEachLayer[1][i] << ", ";
+            layerfile << utilizationEachLayer[i][0] << ", ";
 			cout << "layer" << i+1 << "'s readLatency is: " << readLatencyPerLayer[i]*1e9 << "ns" << endl;
 			layerfile << readLatencyPerLayer[i]*1e9 << ",";
 			cout << "layer" << i+1 << "'s readDynamicEnergy is: " << readDynamicEnergyPerLayer[i]*1e12 << "pJ" << endl;
@@ -772,7 +778,7 @@ int main(int argc, char * argv[]) {
 
     ofstream summaryfile;
     summaryfile.open("Summary.csv", ios::out);
-    summaryfile << "Chip Area, Chip total CIM array, Total IC Area on chip, Total ADC Area on chip, Total Accumulation Circuits on chip, " <<
+    summaryfile << "Utilization, Chip Area, Chip total CIM array, Total IC Area on chip, Total ADC Area on chip, Total Accumulation Circuits on chip, " <<
       "Other Peripheries, Weight Gradient Calculation, Chip readLatency of Forward, Chip readDynamicEnergy of Forward, " <<
       "Chip readLatency of Activation Gradient, Chip readDynamicEnergy of Activation Gradient, Chip readLatency of Weight Gradient, " <<
       "Chip readDynamicEnergy of Weight Gradient, Chip writeLatency of Weight Update, Chip writeDynamicEnergy of Weight Update, " <<
@@ -787,6 +793,7 @@ int main(int argc, char * argv[]) {
       "DRAM data transfer DynamicEnergy, Energy Efficiency TOPS/W, Throughput TOPS, Throughput FPS, Peak Energy Efficiency TOPS/W, " <<
       "Peak Throughput TOPS, Peak Throughput FPS" << endl;
 
+    summaryfile << realMappedMemory/totalNumTile*100 << ", ";
 	cout << "------------------------------ Summary --------------------------------" <<  endl;
 	cout << endl;
 	cout << "ChipArea : " << chipArea*1e12 << "um^2" << endl;
