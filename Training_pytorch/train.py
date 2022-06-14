@@ -35,8 +35,7 @@ parser.add_argument('--batch_size', type=int, default=200, help='input batch siz
 parser.add_argument('--epochs', type=int, default=257, help='number of epochs to train')
 parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
 parser.add_argument('--seed', type=int, default=117, help='random seed')
-parser.add_argument('--log_interval', type=int, default=100,
-                    help='how many batches to wait before logging training status')
+parser.add_argument('--log_interval', type=int, default=100,help='how many batches to wait before logging training status')
 parser.add_argument('--test_interval', type=int, default=1, help='how many epochs to wait before another test')
 parser.add_argument('--logdir', default='log/default', help='folder to save to the log')
 parser.add_argument('--decreasing_lr', default='200,250', help='decreasing strategy')
@@ -55,10 +54,8 @@ parser.add_argument('--v', default=0)
 parser.add_argument('--detect', default=0)
 parser.add_argument('--target', default=0)
 parser.add_argument('--nonlinearityLTP', type=float, default=1.75, help='nonlinearity in LTP')
-parser.add_argument('--nonlinearityLTD', type=float, default=-1.46,
-                    help='nonlinearity in LTD (negative if LTP and LTD are asymmetric)')
-parser.add_argument('--max_level', type=int, default=32,
-                    help='Maximum number of conductance states during weight update (floor(log2(max_level))=cellBit)')
+parser.add_argument('--nonlinearityLTD', type=float, default=-1.46,help='nonlinearity in LTD (negative if LTP and LTD are asymmetric)')
+parser.add_argument('--max_level', type=int, default=32,help='Maximum number of conductance states during weight update (floor(log2(max_level))=cellBit)')
 parser.add_argument('--d2dVari', type=float, default=0, help='device-to-device variation')
 parser.add_argument('--c2cVari', type=float, default=0.003, help='cycle-to-cycle variation')
 parser.add_argument('--momentum', type=float, default=0.9)
