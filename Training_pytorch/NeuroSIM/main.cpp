@@ -357,6 +357,18 @@ int main(int argc, char * argv[]) {
 	if (! param->pipeline) {
 		// layer-by-layer process
 		// show the detailed hardware performance for each layer
+		ofstream layerfile;
+            layerfile.open("Layer.csv", ios::out);
+            layerfile << "readLatency of Forward, readDynamicEnergy of Forward, readLatency of Activation Gradient, " <<
+            "readDynamicEnergy of Activation Gradient, readLatency of Weight Gradient, readDynamicEnergy of Weight Gradient, " <<
+            "writeLatency of Weight Update, writeDynamicEnergy of Weight Update, PEAK readLatency of Forward, PEAK readDynamicEnergy of Forward, " <<
+            "PEAK readLatency of Activation Gradient, PEAK readDynamicEnergy of Activation Gradient, PEAK readLatency of Weight Gradient, " <<
+            "PEAK readDynamicEnergy of Weight Gradient, PEAK writeLatency of Weight Update, PEAK writeDynamicEnergy of Weight Update, " <<
+            "leakagePower, leakageEnergy, ADC readLatency, Accumulation Circuits readLatency, Synaptic Array w/o ADC readLatency, " <<
+            "Buffer buffer latency, Interconnect latency, Weight Gradient Calculation readLatency, Weight Update writeLatency, " <<
+            "DRAM data transfer Latency, ADC readDynamicEnergy, Accumulation Circuits readDynamicEnergy, Synaptic Array w/o ADC readDynamicEnergy, " <<
+            "Buffer readDynamicEnergy, Interconnect readDynamicEnergy, Weight Gradient Calculation readDynamicEnergy, Weight Update writeDynamicEnergy, " <<
+            "DRAM data transfer Energy" << endl;
 		for (int i=0; i<netStructure.size(); i++) {
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
 			param->activityRowReadWG = atof(argv[4*i+16]);
@@ -380,19 +392,6 @@ int main(int argc, char * argv[]) {
 				}
 			}
 			layerLeakageEnergy = numTileOtherLayer*tileLeakage*(layerReadLatency+layerReadLatencyAG);
-
-            ofstream layerfile;
-            layerfile.open("Layer.csv", ios::out);
-            layerfile << "readLatency of Forward, readDynamicEnergy of Forward, readLatency of Activation Gradient, " <<
-            "readDynamicEnergy of Activation Gradient, readLatency of Weight Gradient, readDynamicEnergy of Weight Gradient, " <<
-            "writeLatency of Weight Update, writeDynamicEnergy of Weight Update, PEAK readLatency of Forward, PEAK readDynamicEnergy of Forward, " <<
-            "PEAK readLatency of Activation Gradient, PEAK readDynamicEnergy of Activation Gradient, PEAK readLatency of Weight Gradient, " <<
-            "PEAK readDynamicEnergy of Weight Gradient, PEAK writeLatency of Weight Update, PEAK writeDynamicEnergy of Weight Update, " <<
-            "leakagePower, leakageEnergy, ADC readLatency, Accumulation Circuits readLatency, Synaptic Array w/o ADC readLatency, " <<
-            "Buffer buffer latency, Interconnect latency, Weight Gradient Calculation readLatency, Weight Update writeLatency, " <<
-            "DRAM data transfer Latency, ADC readDynamicEnergy, Accumulation Circuits readDynamicEnergy, Synaptic Array w/o ADC readDynamicEnergy, " <<
-            "Buffer readDynamicEnergy, Interconnect readDynamicEnergy, Weight Gradient Calculation readDynamicEnergy, Weight Update writeDynamicEnergy, " <<
-            "DRAM data transfer Energy" << endl;
 
 			cout << "layer" << i+1 << "'s readLatency of Forward is: " << layerReadLatency*1e9 << "ns" << endl;
 			layerfile << layerReadLatency*1e9 << ",";
@@ -520,6 +519,7 @@ int main(int argc, char * argv[]) {
 			chipEnergyAccum += coreEnergyAccum;
 			chipEnergyOther += coreEnergyOther;
 		}
+		layerfile.close();
 	} else {
 		// pipeline system
 		// firstly define system clock
