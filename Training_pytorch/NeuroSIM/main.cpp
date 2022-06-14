@@ -709,7 +709,7 @@ int main(int argc, char * argv[]) {
 				cout << "Error: the breakdown file cannot be opened!" << endl;
 			}
 		}
-		layerfile.close()
+		layerfile.close();
 	}
 
 	if (breakdownfile.is_open()) {
