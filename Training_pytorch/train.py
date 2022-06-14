@@ -363,8 +363,8 @@ try:
             call(["/bin/bash", "./layer_record/trace_command.sh"])
             df = pd.read_csv("Summary.csv").to_dict()
             for key, value in df.items():
-                print(key, '->', float(value[0]))
-                wandb.log({key: float(value[0])})
+                print(key, '->', value[0])
+                wandb.log({key: value[0]})
 
 except Exception as e:
     import traceback
