@@ -362,7 +362,7 @@ try:
             layer_out = pd.read_csv("Layer.csv").to_dict()
             for key, value in layer_out.items():
                 for layer, result in value.items():
-                    print("Layer {} {}: {}".format(layer+1, key, result))
+                    wandb.log({"Layer {}: {}".format(layer+1, key): result})
 
 except Exception as e:
     import traceback
