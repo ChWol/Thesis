@@ -60,7 +60,6 @@ parser.add_argument('--d2dVari', type=float, default=0, help='device-to-device v
 parser.add_argument('--c2cVari', type=float, default=0.003, help='cycle-to-cycle variation')
 parser.add_argument('--momentum', type=float, default=0.9)
 parser.add_argument('--network', default='speed')
-parser.add_argument('--run', default='')
 parser.add_argument('--technode', type=int, default='32')
 parser.add_argument('--memcelltype', type=int, default=3)
 parser.add_argument('--relu', type=int, default=1)
