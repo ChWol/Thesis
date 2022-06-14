@@ -142,40 +142,12 @@ assert args.network in ['speed', 'vgg8', 'vgg16', 'alexnet'], args.network
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
     model = model.cifar10(args=args, logger=logger)
-
-    # Playing around with wandb
-    classes = ('plane', 'car', 'bird', 'cat',
-               'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-    table_columns = ['image', 'label']
-    table_data = []
-    for i, batch in enumerate(train_loader, 0):
-        inputs, labels = batch[0], batch[1]
-        for j, image in enumerate(inputs, 0):
-            table_data.append([wandb.Image(image), classes[labels[j].item()]])
-        break
-    table = wandb.Table(data=table_data, columns=table_columns)
-    wandb.log({"cifar10_images": table})
-
 if args.type == 'cifar100':
     train_loader, test_loader = dataset.get100(batch_size=args.batch_size, num_workers=1)
     model = model.cifar100(args=args, logger=logger)
 if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     model = model.mnist(args=args, logger=logger)
-
-    # Playing around with wandb
-    classes = ('zero', 'one', 'two', 'three',
-               'four', 'five', 'six', 'seven', 'eight', 'nine')
-    table_columns = ['image', 'label']
-    table_data = []
-    for i, batch in enumerate(train_loader, 0):
-        inputs, labels = batch[0], batch[1]
-        for j, image in enumerate(inputs, 0):
-            table_data.append([wandb.Image(image), classes[labels[j].item()]])
-        break
-    table = wandb.Table(data=table_data, columns=table_columns)
-    wandb.log({"mnist_images": table})
-
 if args.cuda:
     model.cuda()
 
@@ -257,7 +229,7 @@ try:
                 pred = output.data.max(1)[1]  # get the index of the max log-probability
                 correct = pred.cpu().eq(indx_target).sum()
                 acc = float(correct) * 1.0 / len(data)
-                wandb.log({'train_accuracy': acc, 'train_loss': loss})
+                wandb.log({'epoch': epoch, 'train_accuracy': acc, 'train_loss': loss})
                 logger('Train Epoch: {} [{}/{}] Loss: {:.6f} Acc: {:.4f} lr: {:.2e}'.format(
                     epoch, batch_idx * len(data), len(train_loader.dataset),
                     loss.data, acc, optimizer.param_groups[0]['lr']))
@@ -346,7 +318,7 @@ try:
 
             test_loss = test_loss / len(test_loader)  # average over number of mini-batch
             acc = 100. * correct / len(test_loader.dataset)
-            wandb.log({'test_accuracy': acc, 'test_loss': test_loss})
+            wandb.log({'epoch': epoch, 'test_accuracy': acc, 'test_loss': test_loss})
             logger('\tEpoch {} Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
                 epoch, test_loss, correct, len(test_loader.dataset), acc))
             accuracy = acc.cpu().data.numpy()
@@ -363,13 +335,13 @@ try:
             for key, value in layer_out.items():
                 for layer, result in value.items():
                     wandb.log({"Layer {}: {}".format(layer+1, key): result})
+            df = pd.read_csv("Summary.csv").to_dict()
+            for key, value in df.items():
+                wandb.log({key: value[0]})
 
 except Exception as e:
     import traceback
 
     traceback.print_exc()
 finally:
-    df = pd.read_csv("Summary.csv").to_dict()
-    for key, value in df.items():
-        wandb.log({key: value[0]})
     logger("Total Elapse: {:.2f}, Best Result: {:.3f}%".format(time.time() - t_begin, best_acc))
