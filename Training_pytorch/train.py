@@ -366,6 +366,7 @@ except Exception as e:
     traceback.print_exc()
 finally:
     df = pd.read_csv("Summary.csv").to_dict()
+    print(df)
     for key, value in df.items():
         print(key, '->', value[0])
         wandb.log({key: value[0]})
