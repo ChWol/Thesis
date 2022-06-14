@@ -77,7 +77,7 @@ args.wireWidth = technode_to_width[args.technode]
 
 # Initializing Weights and Biases
 wandb.init(project=args.type, config=args)
-wandb.run.name = (args.network + ' - ' + args.run + ' ({})').format(wandb.run.id)
+wandb.run.name = (args.network + ' ({})').format(wandb.run.id)
 
 # momentum
 gamma = args.momentum
