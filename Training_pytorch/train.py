@@ -330,14 +330,18 @@ try:
                 best_acc = acc
                 old_file = new_file
             call(["/bin/bash", "./layer_record/trace_command.sh"])
-            # Loop over layer estimation, add index to key and read out corresponding dictionary value
+
+            log_input = {"Epoch": epoch+1}
             layer_out = pd.read_csv("Layer.csv").to_dict()
             for key, value in layer_out.items():
                 for layer, result in value.items():
-                    wandb.log({'epoch': epoch+1, "Layer {}: {}".format(layer+1, key): result})
-            df = pd.read_csv("Summary.csv").to_dict()
-            for key, value in df.items():
-                wandb.log({'epoch': epoch+1, key: value[0]})
+                    log_input["Layer {}: {}".format(layer+1, key)] = result
+            wandb.log(log_input)
+            summary_out = pd.read_csv("Summary.csv").to_dict()
+            log_input = {"Epoch": epoch + 1}
+            for key, value in summary_out.items():
+                log_input[key] = value[0]
+            wandb.log(log_input)
 
 except Exception as e:
     import traceback
