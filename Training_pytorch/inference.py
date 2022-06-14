@@ -16,7 +16,7 @@ from utee import hook
 # Todo: Import other datasets
 from cifar import dataset
 from cifar import model
-#from IPython import embed
+# from IPython import embed
 from datetime import datetime
 from subprocess import call
 
@@ -29,7 +29,8 @@ parser.add_argument('--batch_size', type=int, default=200, help='input batch siz
 parser.add_argument('--epochs', type=int, default=257, help='number of epochs to train')
 parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
 parser.add_argument('--seed', type=int, default=117, help='random seed')
-parser.add_argument('--log_interval', type=int, default=100,help='how many batches to wait before logging training status')
+parser.add_argument('--log_interval', type=int, default=100,
+                    help='how many batches to wait before logging training status')
 parser.add_argument('--test_interval', type=int, default=1, help='how many epochs to wait before another test')
 parser.add_argument('--logdir', default='log/default', help='folder to save to the log')
 parser.add_argument('--decreasing_lr', default='200,250', help='decreasing strategy')
@@ -48,8 +49,10 @@ parser.add_argument('--v', default=0)
 parser.add_argument('--detect', default=0)
 parser.add_argument('--target', default=0)
 parser.add_argument('--nonlinearityLTP', type=float, default=1.75, help='nonlinearity in LTP')
-parser.add_argument('--nonlinearityLTD', type=float, default=-1.46,help='nonlinearity in LTD (negative if LTP and LTD are asymmetric)')
-parser.add_argument('--max_level', type=int, default=32,help='Maximum number of conductance states during weight update (floor(log2(max_level))=cellBit)')
+parser.add_argument('--nonlinearityLTD', type=float, default=-1.46,
+                    help='nonlinearity in LTD (negative if LTP and LTD are asymmetric)')
+parser.add_argument('--max_level', type=int, default=32,
+                    help='Maximum number of conductance states during weight update (floor(log2(max_level))=cellBit)')
 parser.add_argument('--d2dVari', type=float, default=0, help='device-to-device variation')
 parser.add_argument('--c2cVari', type=float, default=0.003, help='cycle-to-cycle variation')
 parser.add_argument('--momentum', type=float, default=0.9)
@@ -64,11 +67,11 @@ if args.memcelltype == 1:
     args.cellBit = 1
 args.wl_weight = args.cellBit
 args.wl_grad = args.cellBit
-technode_to_width = { 7: 14, 10: 14, 14: 22, 22: 32, 32: 40, 45: 50, 65: 100, 90: 200, 130: 200 }
+technode_to_width = {7: 14, 10: 14, 14: 22, 22: 32, 32: 40, 45: 50, 65: 100, 90: 200, 130: 200}
 args.wireWidth = technode_to_width[args.technode]
 args.inference = 0
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
-args = make_path.makepath(args,['log_interval','test_interval','logdir','epochs','gpu','ngpu','debug'])
+args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs', 'gpu', 'ngpu', 'debug'])
 
 misc.logger.init(args.logdir, 'test_log' + current_time)
 logger = misc.logger.info
@@ -77,35 +80,35 @@ args.inference = 1
 misc.ensure_dir(args.logdir)
 logger("=================FLAGS==================")
 for k, v in args.__dict__.items():
-	logger('{}: {}'.format(k, v))
+    logger('{}: {}'.format(k, v))
 logger("========================================")
 
 # seed
 args.cuda = torch.cuda.is_available()
 torch.manual_seed(args.seed)
 if args.cuda:
-	torch.cuda.manual_seed(args.seed)
+    torch.cuda.manual_seed(args.seed)
 
 # Todo: Check if model saving works
 print('====================')
 print('Path', args.logdir)
-model_path = (args.logdir + '/best-{}.pth').format(args.epochs-1)
+model_path = (args.logdir + '/best-{}.pth').format(args.epochs - 1)
 
 # data loader and model
 # Todo: Add option to choose different datasets
 assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
 if args.type == 'cifar10':
-	train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
-	modelCF = model.cifar10(args = args, logger=logger, pretrained = model_path)
+    train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
+    modelCF = model.cifar10(args=args, logger=logger, pretrained=model_path)
 if args.type == 'cifar100':
-	train_loader, test_loader = dataset.get100(batch_size=args.batch_size, num_workers=1)
-	modelCF = model.cifar100(args=args, logger=logger, pretrained=model_path)
+    train_loader, test_loader = dataset.get100(batch_size=args.batch_size, num_workers=1)
+    modelCF = model.cifar100(args=args, logger=logger, pretrained=model_path)
 if args.type == 'mnist':
-	train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
-	modelCF = model.mnist(args=args, logger=logger, pretrained=model_path)
+    train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
+    modelCF = model.mnist(args=args, logger=logger, pretrained=model_path)
 print(args.cuda)
 if args.cuda:
-	modelCF.cuda()
+    modelCF.cuda()
 best_acc, old_file = 0, None
 t_begin = time.time()
 # ready to go
@@ -116,19 +119,22 @@ trained_with_quantization = True
 
 # for data, target in test_loader:
 for i, (data, target) in enumerate(test_loader):
-	if i==0:
-		hook_handle_list = hook.hardware_evaluation(modelCF,args.cellBit,args.wl_weight,args.wl_activate,0)
-	indx_target = target.clone()
-	if args.cuda:
-		data, target = data.cuda(), target.cuda()
-	with torch.no_grad():
-		data, target = Variable(data), Variable(target)
-		output = modelCF(data)
-		test_loss += F.cross_entropy(output, target).data
-		pred = output.data.max(1)[1]  # get the index of the max log-probability
-		correct += pred.cpu().eq(indx_target).sum()
-	if i==0:
-		hook.remove_hook_list(hook_handle_list)
+    if i == 0:
+        hook_handle_list = hook.hardware_evaluation(model, args.wl_weight, args.wl_activate,
+                                                    0, args.batch_size, args.cellBit, args.technode,
+                                                    args.wireWidth, args.relu, args.memcelltype, 2 ** args.ADCprecision,
+                                                    args.onoffratio)
+    indx_target = target.clone()
+    if args.cuda:
+        data, target = data.cuda(), target.cuda()
+    with torch.no_grad():
+        data, target = Variable(data), Variable(target)
+        output = modelCF(data)
+        test_loss += F.cross_entropy(output, target).data
+        pred = output.data.max(1)[1]  # get the index of the max log-probability
+        correct += pred.cpu().eq(indx_target).sum()
+    if i == 0:
+        hook.remove_hook_list(hook_handle_list)
 
 test_loss = test_loss / len(test_loader)  # average over number of mini-batch
 acc = 100. * correct / len(test_loader.dataset)
@@ -148,7 +154,7 @@ print("variation: ")
 print(args.vari)
 
 logger('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
-	test_loss, correct, len(test_loader.dataset), acc))
+    test_loss, correct, len(test_loader.dataset), acc))
 
 # Running C++ files for layer estimation
 # Todo: Extract parameters
