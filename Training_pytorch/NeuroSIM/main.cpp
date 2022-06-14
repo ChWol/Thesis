@@ -774,7 +774,7 @@ int main(int argc, char * argv[]) {
 	cout << "Chip leakage Energy is: " << chipLeakageEnergy*1e12 << "pJ" << endl;
 	summaryfile << chipLeakageEnergy*1e12 << ",";
 	cout << "Chip leakage Power is: " << chipLeakage*1e6 << "uW" << endl;
-	summaryfile << chipLeakage*1e6 << endl;
+	summaryfile << chipLeakage*1e6 << ",";
 	cout << endl;
 	cout << "************************ Breakdown of Latency and Dynamic Energy *************************" << endl;
 	cout << endl;
