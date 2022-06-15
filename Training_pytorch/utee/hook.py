@@ -11,18 +11,9 @@ def Neural_Sim(self, input, output):
     weightOld_file_name = './layer_record/weightOld' + str(self.name) + '.csv'
     f = open('./layer_record/trace_command.sh', "a")
     input_activity = open('./input_activity.csv', "a")
-    weight_q = wage_quantizer.Q(self.weight, self.wl_weight)
+    # weight_q = wage_quantizer.Q(self.weight, self.wl_weight)
+    weight_q = self.weight
     write_matrix_weight(weight_q.cpu().data.numpy(), weight_file_name)
-
-    print("Input")
-    print(input[0].cpu())
-    print("Output")
-    print(output[0].cpu())
-    print("Weight")
-    print(self.weight.cpu())
-    print("Weight II")
-    print(weight_q)
-
     if len(self.weight.shape) > 2:
         k = self.weight.shape[-1]
         padding = self.padding
