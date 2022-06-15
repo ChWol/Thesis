@@ -84,7 +84,7 @@ class QConv2d(nn.Conv2d):
                                 print(type(0.))
                                 print(torch.full(remainderQ.size(), self.vari, device='cuda').float().type())
 
-                                remainderQ = remainderQ + torch.normal(0., torch.full(remainderQ.size(),self.vari, device='cuda'))
+                                remainderQ = remainderQ + torch.normal(0., torch.full(remainderQ.size(),self.vari, device='cuda').float())
                                 outputPartial= F.conv2d(input, remainderQ*mask, self.bias, self.stride, self.padding, self.dilation, self.groups)
                                 outputDummyPartial= F.conv2d(input, dummyP*mask, self.bias, self.stride, self.padding, self.dilation, self.groups)
                                 scaler = cellRange**k
@@ -115,7 +115,7 @@ class QConv2d(nn.Conv2d):
                                     print(type(0.))
                                     print(torch.full(remainderQ.size(), self.vari, device='cuda').type())
 
-                                    remainderQ = remainderQ + remainderQ*torch.normal(0., torch.full(remainderQ.size(),self.vari, device='cuda'))
+                                    remainderQ = remainderQ + remainderQ*torch.normal(0., torch.full(remainderQ.size(),self.vari, device='cuda').float())
                                     outputPartial= F.conv2d(inputB, remainderQ*mask, self.bias, self.stride, self.padding, self.dilation, self.groups)
                                     outputDummyPartial= F.conv2d(inputB, dummyP*mask, self.bias, self.stride, self.padding, self.dilation, self.groups)
                                     # Add ADC quanization effects here !!!
