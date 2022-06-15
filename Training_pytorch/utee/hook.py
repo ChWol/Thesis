@@ -13,6 +13,12 @@ def Neural_Sim(self, input, output):
     input_activity = open('./input_activity.csv', "a")
     weight_q = wage_quantizer.Q(self.weight, self.wl_weight)
     write_matrix_weight(weight_q.cpu().data.numpy(), weight_file_name)
+
+    print(input[0].cpu())
+    print(output[0].cpu())
+    print(self.weight.cpu())
+    print(weight_q)
+
     if len(self.weight.shape) > 2:
         k = self.weight.shape[-1]
         padding = self.padding
