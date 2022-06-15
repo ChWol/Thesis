@@ -40,7 +40,7 @@ parser.add_argument('--v', default=0)
 parser.add_argument('--detect', default=0)
 parser.add_argument('--target', default=0)
 parser.add_argument('--nonlinearityLTP', type=float, default=1.75, help='nonlinearity in LTP')
-parser.add_argument('--nonlinearityLTD', type=float, default=-1.46,
+parser.add_argument('--nonlinearityLTD', type=float, default=1.46,
                     help='nonlinearity in LTD (negative if LTP and LTD are asymmetric)')
 parser.add_argument('--max_level', type=int, default=32,
                     help='Maximum number of conductance states during weight update (floor(log2(max_level))=cellBit)')

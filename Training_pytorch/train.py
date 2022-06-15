@@ -19,6 +19,7 @@ from datetime import datetime
 from subprocess import call
 import wandb
 
+
 # Todo: Add type, default and help -> copy over to inference
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
 parser.add_argument('--type', default='cifar10', help='dataset for training')
