@@ -51,6 +51,12 @@ def write_matrix_activation_conv(input_matrix, fill_dimension, length, filename)
 def write_matrix_activation_fc(input_matrix, fill_dimension, length, filename):
     filled_matrix_b = np.zeros([input_matrix.shape[1], length], dtype=np.str)
     filled_matrix_bin, scale = dec2bin(input_matrix[0, :], length)
+    print(input_matrix)
+    print(fill_dimension)
+    print(length)
+    print(filename)
+    print(filled_matrix_b)
+    print(filled_matrix_bin)
     for i, b in enumerate(filled_matrix_bin):
         filled_matrix_b[:, i] = b
     print("HIER GEHTS ZUM TESTEN")
