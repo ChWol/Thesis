@@ -53,6 +53,8 @@ def write_matrix_activation_fc(input_matrix, fill_dimension, length, filename):
     filled_matrix_bin, scale = dec2bin(input_matrix[0, :], length)
     for i, b in enumerate(filled_matrix_bin):
         filled_matrix_b[:, i] = b
+    print("HIER GEHTS ZUM TESTEN")
+    print(filled_matrix_b)
     activity = np.sum(filled_matrix_b.astype(np.float), axis=None) / np.size(filled_matrix_b)
     np.savetxt(filename, filled_matrix_b, delimiter=",", fmt='%s')
     return activity
