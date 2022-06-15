@@ -82,7 +82,7 @@ class QConv2d(nn.Conv2d):
 
                                 print("HIER GEHTS LOS MIT TESTEN")
                                 print(type(0.))
-                                print(torch.full(remainderQ.size(), self.vari, device='cuda').type())
+                                print(torch.full(remainderQ.size(), self.vari, device='cuda').float().type())
 
                                 remainderQ = remainderQ + torch.normal(0., torch.full(remainderQ.size(),self.vari, device='cuda'))
                                 outputPartial= F.conv2d(input, remainderQ*mask, self.bias, self.stride, self.padding, self.dilation, self.groups)
