@@ -1,34 +1,25 @@
 import argparse
 import os
 import time
-import csv
-# Todo: explain
 from utee import misc
-# Import Pytorch & Numpy & Pandas
 import torch
 import torch.optim as optim
 from torch.autograd import Variable
 import numpy as np
 import pandas as pd
-# Todo: explain
 from utee import make_path
 from utee import wage_util
 from utee import wage_quantizer
 from utee import hook
-# Import Cifar dataset
-# Todo: Import other datasets
+# Todo: Rename cifar directory
 from cifar import dataset
 from cifar import model
-# Todo: explain
 from modules.quantization_cpu_np_infer import QConv2d, QLinear
-# from IPython import embed
 from datetime import datetime
 from subprocess import call
-# Import weights and biases
 import wandb
 
-# Parsing training & architecture parameters
-# Todo: Explain each parameter
+# Todo: Add type, default and help -> copy over to inference
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
 parser.add_argument('--type', default='cifar10', help='dataset for training')
 parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training')
@@ -66,20 +57,19 @@ parser.add_argument('--relu', type=int, default=1)
 current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
-# Manually overwriting arguments to match simulator-conditions
+
 if args.memcelltype == 1:
     args.cellBit = 1
+
 args.wl_weight = args.cellBit
 args.wl_grad = args.cellBit
 
-technode_to_width = { 7: 14, 10: 14, 14: 22, 22: 32, 32: 40, 45: 50, 65: 100, 90: 200, 130: 200 }
+technode_to_width = {7: 14, 10: 14, 14: 22, 22: 32, 32: 40, 45: 50, 65: 100, 90: 200, 130: 200}
 args.wireWidth = technode_to_width[args.technode]
 
-# Initializing Weights and Biases
 wandb.init(project=args.type, config=args)
 wandb.run.name = (args.network + ' ({})').format(wandb.run.id)
 
-# momentum
 gamma = args.momentum
 alpha = 1 - args.momentum
 
@@ -100,19 +90,16 @@ out = open("PythonWrapper_Output.csv", 'ab')
 out_firstline = np.array([["epoch", "average loss", "accuracy"]])
 np.savetxt(out, out_firstline, delimiter=",", fmt='%s')
 
-# Todo: explain
 delta_distribution = open("delta_dist.csv", 'ab')
 delta_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", "6_mean", "7_mean", "8_mean", "1_std",
                              "2_std", "3_std", "4_std", "5_std", "6_std", "7_std", "8_std"]])
 np.savetxt(delta_distribution, delta_firstline, delimiter=",", fmt='%s')
 
-# Todo: explain
 weight_distribution = open("weight_dist.csv", 'ab')
 weight_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", "6_mean", "7_mean", "8_mean", "1_std",
                               "2_std", "3_std", "4_std", "5_std", "6_std", "7_std", "8_std"]])
 np.savetxt(weight_distribution, weight_firstline, delimiter=",", fmt='%s')
 
-# Todo: explain
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
 args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs'])
 misc.logger.init(args.logdir, 'train_log_' + current_time)
@@ -132,7 +119,6 @@ if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
 # data loader and model
-# Todo: Allow changes, add further datasets
 assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
 assert args.network in ['speed', 'vgg8', 'vgg16', 'alexnet'], args.network
 if args.type == 'cifar10':
@@ -147,10 +133,9 @@ if args.type == 'mnist':
 if args.cuda:
     model.cuda()
 
-# Todo: Try different architectures, maybe point to change for different algorithms
+# Todo: Include defined learning rate
 optimizer = optim.SGD(model.parameters(), lr=1)
 
-# Todo: explain
 decreasing_lr = list(map(int, args.decreasing_lr.split(',')))
 logger('decreasing_lr: ' + str(decreasing_lr))
 best_acc, old_file = 0, None
@@ -165,7 +150,6 @@ try:
     paramALTP = {}
     paramALTD = {}
     k = 0
-    # Todo: explain
     for layer in list(model.parameters())[::-1]:
         d2dVariation = torch.normal(torch.zeros_like(layer), args.d2dVari * torch.ones_like(layer))
         NL_LTP = torch.ones_like(layer) * args.nonlinearityLTP + d2dVariation
@@ -174,11 +158,9 @@ try:
         paramALTD[k] = wage_quantizer.GetParamA(NL_LTD.cpu().numpy()) * args.max_level
         k = k + 1
 
-    # Actual training process
     for epoch in range(args.epochs):
         model.train()
 
-        # Todo: explain
         velocity = {}
         i = 0
         for layer in list(model.parameters())[::-1]:
@@ -198,10 +180,8 @@ try:
             output = model(data)
             loss = wage_util.SSE(output, target)
 
-            # Backpropagation, possible point of change for different algorithms
             loss.backward()
 
-            # Todo: explain
             # introduce non-ideal property
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
@@ -217,7 +197,6 @@ try:
             # Update function
             optimizer.step()
 
-            # Todo: explain
             for name, param in list(model.named_parameters())[::-1]:
                 param.data = wage_quantizer.W(param.data, param.grad.data, args.wl_weight, args.c2cVari)
 
@@ -237,7 +216,6 @@ try:
         logger("Elapsed {:.2f}s, {:.2f} s/epoch, {:.2f} s/batch, ets {:.2f}s".format(
             elapse_time, speed_epoch, speed_batch, eta))
 
-        # Todo: Check if model saving works
         misc.model_save(model, os.path.join(args.logdir, 'latest.pth'))
 
         if not os.path.exists('./layer_record'):
@@ -252,7 +230,6 @@ try:
         oldWeight = {}
         k = 0
 
-        # Todo: explain
         for name, param in list(model.named_parameters()):
             oldWeight[k] = param.data + param.grad.data
             k = k + 1
@@ -271,7 +248,6 @@ try:
         print("delta distribution")
         print(delta_mean)
 
-        # Todo: explain
         h = 0
         for i, layer in enumerate(model.features.modules()):
             if isinstance(layer, QConv2d) or isinstance(layer, QLinear):
@@ -285,9 +261,6 @@ try:
                 h = h + 1
 
         # Run tests including hardware simulation
-        # Todo: explain
-        # Todo: extract printed information for WandB
-        # Todo: not only log on last
         if epoch % args.test_interval == 0:
             model.eval()
             test_loss = 0

@@ -1,41 +1,32 @@
 import argparse
 import os
 import time
-# Todo: epxlain
 from utee import misc
-# Import Pytorch & Numpy
 import torch
 import torch.nn.functional as F
-import torch.optim as optim
 from torch.autograd import Variable
-import numpy as np
-# Todo: explain
 from utee import make_path
 from utee import hook
-# Import Cifar dataset
-# Todo: Import other datasets
+# Todo: Rename cifar to general dataset
 from cifar import dataset
 from cifar import model
-# from IPython import embed
 from datetime import datetime
 from subprocess import call
 
-# Parsing training & architecture parameters
-# Todo: Explain each parameter
-# Todo: Remove unneccessary ones
+
+# Todo: Remove unnecessary parameters, add types, change description or help
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
 parser.add_argument('--type', default='cifar10', help='dataset for training')
 parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training')
 parser.add_argument('--epochs', type=int, default=257, help='number of epochs to train')
-parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
+parser.add_argument('--grad_scale', type=float, default=8, help='learning rate for wage delta calculation')
 parser.add_argument('--seed', type=int, default=117, help='random seed')
-parser.add_argument('--log_interval', type=int, default=100,
-                    help='how many batches to wait before logging training status')
+parser.add_argument('--log_interval', type=int, default=100, help='how many batches to wait before logging training status')
 parser.add_argument('--test_interval', type=int, default=1, help='how many epochs to wait before another test')
 parser.add_argument('--logdir', default='log/default', help='folder to save to the log')
 parser.add_argument('--decreasing_lr', default='200,250', help='decreasing strategy')
-parser.add_argument('--wl_weight', type=int, default=6, help='weight precision')
-parser.add_argument('--wl_grad', type=int, default=6, help='gradient precision')
+parser.add_argument('--wl_weight', type=int, default=8, help='weight precision')
+parser.add_argument('--wl_grad', type=int, default=8, help='gradient precision')
 parser.add_argument('--wl_activate', type=int, default=8)
 parser.add_argument('--wl_error', type=int, default=8)
 parser.add_argument('--onoffratio', type=int, default=10)
@@ -63,12 +54,16 @@ parser.add_argument('--relu', type=int, default=1)
 current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
+
 if args.memcelltype == 1:
     args.cellBit = 1
+
 args.wl_weight = args.cellBit
 args.wl_grad = args.cellBit
+
 technode_to_width = {7: 14, 10: 14, 14: 22, 22: 32, 32: 40, 45: 50, 65: 100, 90: 200, 130: 200}
 args.wireWidth = technode_to_width[args.technode]
+
 args.inference = 0
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
 args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs', 'gpu', 'ngpu', 'debug'])
@@ -77,6 +72,7 @@ misc.logger.init(args.logdir, 'test_log' + current_time)
 logger = misc.logger.info
 
 args.inference = 1
+
 misc.ensure_dir(args.logdir)
 logger("=================FLAGS==================")
 for k, v in args.__dict__.items():
@@ -89,13 +85,11 @@ torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
-# Todo: Check if model saving works
 print('====================')
 print('Path', args.logdir)
 model_path = (args.logdir + '/best-{}.pth').format(args.epochs - 1)
 
 # data loader and model
-# Todo: Add option to choose different datasets
 assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
@@ -157,7 +151,6 @@ logger('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
     test_loss, correct, len(test_loader.dataset), acc))
 
 # Running C++ files for layer estimation
-# Todo: Extract parameters
 call(["/bin/bash", "./layer_record/trace_command.sh"])
 
 finish_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')

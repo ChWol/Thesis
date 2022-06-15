@@ -1,10 +1,7 @@
-# from modules.quantize import quantize, quantize_grad, QConv2d, QLinear, RangeBN
 import os
-import torch.nn as nn
-import shutil
-from modules.quantization_cpu_np_infer import QConv2d, QLinear
+
 import numpy as np
-import torch
+from modules.quantization_cpu_np_infer import QConv2d, QLinear
 from utee import wage_quantizer
 
 
@@ -51,16 +48,8 @@ def write_matrix_activation_conv(input_matrix, fill_dimension, length, filename)
 def write_matrix_activation_fc(input_matrix, fill_dimension, length, filename):
     filled_matrix_b = np.zeros([input_matrix.shape[1], length], dtype=np.str)
     filled_matrix_bin, scale = dec2bin(input_matrix[0, :], length)
-    print(input_matrix)
-    print(fill_dimension)
-    print(length)
-    print(filename)
-    print(filled_matrix_b)
-    print(filled_matrix_bin)
     for i, b in enumerate(filled_matrix_bin):
         filled_matrix_b[:, i] = b
-    print("HIER GEHTS ZUM TESTEN")
-    print(filled_matrix_b)
     activity = np.sum(filled_matrix_b.astype(np.float), axis=None) / np.size(filled_matrix_b)
     np.savetxt(filename, filled_matrix_b, delimiter=",", fmt='%s')
     return activity

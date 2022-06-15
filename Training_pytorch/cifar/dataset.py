@@ -1,7 +1,7 @@
+import os
 import torch
 from torchvision import datasets, transforms
-from torch.utils.data import DataLoader
-import os
+
 
 def get10(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, val=True, **kwargs):
     data_root = os.path.expanduser(os.path.join(data_root, 'cifar10-data'))
@@ -36,6 +36,7 @@ def get10(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, val=T
     ds = ds[0] if len(ds) == 1 else ds
     return ds
 
+
 def get100(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, val=True, **kwargs):
     data_root = os.path.expanduser(os.path.join(data_root, 'cifar100-data'))
     num_workers = kwargs.setdefault('num_workers', 1)
@@ -69,6 +70,7 @@ def get100(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, val=
     ds = ds[0] if len(ds) == 1 else ds
     return ds
 
+
 def get_mnist(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, val=True, **kwargs):
     data_root = os.path.expanduser(os.path.join(data_root, 'mnist-data'))
     num_workers = kwargs.setdefault('num_workers', 1)
@@ -80,6 +82,7 @@ def get_mnist(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, v
             datasets.MNIST(
                 root=data_root, train=True, download=True,
                 transform=transforms.Compose([
+                    # Todo: Adjust transformations to match mnist - compare to examples above
                     transforms.Pad(4),
                     transforms.RandomCrop(28),
                     transforms.RandomHorizontalFlip(),
@@ -94,6 +97,7 @@ def get_mnist(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, v
                 root=data_root, train=False, download=True,
                 transform=transforms.Compose([
                     # Todo: Resolve the fact that mnist is 28x28p
+                    # Todo: Add normalization here as well - compare to examples above
                     transforms.ToTensor(),
                 ])),
             batch_size=batch_size, shuffle=False, **kwargs)
