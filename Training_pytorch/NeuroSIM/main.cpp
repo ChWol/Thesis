@@ -399,16 +399,7 @@ int main(int argc, char * argv[]) {
 			layerfile << layerWriteDynamicEnergyPeakWU*1e12 << ",";
 			layerfile << layerDRAMDynamicEnergy*1e12 << endl;
 
-			if (breakdownfile.is_open()) {
-				breakdownfile << i+1 << "," << layerReadLatency << "," << layerReadLatencyAG << "," << layerReadLatencyWG << "," << layerWriteLatencyWU << ",";
-				breakdownfile << layerReadDynamicEnergy << "," << layerReadDynamicEnergyAG << "," << layerReadDynamicEnergyWG << "," << layerWriteDynamicEnergyWU << ",";
-				breakdownfile << layerReadLatencyPeakFW << "," << layerReadLatencyPeakAG << "," << layerReadLatencyPeakWG << "," << layerWriteLatencyPeakWU << ",";
-				breakdownfile << layerReadDynamicEnergyPeakFW << "," << layerReadDynamicEnergyPeakAG << "," << layerReadDynamicEnergyPeakWG << "," << layerWriteDynamicEnergyPeakWU <<",";
-				breakdownfile << ", , " << coreLatencyADC << "," << coreLatencyAccum << "," << coreLatencyOther << "," <<layerbufferLatency << "," << layericLatency << "," << layerReadLatencyPeakWG << "," << layerWriteLatencyPeakWU << "," << layerDRAMLatency << ",";
-				breakdownfile << coreEnergyADC << "," << coreEnergyAccum << "," << coreEnergyOther << "," << layerbufferDynamicEnergy << "," << layericDynamicEnergy << "," << layerReadDynamicEnergyPeakWG << "," << layerWriteDynamicEnergyPeakWU << "," << layerDRAMDynamicEnergy << endl;
-			} else {
-				cout << "Error: the breakdown file cannot be opened!" << endl;
-			}
+
 
 			chipReadLatency += layerReadLatency;
 			chipReadDynamicEnergy += layerReadDynamicEnergy;
@@ -629,16 +620,7 @@ int main(int argc, char * argv[]) {
 
 			chipLeakageEnergy += leakagePowerPerLayer[i] * ((systemClock-readLatencyPerLayer[i]) + (systemClockAG-readLatencyPerLayerAG[i]));
 
-			if (breakdownfile.is_open()) {
-				breakdownfile << i+1 << "," << readLatencyPerLayer[i] << "," << readLatencyPerLayerAG[i] << "," << readLatencyPerLayerWG[i] << "," << writeLatencyPerLayerWU[i] << ",";
-				breakdownfile << readDynamicEnergyPerLayer[i] << "," << readDynamicEnergyPerLayerAG[i] << "," << readDynamicEnergyPerLayerWG[i] << "," << writeDynamicEnergyPerLayerWU[i] << ",";
-				breakdownfile << readLatencyPerLayerPeakFW[i] << "," << readLatencyPerLayerPeakAG[i] << "," << readLatencyPerLayerPeakWG[i] << "," << writeLatencyPerLayerPeakWU[i] << ",";
-				breakdownfile << readDynamicEnergyPerLayerPeakFW[i] << "," << readDynamicEnergyPerLayerPeakAG[i] << "," << readDynamicEnergyPerLayerPeakWG[i] << "," << writeDynamicEnergyPerLayerPeakWU[i] << ",";
-				breakdownfile << ", , " << coreLatencyADCPerLayer[i] << "," << coreLatencyAccumPerLayer[i] << "," << coreLatencyOtherPerLayer[i] << "," << bufferLatencyPerLayer[i] << "," << icLatencyPerLayer[i] << "," << readLatencyPerLayerPeakWG[i] << "," << writeLatencyPerLayerPeakWU[i] << "," << dramLatencyPerLayer[i] <<",";
-				breakdownfile << coreEnergyADCPerLayer[i] << "," << coreEnergyAccumPerLayer[i] << "," << coreEnergyOtherPerLayer[i] << "," << bufferEnergyPerLayer[i] << "," << icEnergyPerLayer[i] << "," << readDynamicEnergyPerLayerPeakWG[i] << "," << writeDynamicEnergyPerLayerPeakWU[i] << "," << dramDynamicEnergyPerLayer[i] << endl;
-			} else {
-				cout << "Error: the breakdown file cannot be opened!" << endl;
-			}
+
 		}
 		layerfile.close();
 	}
