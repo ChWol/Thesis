@@ -7,8 +7,8 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from utee import make_path
 from utee import hook
-from data import dataset
-from data import model
+from models import dataset
+from models import model
 from datetime import datetime
 from subprocess import call
 
@@ -85,7 +85,7 @@ print('====================')
 print('Path', args.logdir)
 model_path = (args.logdir + '/best-{}.pth').format(args.epochs - 1)
 
-# data loader and model
+# models loader and model
 assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
@@ -107,7 +107,7 @@ test_loss = 0
 correct = 0
 trained_with_quantization = True
 
-# for data, target in test_loader:
+# for models, target in test_loader:
 for i, (data, target) in enumerate(test_loader):
     if i == 0:
         hook_handle_list = hook.hardware_evaluation(model, args.wl_weight, args.wl_activate,

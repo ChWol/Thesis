@@ -11,13 +11,12 @@ from utee import make_path
 from utee import wage_util
 from utee import wage_quantizer
 from utee import hook
-from data import dataset
-from data import model
+from models import dataset
+from models import model
 from modules.quantization_cpu_np_infer import QConv2d, QLinear
 from datetime import datetime
 from subprocess import call
 import wandb
-
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
 parser.add_argument('--type', default='cifar10', help='dataset for training')
@@ -25,7 +24,7 @@ parser.add_argument('--batch_size', type=int, default=200, help='input batch siz
 parser.add_argument('--epochs', type=int, default=257, help='number of epochs to train')
 parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
 parser.add_argument('--seed', type=int, default=117, help='random seed')
-parser.add_argument('--log_interval', type=int, default=100,help='how many batches to wait before logging training status')
+parser.add_argument('--log_interval', type=int, default=100, help='how many batches to wait before logging training status')
 parser.add_argument('--test_interval', type=int, default=1, help='how many epochs to wait before another test')
 parser.add_argument('--logdir', default='log/default', help='folder to save to the log')
 parser.add_argument('--decreasing_lr', default='200,250', help='decreasing strategy')
@@ -44,8 +43,8 @@ parser.add_argument('--v', default=0)
 parser.add_argument('--detect', default=0)
 parser.add_argument('--target', default=0)
 parser.add_argument('--nonlinearityLTP', type=float, default=1.75, help='nonlinearity in LTP')
-parser.add_argument('--nonlinearityLTD', type=float, default=1.46,help='nonlinearity in LTD (negative if LTP and LTD are asymmetric)')
-parser.add_argument('--max_level', type=int, default=32,help='Maximum number of conductance states during weight update (floor(log2(max_level))=cellBit)')
+parser.add_argument('--nonlinearityLTD', type=float, default=1.46, help='nonlinearity in LTD (negative if LTP and LTD are asymmetric)')
+parser.add_argument('--max_level', type=int, default=32, help='Maximum number of conductance states during weight update (floor(log2(max_level))=cellBit)')
 parser.add_argument('--d2dVari', type=float, default=0, help='device-to-device variation')
 parser.add_argument('--c2cVari', type=float, default=0.003, help='cycle-to-cycle variation')
 parser.add_argument('--momentum', type=float, default=0.9)
@@ -57,7 +56,7 @@ current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
 
-args.max_level = 2**args.cellBit
+args.max_level = 2 ** args.cellBit
 
 if args.memcelltype == 1:
     args.cellBit = 1
@@ -104,7 +103,6 @@ if args.cuda:
 
 # data loader and model
 assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
-assert args.network in ['speed', 'vgg8', 'vgg16', 'alexnet'], args.network
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
     model = model.cifar10(args=args, logger=logger)
@@ -114,6 +112,21 @@ if args.type == 'cifar100':
 if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     model = model.mnist(args=args, logger=logger)
+
+assert args.network in ['speed', 'vgg8', 'vgg16', 'alexnet'], args.network
+'''
+assert args.model in ['VGG8', 'DenseNet40', 'ResNet18'], args.model
+if args.model == 'VGG8':
+    from models import VGG
+    model = VGG.vgg8(args=args, logger=logger)
+elif args.model == 'DenseNet40':
+    from models import DenseNet
+    model = DenseNet.densenet40(args=args, logger=logger)
+elif args.model == 'ResNet18':
+    from models import ResNet
+    model = ResNet.resnet18(args=args, logger=logger)
+    '''
+
 if args.cuda:
     model.cuda()
 
@@ -187,7 +200,7 @@ try:
                 pred = output.data.max(1)[1]  # get the index of the max log-probability
                 correct = pred.cpu().eq(indx_target).sum()
                 acc = float(correct) * 1.0 / len(data)
-                wandb.log({'Epoch': epoch+1, 'train_accuracy': acc, 'train_loss': loss})
+                wandb.log({'Epoch': epoch + 1, 'train_accuracy': acc, 'train_loss': loss})
                 logger('Train Epoch: {} [{}/{}] Loss: {:.6f} Acc: {:.4f} lr: {:.2e}'.format(
                     epoch, batch_idx * len(data), len(train_loader.dataset),
                     loss.data, acc, optimizer.param_groups[0]['lr']))
@@ -234,11 +247,15 @@ try:
         h = 0
         for i, layer in enumerate(model.features.modules()):
             if isinstance(layer, QConv2d) or isinstance(layer, QLinear):
+                print("Hier wird getestet")
+                print(isinstance(layer, QConv2d))
                 weight_file_name = './layer_record/weightOld' + str(layer.name) + '.csv'
                 hook.write_matrix_weight((oldWeight[h]).cpu().data.numpy(), weight_file_name)
                 h = h + 1
         for i, layer in enumerate(model.classifier.modules()):
             if isinstance(layer, QLinear):
+                print("Hier wird getestet")
+                print(isinstance(layer, QLinear))
                 weight_file_name = './layer_record/weightOld' + str(layer.name) + '.csv'
                 hook.write_matrix_weight((oldWeight[h]).cpu().data.numpy(), weight_file_name)
                 h = h + 1
@@ -253,7 +270,8 @@ try:
                 if i == 0:
                     hook_handle_list = hook.hardware_evaluation(model, args.wl_weight, args.wl_activate,
                                                                 epoch, args.batch_size, args.cellBit, args.technode,
-                                                                args.wireWidth, args.relu, args.memcelltype, 2 ** args.ADCprecision,
+                                                                args.wireWidth, args.relu, args.memcelltype,
+                                                                2 ** args.ADCprecision,
                                                                 args.onoffratio)
                 indx_target = target.clone()
                 if args.cuda:
@@ -270,7 +288,7 @@ try:
 
             test_loss = test_loss / len(test_loader)  # average over number of mini-batch
             acc = 100. * correct / len(test_loader.dataset)
-            wandb.log({'Epoch': epoch+1, 'test_accuracy': acc, 'test_loss': test_loss})
+            wandb.log({'Epoch': epoch + 1, 'test_accuracy': acc, 'test_loss': test_loss})
             logger('\tEpoch {} Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
                 epoch, test_loss, correct, len(test_loader.dataset), acc))
             accuracy = acc.cpu().data.numpy()
@@ -282,11 +300,11 @@ try:
                 old_file = new_file
             call(["/bin/bash", "./layer_record/trace_command.sh"])
 
-            log_input = {"Epoch": epoch+1}
+            log_input = {"Epoch": epoch + 1}
             layer_out = pd.read_csv("Layer.csv").to_dict()
             for key, value in layer_out.items():
                 for layer, result in value.items():
-                    log_input["Layer {}: {}".format(layer+1, key)] = result
+                    log_input["Layer {}: {}".format(layer + 1, key)] = result
             wandb.log(log_input)
             summary_out = pd.read_csv("Summary.csv").to_dict()
             log_input = {"Epoch": epoch + 1}
