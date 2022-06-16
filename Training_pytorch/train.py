@@ -57,6 +57,8 @@ current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
 
+args.max_level = 2**args.cellBit
+
 if args.memcelltype == 1:
     args.cellBit = 1
 

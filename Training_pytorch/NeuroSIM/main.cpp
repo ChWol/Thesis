@@ -824,8 +824,8 @@ int main(int argc, char * argv[]) {
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 	cout << "Chip total Latency (per epoch) is: " << (chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU)*1e9 << "ns" << endl;
 	summaryfile << (chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU)*1e9 << ",";
-	cout << "Chip total Energy (per epoch) is: " << (chipReadDynamicEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU) << "pJ" << endl;
-	summaryfile << (chipReadDynamicEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU) << ",";
+	cout << "Chip total Energy (per epoch) is: " << (chipReadDynamicEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*1e12 << "pJ" << endl;
+	summaryfile << (chipReadDynamicEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*1e12 << ",";
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 	cout << "Chip PEAK readLatency of Forward (per epoch) is: " << chipReadLatencyPeakFW*1e9 << "ns" << endl;
 	summaryfile << chipReadLatencyPeakFW*1e9 << ",";
