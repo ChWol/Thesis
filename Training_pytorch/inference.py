@@ -7,14 +7,12 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from utee import make_path
 from utee import hook
-# Todo: Rename cifar to general dataset
 from cifar import dataset
 from cifar import model
 from datetime import datetime
 from subprocess import call
 
 
-# Todo: Remove unnecessary parameters, add types, change description or help
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
 parser.add_argument('--type', default='cifar10', help='dataset for training')
 parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training')

@@ -6,7 +6,6 @@ import torch
 import csv
 from utee import misc
 
-# Todo: What is this needed for?
 print = misc.logger.info
 
 
@@ -91,8 +90,10 @@ def make_layers(cfg, args, logger, in_dimension):
                              subArray=args.subArray, ADCprecision=args.ADCprecision, vari=args.vari, t=args.t, v=args.v,
                              detect=args.detect, target=args.target,
                              name='Conv' + str(i) + '_')
-            # Todo: Add sigmoid if chosen
-            non_linearity_activation = nn.ReLU()
+            if args.relu:
+                non_linearity_activation = nn.ReLU()
+            else:
+                non_linearity_activation = nn.Sigmoid()
             layers += [conv2d, non_linearity_activation]
             in_channels = out_channels
     return nn.Sequential(*layers)
