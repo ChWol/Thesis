@@ -73,22 +73,6 @@ wandb.run.name = (args.network + ' ({})').format(wandb.run.id)
 gamma = args.momentum
 alpha = 1 - args.momentum
 
-# Output values for simulation/hardware
-NeuroSim_Out = np.array([["L_forward (s)", "L_activation gradient (s)", "L_weight gradient (s)", "L_weight update (s)",
-                          "E_forward (J)", "E_activation gradient (J)", "E_weight gradient (J)", "E_weight update (J)",
-                          "L_forward_Peak (s)", "L_activation gradient_Peak (s)", "L_weight gradient_Peak (s)",
-                          "L_weight update_Peak (s)",
-                          "E_forward_Peak (J)", "E_activation gradient_Peak (J)", "E_weight gradient_Peak (J)",
-                          "E_weight update_Peak (J)",
-                          "TOPS/W", "TOPS", "Peak TOPS/W", "Peak TOPS"]])
-np.savetxt("NeuroSim_Output.csv", NeuroSim_Out, delimiter=",", fmt='%s')
-if not os.path.exists('./NeuroSim_Results_Each_Epoch'):
-    os.makedirs('./NeuroSim_Results_Each_Epoch')
-
-# Output values for network
-out = open("PythonWrapper_Output.csv", 'ab')
-out_firstline = np.array([["epoch", "average loss", "accuracy"]])
-np.savetxt(out, out_firstline, delimiter=",", fmt='%s')
 
 delta_distribution = open("delta_dist.csv", 'ab')
 delta_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", "6_mean", "7_mean", "8_mean", "1_std",
