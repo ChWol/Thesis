@@ -79,6 +79,10 @@ void ProcessingUnitInitialize(SubArray *& subArray, InputParameter& inputParamet
 		case -1:	break;
 		default:	exit(-1);
 	}
+	cout << "Hier wird getestet\n";
+	cout << param->memcelltype << endl;
+	cout << cell.memCellType;
+
 	switch(param->accesstype) {
 		case 4:	    cell.accessType = none_access;  break;
 		case 3:	    cell.accessType = diode_access; break;
