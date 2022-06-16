@@ -82,8 +82,6 @@ void MultilevelSenseAmp::Initialize(int _numCol, int _levelOutput, double _clkFr
 		cout << "Hier wird getestet" << endl;
 		cout << param->resistanceOff << endl;
 		cout << param->resistanceOn << endl;
-		cout << R_start << endl;
-		cout << R_index << endl;
 
 		widthNmos = MIN_NMOS_SIZE * tech.featureSize;
 		widthPmos = tech.pnSizeRatio * MIN_NMOS_SIZE * tech.featureSize;
