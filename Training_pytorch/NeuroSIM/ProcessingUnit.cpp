@@ -759,7 +759,6 @@ vector<double> GetColumnResistance(const vector<double> &input, const vector<vec
 		columnG = 0;
 		for (int i=0; i<weight.size(); i++) {
 			if (cell.memCellType == Type::RRAM) {	// eNVM
-				cout << "RRAM path genommen" << endl;
 				double totalWireResistance;
 				if (cell.accessType == CMOS_access) {
 					totalWireResistance = (double) 1.0/weight[i][j] + (j + 1) * param->wireResistanceRow + (weight.size() - i) * param->wireResistanceCol + cell.resistanceAccess;
@@ -825,7 +824,6 @@ vector<double> GetRowResistance(const vector<double> &input, const vector<vector
 		rowG = 0;
 		for (int j=0; j<weight[0].size(); j++) {
 			if (cell.memCellType == Type::RRAM) {	// eNVM
-				cout << "RRAM path genommen" << endl;
 				if (cell.accessType == CMOS_access) {
 					totalWireResistance = (double) 1.0/weight[i][j] + (i + 1) * param->wireResistanceRow + (weight[0].size() - j) * param->wireResistanceCol + cell.resistanceAccess;
 				} else {
