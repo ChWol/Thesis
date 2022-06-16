@@ -66,12 +66,11 @@ args.wl_grad = args.cellBit
 technode_to_width = {7: 14, 10: 14, 14: 22, 22: 32, 32: 40, 45: 50, 65: 100, 90: 200, 130: 200}
 args.wireWidth = technode_to_width[args.technode]
 
-wandb.init(project=args.type, config=args)
-wandb.run.name = (args.network + ' ({})').format(wandb.run.id)
-
 gamma = args.momentum
 alpha = 1 - args.momentum
 
+wandb.init(project=args.type, config=args)
+wandb.run.name = (args.network + ' ({})').format(wandb.run.id)
 
 delta_distribution = open("delta_dist.csv", 'ab')
 delta_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", "6_mean", "7_mean", "8_mean", "1_std",
