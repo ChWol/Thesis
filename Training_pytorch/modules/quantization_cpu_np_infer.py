@@ -37,19 +37,8 @@ class QConv2d(nn.Conv2d):
         self.name = name
         self.scale = wage_initializer.wage_init_(self.weight, self.wl_weight, factor=1.0)
 
-        print("hier wird getestet - ini")
-        print("inference: {}".format(inference))
-        print("onoffratio: {}".format(onoffratio))
-        print("cellbit: {}".format(cellBit))
-        print("adc precision: {}".format(ADCprecision))
 
     def forward(self, input):
-        print("hier wird getestet - forward")
-        print("inference: {}".format(self.inference))
-        print("onoffratio: {}".format(self.onoffratio))
-        print("cellbit: {}".format(self.cellBit))
-        print("adc precision: {}".format(self.ADCprecision))
-
         weight1 = self.weight * self.scale + (self.weight - self.weight * self.scale).detach()
         weight = weight1 + (wage_quantizer.Q(weight1, self.wl_weight) - weight1).detach()
         outputOrignal = F.conv2d(input, weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
