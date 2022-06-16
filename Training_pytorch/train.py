@@ -23,7 +23,7 @@ parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
 parser.add_argument('--type', default='cifar10', help='dataset for training')
 parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training')
 parser.add_argument('--epochs', type=int, default=257, help='number of epochs to train')
-parser.add_argument('--grad_scale', type=float, default=0.1, help='learning rate for wage delta calculation')
+parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
 parser.add_argument('--seed', type=int, default=117, help='random seed')
 parser.add_argument('--log_interval', type=int, default=100,help='how many batches to wait before logging training status')
 parser.add_argument('--test_interval', type=int, default=1, help='how many epochs to wait before another test')
@@ -116,7 +116,6 @@ if args.type == 'mnist':
 if args.cuda:
     model.cuda()
 
-# Todo: Include defined learning rate
 optimizer = optim.SGD(model.parameters(), lr=1)
 
 decreasing_lr = list(map(int, args.decreasing_lr.split(',')))
@@ -187,7 +186,7 @@ try:
                 pred = output.data.max(1)[1]  # get the index of the max log-probability
                 correct = pred.cpu().eq(indx_target).sum()
                 acc = float(correct) * 1.0 / len(data)
-                wandb.log({'epoch': epoch+1, 'train_accuracy': acc, 'train_loss': loss})
+                wandb.log({'Epoch': epoch+1, 'train_accuracy': acc, 'train_loss': loss})
                 logger('Train Epoch: {} [{}/{}] Loss: {:.6f} Acc: {:.4f} lr: {:.2e}'.format(
                     epoch, batch_idx * len(data), len(train_loader.dataset),
                     loss.data, acc, optimizer.param_groups[0]['lr']))
@@ -270,7 +269,7 @@ try:
 
             test_loss = test_loss / len(test_loader)  # average over number of mini-batch
             acc = 100. * correct / len(test_loader.dataset)
-            wandb.log({'epoch': epoch+1, 'test_accuracy': acc, 'test_loss': test_loss})
+            wandb.log({'Epoch': epoch+1, 'test_accuracy': acc, 'test_loss': test_loss})
             logger('\tEpoch {} Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
                 epoch, test_loss, correct, len(test_loader.dataset), acc))
             accuracy = acc.cpu().data.numpy()
