@@ -7,8 +7,8 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from utee import make_path
 from utee import hook
-from cifar import dataset
-from cifar import model
+from data import dataset
+from data import model
 from datetime import datetime
 from subprocess import call
 

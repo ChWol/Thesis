@@ -153,7 +153,6 @@ cfg_list = {
 }
 
 
-# Todo: Merge to one method
 def cifar10(args, logger, pretrained=None):
     cfg = cfg_list[args.network]
     build_csv(cfg, 8192, 3)

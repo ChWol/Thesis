@@ -11,15 +11,14 @@ from utee import make_path
 from utee import wage_util
 from utee import wage_quantizer
 from utee import hook
-# Todo: Rename cifar directory
-from cifar import dataset
-from cifar import model
+from data import dataset
+from data import model
 from modules.quantization_cpu_np_infer import QConv2d, QLinear
 from datetime import datetime
 from subprocess import call
 import wandb
 
-# Todo: Add type, default and help
+
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
 parser.add_argument('--type', default='cifar10', help='dataset for training')
 parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training')
