@@ -90,7 +90,7 @@ def make_layers(cfg, args, logger, in_dimension):
                              subArray=args.subArray, ADCprecision=args.ADCprecision, vari=args.vari, t=args.t, v=args.v,
                              detect=args.detect, target=args.target,
                              name='Conv' + str(i) + '_')
-            if args.relu:
+            if True:
                 non_linearity_activation = nn.ReLU()
             else:
                 non_linearity_activation = nn.Sigmoid()
