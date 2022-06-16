@@ -74,6 +74,11 @@ void MultilevelSenseAmp::Initialize(int _numCol, int _levelOutput, double _clkFr
 			for (int i=0; i<levelOutput-1; i++){
 				double R_start = (double) param->resistanceOn;
 				double R_index = (double) param->resistanceOff;
+				cout << "Hier wird getestet" << endl;
+				cout << param->resistanceOff << endl;
+				cout << param->resistanceOn << endl;
+				cout << R_start << endl;
+				cout << R_index << endl;
 				double R_this = R_start + (double) (i+1)*R_index/levelOutput;
 				Rref.push_back(R_this);
 			} // TODO: Nonlinear Quantize
