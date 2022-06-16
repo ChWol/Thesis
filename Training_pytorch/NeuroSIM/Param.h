@@ -43,7 +43,7 @@ class Param {
 public:
 	Param();
 
-	void recalculate_Params(int wireWidth, int memcelltype);
+	void recalculate_Params(int wireWidth, int memcelltype, int resistanceOff);
 
 	int operationmode, operationmodeBack, memcelltype, accesstype, transistortype, deviceroadmap;      		
 	

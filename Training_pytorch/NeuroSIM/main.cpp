@@ -69,9 +69,8 @@ int main(int argc, char * argv[]) {
 	vector<vector<double> > netStructure;
 	netStructure = getNetStructure(argv[2]);
 	
-	// define weight/input/memory precision from wrapper
-	param->synapseBit = atoi(argv[3]);             		 // precision of synapse weight
-	param->numBitInput = atoi(argv[4]);            		 // precision of input neural activation
+	param->synapseBit = atoi(argv[3]);
+	param->numBitInput = atoi(argv[4]);
 	param->batchSize = atoi(argv[5]);
 	param->cellBit = atoi(argv[6]);
 	param->technode = atoi(argv[7]);
@@ -81,17 +80,7 @@ int main(int argc, char * argv[]) {
 	param->levelOutput = atoi(argv[11]);
 	param->resistanceOff = 240e3*atoi(argv[12]);
 
-	param->recalculate_Params(param->wireWidth, param->memcelltype);
-
-    // Todo: Change in parse in train.py, pass to hook.py, pass to main.cpp, change offset down there, try printing in some other file
-    // Todo: Remove from Param.cpp
-    // Todo: IMPORTANT to check all other occurances of the parameter
-
-	// memcelltype: IMPORTANT -> lots of calculations based on this in Param.cpp
-	// reLu - change in network as well
-	// technode -> change wireWidth accordingly
-	// leveloutput corresponding to ADCprecision
-	// on/off resistance: in c++ ausrechnen durch faktor und definiertes Verhältnis
+	param->recalculate_Params(param->wireWidth, param->memcelltype, param->resistanceOff);
 
 	if (param->cellBit > param->synapseBit) {
 		cout << "ERROR!: Memory precision is even higher than synapse precision, please modify 'cellBit' in Param.cpp!" << endl;

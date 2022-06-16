@@ -143,9 +143,8 @@ Param::Param() {
 	widthInFeatureSizeCrossbar = 2;     // Crossbar Cell width in feature size
 	
 	resistanceOn = 240e3;               // Ron resistance at Vr in the reported measurement data (need to recalculate below if considering the nonlinearity)
-	resistanceOff = 240e3*100;           // Roff resistance at Vr in the reported measurement dat (need to recalculate below if considering the nonlinearity)
 	maxConductance = (double) 1/resistanceOn;
-	minConductance = (double) 1/resistanceOff;
+
 	gateCapFeFET = 2.1717e-18;	        // Gate capacitance of FeFET (F)
 	polarization = 20;                  // polarization of FeFET (uC/cm^2)
 	maxNumLevelLTP = 60;	            // Maximum number of conductance states during LTP or weight increase
@@ -171,7 +170,6 @@ Param::Param() {
 	parallelBP = true;          		// false: conventionalSequential (Use several multi-bit RRAM as one synapse)
 										// true: conventionalParallel (Use several multi-bit RRAM as one synapse)
 	
-	//batchSize = 100;                    // batchSize in training
 	numIteration = 250;                 // num of iteration for one epoch
 	
 	bufferOverHeadConstraint = 1;       // N times of overhead of the original buffer designed for inference only
@@ -222,7 +220,9 @@ Param::Param() {
 	/***************************************** Initialization of parameters NO need to modify *****************************************/
 }
 
-void Param::recalculate_Params(int wireWidth, int memcelltype) {
+void Param::recalculate_Params(int wireWidth, int memcelltype, int resistanceOff) {
+	minConductance = (double) 1/resistanceOff;
+
     /*** Initialize interconnect wires ***/
     switch(wireWidth) {
 		case 200: 	AR = 2.10; Rho = 2.42e-8; break;  // for technode: 130, 90
