@@ -79,9 +79,18 @@ void ProcessingUnitInitialize(SubArray *& subArray, InputParameter& inputParamet
 		case -1:	break;
 		default:	exit(-1);
 	}
-	cout << "Hier wird getestet\n";
+	cout << "Hier wird getestet" << endl;
 	cout << param->memcelltype << endl;
-	cout << cell.memCellType;
+	cout << cell.memCellType << endl;
+	if (cell.memCellType == Type::SRAM) {
+	    cout << "SRAM" << endl;
+	}
+	else if (cell.memCellType == Type::SRAM) {
+	    cout << "RRAM" << endl;
+	}
+	else {
+	    cout << "FeFET" << endl;
+ 	}
 
 	switch(param->accesstype) {
 		case 4:	    cell.accessType = none_access;  break;
