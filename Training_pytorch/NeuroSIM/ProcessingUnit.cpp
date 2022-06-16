@@ -72,6 +72,8 @@ DFF *bufferOutputCM;
 void ProcessingUnitInitialize(SubArray *& subArray, InputParameter& inputParameter, Technology& tech, MemCell& cell, int _numSubArrayRowNM, int _numSubArrayColNM, int _numSubArrayRowCM, int _numSubArrayColCM) {
 	
 	/*** circuit level parameters ***/
+	cout << "Früherer Test" << endl;
+	cout << param->memcelltype << endl;
 	switch(param->memcelltype) {
 		case 3:     cell.memCellType = Type::FeFET; break;
 		case 2:	    cell.memCellType = Type::RRAM; break;
