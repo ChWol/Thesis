@@ -87,7 +87,7 @@ void ProcessingUnitInitialize(SubArray *& subArray, InputParameter& inputParamet
 	if (cell.memCellType == Type::SRAM) {
 	    cout << "SRAM" << endl;
 	}
-	else if (cell.memCellType == Type::SRAM) {
+	else if (cell.memCellType == Type::RRAM) {
 	    cout << "RRAM" << endl;
 	}
 	else {
