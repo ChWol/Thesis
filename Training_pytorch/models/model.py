@@ -55,7 +55,6 @@ def build_csv(features, classifiers, linear_dimension, input_depth=3):
             writer.writerow(row)
 
 
-# Todo: Develop same for linear layers, rename in_dimension
 def make_features(features, args, logger, in_dimension):
     layers = []
     in_channels = in_dimension
@@ -116,62 +115,85 @@ def make_classifiers(classifiers, args, logger, in_dimension):
     return nn.Sequential(*layers)
 
 
-# Todo: Use more semantic notation, make linear layers work, add Resnet
-cfg_list = {
-    'speed': {
-        'features': [('C', 128, 3, 'same', 32),
-                     ('M', 2, 2),
-                     ('C', 256, 3, 'same', 16),
-                     ('M', 2, 2),
-                     ('C', 512, 3, 'same', 8),
-                     ('M', 2, 2)],
-        'classifier': [('L', 1024, 1, 'same', 1),
-                       ('L', 10, 1, 'same', 1)]
-    },
-    'vgg8': {
-        'features': [('C', 128, 3, 'same', 32),
-                     ('C', 128, 3, 'same', 32),
-                     ('M', 2, 2),
-                     ('C', 256, 3, 'same', 16),
-                     ('C', 256, 3, 'same', 16),
-                     ('M', 2, 2),
-                     ('C', 512, 3, 'same', 8),
-                     ('C', 512, 3, 'same', 8),
-                     ('M', 2, 2)],
-        'classifier': [('L', 1024, 1, 'same', 1),
-                       ('L', 10, 1, 'same', 1)]
-    },
-    'vgg16': {
-        'features': [('C', 64, 3, 'same', 32),
-                     ('C', 64, 3, 'same', 32),
-                     ('M', 2, 2),
-                     ('C', 128, 3, 'same', 16),
-                     ('C', 128, 3, 'same', 16),
-                     ('M', 2, 2),
-                     ('C', 256, 3, 'same', 16),
-                     ('C', 256, 3, 'same', 16),
-                     ('C', 256, 3, 'same', 16),
-                     ('M', 2, 2),
-                     ('C', 512, 3, 'same', 8),
-                     ('C', 512, 3, 'same', 8),
-                     ('C', 512, 3, 'same', 8),
-                     ('M', 2, 2),
-                     ('C', 512, 3, 'same', 4),
-                     ('C', 512, 3, 'same', 4),
-                     ('C', 512, 3, 'same', 4),
-                     ('M', 2, 2)],
-        'classifier': [('L', 1024, 1, 'same', 1),
-                       ('L', 10, 1, 'same', 1)]
+def get_model(num_classes, network):
+    networks = {
+        'speed': {
+            'features': [('C', 128, 3, 'same', 32),
+                         ('M', 2, 2),
+                         ('C', 256, 3, 'same', 16),
+                         ('M', 2, 2),
+                         ('C', 512, 3, 'same', 8),
+                         ('M', 2, 2)],
+            'classifier': [('L', 1024, 1, 'same', 1),
+                           ('L', num_classes, 1, 'same', 1)]
+        },
+        'vgg8': {
+            'features': [('C', 128, 3, 'same', 32),
+                         ('C', 128, 3, 'same', 32),
+                         ('M', 2, 2),
+                         ('C', 256, 3, 'same', 16),
+                         ('C', 256, 3, 'same', 16),
+                         ('M', 2, 2),
+                         ('C', 512, 3, 'same', 8),
+                         ('C', 512, 3, 'same', 8),
+                         ('M', 2, 2)],
+            'classifier': [('L', 1024, 1, 'same', 1),
+                           ('L', num_classes, 1, 'same', 1)]
+        },
+        'vgg11': {
+            'features': [('C', 64, 3, 'same', 32),
+                         ('M', 2, 2),
+                         ('C', 128, 3, 'same', 16),
+                         ('M', 2, 2),
+                         ('C', 256, 3, 'same', 8),
+                         ('C', 256, 3, 'same', 8),
+                         ('M', 2, 2),
+                         ('C', 512, 3, 'same', 8),
+                         ('C', 512, 3, 'same', 8),
+                         ('M', 2, 2),
+                         ('C', 512, 3, 'same', 8),
+                         ('C', 512, 3, 'same', 8),
+                         ('M', 2, 2)],
+            'classifier': [('L', 4096, 1, 'same', 1),
+                           ('L', 4096, 1, 'same', 1),
+                           ('L', num_classes, 1, 'same', 1)]
+        },
+        'vgg16': {
+            'features': [('C', 64, 3, 'same', 32),
+                         ('C', 64, 3, 'same', 32),
+                         ('M', 2, 2),
+                         ('C', 128, 3, 'same', 16),
+                         ('C', 128, 3, 'same', 16),
+                         ('M', 2, 2),
+                         ('C', 256, 3, 'same', 16),
+                         ('C', 256, 3, 'same', 16),
+                         ('C', 256, 3, 'same', 16),
+                         ('M', 2, 2),
+                         ('C', 512, 3, 'same', 8),
+                         ('C', 512, 3, 'same', 8),
+                         ('C', 512, 3, 'same', 8),
+                         ('M', 2, 2),
+                         ('C', 512, 3, 'same', 4),
+                         ('C', 512, 3, 'same', 4),
+                         ('C', 512, 3, 'same', 4),
+                         ('M', 2, 2)],
+            'classifier': [('L', 1024, 1, 'same', 1),
+                           ('L', num_classes, 1, 'same', 1)]
+        }
     }
-}
+    return networks[network]
 
 
-def cifar(args, logger, pretrained=None):
-    features = cfg_list[args.network]["features"]
-    classifiers = cfg_list[args.network]["classifier"]
+def cifar(args, logger, num_classes, pretrained=None):
+    model = get_model(num_classes, args.network)
+    features = model["features"]
+    classifiers = model["classifier"]
+
     build_csv(features, classifiers, 8192, 3)
+
     features = make_features(features, args, logger, 3)
     classifiers = make_classifiers(classifiers, args, logger, 8192)
+
     model = MODEL(features, classifiers)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
@@ -179,11 +201,15 @@ def cifar(args, logger, pretrained=None):
 
 
 def mnist(args, logger, pretrained=None):
-    features = cfg_list[args.network]["features"]
-    classifiers = cfg_list[args.network]["classifier"]
+    model = get_model(10, args.network)
+    features = model["features"]
+    classifiers = model["classifier"]
+
     build_csv(features, classifiers, 4608, 1)
+
     features = make_features(features, args, logger, 1)
     classifiers = make_classifiers(classifiers, args, logger, 4608)
+
     model = MODEL(features, classifiers)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
