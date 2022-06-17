@@ -71,7 +71,7 @@ args.wireWidth = technode_to_width[args.technode]
 gamma = args.momentum
 alpha = 1 - args.momentum
 
-wandb.init(project=args.type, config=args)
+wandb.init(project="test", config=args)
 wandb.run.name = (args.network + ' ({})').format(wandb.run.id)
 
 delta_distribution = open("delta_dist.csv", 'ab')
