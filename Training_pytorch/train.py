@@ -114,7 +114,7 @@ if args.type == 'mnist':
     model = model.mnist(args=args, logger=logger)
 
 
-assert args.network in ['speed', 'vgg8', 'vgg16', 'alexnet'], args.network
+assert args.network in ['speed', 'vgg8', 'vgg11', 'vgg16'], args.network
 '''
 assert args.model in ['VGG8', 'DenseNet40', 'ResNet18'], args.model
 if args.model == 'VGG8':
