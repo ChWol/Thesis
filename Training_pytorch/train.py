@@ -71,7 +71,7 @@ args.wireWidth = technode_to_width[args.technode]
 gamma = args.momentum
 alpha = 1 - args.momentum
 
-wandb.init(project=args.type.upper(), name=args.network, config=args)
+wandb.init(project=args.type.upper(), name=args.network, config=args, entity='duke-tum')
 
 delta_distribution = open("delta_dist.csv", 'ab')
 delta_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", "6_mean", "7_mean", "8_mean", "1_std",
@@ -272,7 +272,7 @@ try:
 
             test_loss = test_loss / len(test_loader)  # average over number of mini-batch
             acc = 100. * correct / len(test_loader.dataset)
-            wandb.summary({'Epoch': epoch + 1, 'Test Accuracy': acc, 'Test Loss': test_loss})
+            wandb.log({'Epoch': epoch + 1, 'Test Accuracy': acc, 'Test Loss': test_loss})
             logger('\tEpoch {} Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
                 epoch, test_loss, correct, len(test_loader.dataset), acc))
             accuracy = acc.cpu().data.numpy()
