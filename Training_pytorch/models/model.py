@@ -104,7 +104,7 @@ def make_classifiers(classifiers, args, logger, in_dimension):
                          wl_input=args.wl_activate, wl_activate=wl_activate, wl_error=args.wl_error,
                          wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
                          cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision, vari=args.vari,
-                         t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + str(i) + '_'),
+                         t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + str(i) + '_')
 
         if i == len(classifiers) - 1:
             layers += [linear]
