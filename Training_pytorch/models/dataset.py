@@ -82,11 +82,11 @@ def get_mnist(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, v
             datasets.MNIST(
                 root=data_root, train=True, download=True,
                 transform=transforms.Compose([
-                    # Todo: Adjust transformations to match mnist - compare to examples above
                     transforms.Pad(4),
                     transforms.RandomCrop(28),
                     transforms.RandomHorizontalFlip(),
                     transforms.ToTensor(),
+                    transforms.Normalize((0.5,), (0.5,))
                 ])),
             batch_size=batch_size, shuffle=True, **kwargs)
         ds.append(train_loader)
