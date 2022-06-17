@@ -13,6 +13,7 @@ class QConv2d(nn.Conv2d):
                  subArray=128, ADCprecision=5, vari=0, t=0, v=0, detect=0, target=0, debug=0, name='Qconv'):
         super(QConv2d, self).__init__(in_channels, out_channels, kernel_size,
                                       stride, padding, dilation, groups, bias)
+        print("Inference: {}".format(inference))
         self.logger = logger
         self.clip_weight = clip_weight
         self.wage_init = wage_init
@@ -36,7 +37,6 @@ class QConv2d(nn.Conv2d):
         self.target = target
         self.name = name
         self.scale = wage_initializer.wage_init_(self.weight, self.wl_weight, factor=1.0)
-        print("Inference: {}".format(inference))
 
 
     def forward(self, input):
@@ -201,6 +201,7 @@ class QLinear(nn.Linear):
                  quantize_weight=False, clip_output=False, quantize_output=False,
                  wl_input=8, wl_activate=8, wl_error=8, wl_weight=8, inference=0, onoffratio=10, cellBit=1,
                  subArray=128, ADCprecision=5, vari=0, t=0, v=0, detect=0, target=0, debug=0, name='Qlinear'):
+        print("Inference: {}".format(inference))
         super(QLinear, self).__init__(in_features, out_features, bias)
         self.logger = logger
         self.clip_weight = clip_weight
@@ -225,7 +226,6 @@ class QLinear(nn.Linear):
         self.target = target
         self.name = name
         self.scale = wage_initializer.wage_init_(self.weight, self.wl_weight, factor=1.0)
-        print("Inference: {}".format(inference))
 
 
     def forward(self, input):
