@@ -60,6 +60,7 @@ def build_csv(features, classifiers, linear_dimension, input_depth=3):
                 if features[i + 1][0] == 'M':
                     pooling = 1
                 row = [features[i][4], features[i][4], ifm_depth, features[i][2], features[i][2], features[i][1], pooling, 1]
+            ifm_depth = features[i][1]
             writer.writerow(row)
 
         ifm_depth = linear_dimension
