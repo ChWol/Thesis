@@ -170,12 +170,13 @@ def cifar(args, logger, pretrained=None):
     features = cfg_list[args.network]["features"]
     classifiers = cfg_list[args.network]["classifier"]
     build_csv(features, classifiers, 8192, 3)
-    features = make_features(features, args, logger, 1)
+    features = make_features(features, args, logger, 3)
     classifiers = make_classifiers(classifiers, args, logger, 8192)
     model = MODEL(features, classifiers)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
+
 
 def mnist(args, logger, pretrained=None):
     features = cfg_list[args.network]["features"]
