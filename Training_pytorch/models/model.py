@@ -93,13 +93,13 @@ def make_classifiers(classifiers, args, logger, in_dimension):
     layers = []
     in_size = in_dimension
 
-    for i, v in enumerate(classifiers):
+    for i in range(classifiers):
         if i == len(classifiers) - 1:
             wl_activate = -1
         else:
             wl_activate = args.wl_activate
 
-        linear = QLinear(in_size, v[1], logger=logger,
+        linear = QLinear(in_size, classifiers[i][1], logger=logger,
                          wl_input=args.wl_activate, wl_activate=wl_activate, wl_error=args.wl_error,
                          wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
                          cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision, vari=args.vari,
@@ -110,7 +110,7 @@ def make_classifiers(classifiers, args, logger, in_dimension):
         else:
             layers += [linear, activation]
 
-        in_size = v[1]
+        in_size = classifiers[i][1]
 
     return nn.Sequential(*layers)
 
