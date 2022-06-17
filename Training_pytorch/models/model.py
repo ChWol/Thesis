@@ -93,7 +93,7 @@ def make_classifiers(classifiers, args, logger, in_dimension):
     layers = []
     in_size = in_dimension
 
-    for i in range(classifiers):
+    for i in range(len(classifiers)):
         if i == len(classifiers) - 1:
             wl_activate = -1
         else:
