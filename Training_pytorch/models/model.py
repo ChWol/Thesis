@@ -81,6 +81,7 @@ def make_features(features, args, logger, in_dimension):
                 non_linearity_activation = nn.Sigmoid()
             layers += [conv2d, non_linearity_activation]
             in_channels = out_channels
+    print(layers)
     return nn.Sequential(*layers)
 
 
@@ -111,7 +112,7 @@ def make_classifiers(classifiers, args, logger, in_dimension):
             layers += [linear, activation]
 
         in_size = classifiers[i][1]
-    print(*layers)
+    print(layers)
     return nn.Sequential(*layers)
 
 
