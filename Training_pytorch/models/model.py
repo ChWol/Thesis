@@ -111,7 +111,7 @@ def make_classifiers(classifiers, args, logger, in_dimension):
             layers += [linear, activation]
 
         in_size = classifiers[i][1]
-
+    print(*layers)
     return nn.Sequential(*layers)
 
 
