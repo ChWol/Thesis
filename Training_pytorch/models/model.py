@@ -9,9 +9,9 @@ from utee import misc
 print = misc.logger.info
 
 
-class CIFAR(nn.Module):
+class MODEL(nn.Module):
     def __init__(self, args, dimensions, features, num_classes, logger):
-        super(CIFAR, self).__init__()
+        super(MODEL, self).__init__()
         assert isinstance(features, nn.Sequential), type(features)
 
         if args.relu == 1:
@@ -157,7 +157,7 @@ def cifar10(args, logger, pretrained=None):
     cfg = cfg_list[args.network]
     build_csv(cfg, 8192, 3)
     layers = make_layers(cfg, args, logger, 3)
-    model = CIFAR(args, 8192, layers, num_classes=10, logger=logger)
+    model = MODEL(args, 8192, layers, num_classes=10, logger=logger)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
@@ -167,7 +167,7 @@ def cifar100(args, logger, pretrained=None):
     cfg = cfg_list[args.network]
     build_csv(cfg, 8192, 3)
     layers = make_layers(cfg, args, logger, 3)
-    model = CIFAR(args, 8192, layers, num_classes=100, logger=logger)
+    model = MODEL(args, 8192, layers, num_classes=100, logger=logger)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
@@ -177,7 +177,17 @@ def mnist(args, logger, pretrained=None):
     cfg = cfg_list[args.network]
     build_csv(cfg, 4608, 1)
     layers = make_layers(cfg, args, logger, 1)
-    model = CIFAR(args, 4608, layers, num_classes=10, logger=logger)
+    model = MODEL(args, 4608, layers, num_classes=10, logger=logger)
+    if pretrained is not None:
+        model.load_state_dict(torch.load(pretrained))
+    return model
+
+
+def imagenet(args, logger, pretrained=None):
+    cfg = cfg_list[args.network]
+    build_csv(cfg, 4608, 1)
+    layers = make_layers(cfg, args, logger, 3)
+    model = MODEL(args, 4608, layers, num_classes=1000, logger=logger)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
