@@ -44,12 +44,10 @@ class MODEL(nn.Module):
         return x
 
 
-# Todo: Improve especially regarding further networks
 def build_csv(layers, linear_dimension, input_depth=3):
     once = False
     current_dir = os.path.dirname(__file__)
     path = os.path.join(current_dir, '../NeuroSIM/NetWork.csv')
-    print(path)
     with open(path, 'w', newline='') as f:
         writer = csv.writer(f)
         ifm_depth = input_depth
@@ -101,25 +99,18 @@ def make_layers(cfg, args, logger, in_dimension):
 
 # Todo: Use more semantic notation, make linear layers work, add Resnet
 cfg_list = {
-    'speed': [('C', 128, 3, 'same', 32),
+    'speed': {
+        'features': [('C', 128, 3, 'same', 32),
               ('M', 2, 2),
               ('C', 256, 3, 'same', 16),
               ('M', 2, 2),
               ('C', 512, 3, 'same', 8),
-              ('M', 2, 2),
-              ('L', 1024, 1, 'same', 1),
-              ('L', 10, 1, 'same', 1)],
-    'alexnet': [('C', 96, 11, 'same', 32),
-                ('M', 3, 2),
-                ('C', 256, 5, 'same', 16),
-                ('M', 3, 2),
-                ('C', 384, 3, 'same', 8),
-                ('C', 384, 3, 'same', 8),
-                ('C', 256, 3, 'same', 8),
-                ('M', 3, 2),
-                ('L', 1024, 1, 'same', 1),
-                ('L', 10, 1, 'same', 1)],
-    'vgg8': [('C', 128, 3, 'same', 32),
+              ('M', 2, 2)],
+        'classifier': [('L', 1024, 1, 'same', 1),
+              ('L', 10, 1, 'same', 1)]
+    },
+    'vgg8': {
+        'features': [('C', 128, 3, 'same', 32),
              ('C', 128, 3, 'same', 32),
              ('M', 2, 2),
              ('C', 256, 3, 'same', 16),
@@ -127,10 +118,12 @@ cfg_list = {
              ('M', 2, 2),
              ('C', 512, 3, 'same', 8),
              ('C', 512, 3, 'same', 8),
-             ('M', 2, 2),
-             ('L', 1024, 1, 'same', 1),
-             ('L', 10, 1, 'same', 1)],
-    'vgg16': [('C', 64, 3, 'same', 32),
+             ('M', 2, 2)],
+        'classifier': [('L', 1024, 1, 'same', 1),
+             ('L', 10, 1, 'same', 1)]
+    },
+    'vgg16': {
+        'features': [('C', 64, 3, 'same', 32),
               ('C', 64, 3, 'same', 32),
               ('M', 2, 2),
               ('C', 128, 3, 'same', 16),
@@ -147,14 +140,15 @@ cfg_list = {
               ('C', 512, 3, 'same', 4),
               ('C', 512, 3, 'same', 4),
               ('C', 512, 3, 'same', 4),
-              ('M', 2, 2),
-              ('L', 1024, 1, 'same', 1),
+              ('M', 2, 2)],
+        'classifier': [('L', 1024, 1, 'same', 1),
               ('L', 10, 1, 'same', 1)]
+    }
 }
 
 
 def cifar10(args, logger, pretrained=None):
-    cfg = cfg_list[args.network]
+    cfg = cfg_list[args.network.features] + cfg_list[args.network.classifier]
     build_csv(cfg, 8192, 3)
     layers = make_layers(cfg, args, logger, 3)
     model = MODEL(args, 8192, layers, num_classes=10, logger=logger)
@@ -164,7 +158,7 @@ def cifar10(args, logger, pretrained=None):
 
 
 def cifar100(args, logger, pretrained=None):
-    cfg = cfg_list[args.network]
+    cfg = cfg_list[args.network.features] + cfg_list[args.network.classifier]
     build_csv(cfg, 8192, 3)
     layers = make_layers(cfg, args, logger, 3)
     model = MODEL(args, 8192, layers, num_classes=100, logger=logger)
@@ -174,7 +168,7 @@ def cifar100(args, logger, pretrained=None):
 
 
 def mnist(args, logger, pretrained=None):
-    cfg = cfg_list[args.network]
+    cfg = cfg_list[args.network.features] + cfg_list[args.network.classifier]
     build_csv(cfg, 4608, 1)
     layers = make_layers(cfg, args, logger, 1)
     model = MODEL(args, 4608, layers, num_classes=10, logger=logger)
