@@ -177,7 +177,8 @@ def get_model(num_classes, network):
                          ('C', 512, 3, 'same', 2),
                          ('C', 512, 3, 'same', 2),
                          ('M', 2, 2)],
-            'classifier': [('L', 1024, 1, 'same', 1),
+            'classifier': [('L', 4096, 1, 'same', 1),
+                           ('L', 1024, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         }
     }

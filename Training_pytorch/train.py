@@ -17,6 +17,7 @@ from modules.quantization_cpu_np_infer import QConv2d, QLinear
 from datetime import datetime
 from subprocess import call
 import wandb
+from decimal import Decimal
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
 parser.add_argument('--type', default='cifar10', help='dataset for training')
@@ -113,20 +114,7 @@ if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     model = model.mnist(args=args, logger=logger)
 
-
 assert args.network in ['speed', 'vgg8', 'vgg11', 'vgg16'], args.network
-'''
-assert args.model in ['VGG8', 'DenseNet40', 'ResNet18'], args.model
-if args.model == 'VGG8':
-    from models import VGG
-    model = VGG.vgg8(args=args, logger=logger)
-elif args.model == 'DenseNet40':
-    from models import DenseNet
-    model = DenseNet.densenet40(args=args, logger=logger)
-elif args.model == 'ResNet18':
-    from models import ResNet
-    model = ResNet.resnet18(args=args, logger=logger)
-    '''
 
 if args.cuda:
     model.cuda()
@@ -306,7 +294,9 @@ try:
             summary_out = pd.read_csv("Summary.csv").to_dict()
             log_input = {"Epoch": epoch + 1}
             for key, value in summary_out.items():
-                log_input[key] = value[0]
+                exponential = '%.2E' % Decimal(value[0])
+                print(exponential)
+                log_input[key] = exponential
             wandb.log(log_input)
 
 except Exception as e:
