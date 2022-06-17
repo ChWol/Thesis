@@ -10,29 +10,12 @@ print = misc.logger.info
 
 
 class MODEL(nn.Module):
-    def __init__(self, args, dimensions, features, num_classes, logger):
+    def __init__(self, args, dimensions, features, classifier, num_classes, logger):
         super(MODEL, self).__init__()
         assert isinstance(features, nn.Sequential), type(features)
 
-        if args.relu == 1:
-            activation = nn.ReLU(inplace=True)
-        else:
-            activation = nn.Sigmoid()
-
         self.features = features
-        # Todo: Set up classifiers as done for features, especially regarding different network structures
-        self.classifier = nn.Sequential(
-            QLinear(dimensions, 1024, logger=logger,
-                    wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
-                    wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
-                    cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision, vari=args.vari,
-                    t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC1_'),
-            activation,
-            QLinear(1024, num_classes, logger=logger,
-                    wl_input=args.wl_activate, wl_activate=-1, wl_error=args.wl_error, wl_weight=args.wl_weight,
-                    inference=args.inference, onoffratio=args.onoffratio, cellBit=args.cellBit, subArray=args.subArray,
-                    ADCprecision=args.ADCprecision, vari=args.vari, t=args.t, v=args.v, detect=args.detect,
-                    target=args.target, name='FC2_'))
+        self.classifier = classifier
 
         print(self.features)
         print(self.classifier)
@@ -59,7 +42,8 @@ def build_csv(features, classifiers, linear_dimension, input_depth=3):
             if features[i][0] == 'C':
                 if features[i + 1][0] == 'M':
                     pooling = 1
-                row = [features[i][4], features[i][4], ifm_depth, features[i][2], features[i][2], features[i][1], pooling, 1]
+                row = [features[i][4], features[i][4], ifm_depth, features[i][2], features[i][2], features[i][1],
+                       pooling, 1]
             ifm_depth = features[i][1]
             writer.writerow(row)
 
@@ -72,10 +56,10 @@ def build_csv(features, classifiers, linear_dimension, input_depth=3):
 
 
 # Todo: Develop same for linear layers, rename in_dimension
-def make_layers(cfg, args, logger, in_dimension):
+def make_features(features, args, logger, in_dimension):
     layers = []
     in_channels = in_dimension
-    for i, v in enumerate(cfg):
+    for i, v in enumerate(features):
         if v[0] == 'M':
             layers += [nn.MaxPool2d(kernel_size=v[1], stride=v[2])]
         if v[0] == 'C':
@@ -100,52 +84,83 @@ def make_layers(cfg, args, logger, in_dimension):
     return nn.Sequential(*layers)
 
 
+def make_classifiers(classifiers, args, logger, in_dimension):
+    if args.relu == 1:
+        activation = nn.ReLU(inplace=True)
+    else:
+        activation = nn.Sigmoid()
+
+    layers = []
+    in_size = in_dimension
+
+    for i, v in enumerate(classifiers):
+        if i == len(classifiers) - 1:
+            wl_activate = -1
+        else:
+            wl_activate = args.wl_activate
+
+        linear = QLinear(in_size, v[1], logger=logger,
+                         wl_input=args.wl_activate, wl_activate=wl_activate, wl_error=args.wl_error,
+                         wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
+                         cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision, vari=args.vari,
+                         t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + str(i) + '_'),
+
+        if i == len(classifiers) - 1:
+            layers += [linear]
+        else:
+            layers += [linear, activation]
+
+        in_size = v[1]
+
+    return nn.Sequential(*layers)
+
+
 # Todo: Use more semantic notation, make linear layers work, add Resnet
 cfg_list = {
     'speed': {
         'features': [('C', 128, 3, 'same', 32),
-              ('M', 2, 2),
-              ('C', 256, 3, 'same', 16),
-              ('M', 2, 2),
-              ('C', 512, 3, 'same', 8),
-              ('M', 2, 2)],
+                     ('M', 2, 2),
+                     ('C', 256, 3, 'same', 16),
+                     ('M', 2, 2),
+                     ('C', 512, 3, 'same', 8),
+                     ('M', 2, 2)],
         'classifier': [('L', 1024, 1, 'same', 1),
-              ('L', 10, 1, 'same', 1)]
+                       ('L', 10, 1, 'same', 1)]
     },
     'vgg8': {
         'features': [('C', 128, 3, 'same', 32),
-             ('C', 128, 3, 'same', 32),
-             ('M', 2, 2),
-             ('C', 256, 3, 'same', 16),
-             ('C', 256, 3, 'same', 16),
-             ('M', 2, 2),
-             ('C', 512, 3, 'same', 8),
-             ('C', 512, 3, 'same', 8),
-             ('M', 2, 2)],
+                     ('C', 128, 3, 'same', 32),
+                     ('M', 2, 2),
+                     ('C', 256, 3, 'same', 16),
+                     ('C', 256, 3, 'same', 16),
+                     ('M', 2, 2),
+                     ('C', 512, 3, 'same', 8),
+                     ('C', 512, 3, 'same', 8),
+                     ('M', 2, 2)],
         'classifier': [('L', 1024, 1, 'same', 1),
-             ('L', 10, 1, 'same', 1)]
+                       ('L', 10, 1, 'same', 1)]
     },
     'vgg16': {
         'features': [('C', 64, 3, 'same', 32),
-              ('C', 64, 3, 'same', 32),
-              ('M', 2, 2),
-              ('C', 128, 3, 'same', 16),
-              ('C', 128, 3, 'same', 16),
-              ('M', 2, 2),
-              ('C', 256, 3, 'same', 16),
-              ('C', 256, 3, 'same', 16),
-              ('C', 256, 3, 'same', 16),
-              ('M', 2, 2),
-              ('C', 512, 3, 'same', 8),
-              ('C', 512, 3, 'same', 8),
-              ('C', 512, 3, 'same', 8),
-              ('M', 2, 2),
-              ('C', 512, 3, 'same', 4),
-              ('C', 512, 3, 'same', 4),
-              ('C', 512, 3, 'same', 4),
-              ('M', 2, 2)],
+                     ('C', 64, 3, 'same', 32),
+                     ('M', 2, 2),
+                     ('C', 128, 3, 'same', 16),
+                     ('C', 128, 3, 'same', 16),
+                     ('M', 2, 2),
+                     ('C', 256, 3, 'same', 16),
+                     ('C', 256, 3, 'same', 16),
+                     ('C', 256, 3, 'same', 16),
+                     ('M', 2, 2),
+                     ('C', 512, 3, 'same', 8),
+                     ('C', 512, 3, 'same', 8),
+                     ('C', 512, 3, 'same', 8),
+                     ('M', 2, 2),
+                     ('C', 512, 3, 'same', 4),
+                     ('C', 512, 3, 'same', 4),
+                     ('C', 512, 3, 'same', 4),
+                     ('M', 2, 2)],
         'classifier': [('L', 1024, 1, 'same', 1),
-              ('L', 10, 1, 'same', 1)]
+                       ('L', 10, 1, 'same', 1)]
     }
 }
 
@@ -154,8 +169,9 @@ def cifar10(args, logger, pretrained=None):
     features = cfg_list[args.network]["features"]
     classifiers = cfg_list[args.network]["classifier"]
     build_csv(features, classifiers, 8192, 3)
-    features = make_layers(features, args, logger, 1)
-    model = MODEL(args, 8192, features, num_classes=10, logger=logger)
+    features = make_features(features, args, logger, 1)
+    classifiers = make_classifiers(classifiers, args, logger, 8192)
+    model = MODEL(args, 8192, features, classifiers, num_classes=10, logger=logger)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
@@ -165,8 +181,9 @@ def cifar100(args, logger, pretrained=None):
     features = cfg_list[args.network]["features"]
     classifiers = cfg_list[args.network]["classifier"]
     build_csv(features, classifiers, 8192, 3)
-    features = make_layers(features, args, logger, 1)
-    model = MODEL(args, 8192, features, num_classes=100, logger=logger)
+    features = make_features(features, args, logger, 1)
+    classifiers = make_classifiers(classifiers, args, logger, 8192)
+    model = MODEL(args, 8192, features, classifiers, num_classes=100, logger=logger)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
@@ -176,8 +193,9 @@ def mnist(args, logger, pretrained=None):
     features = cfg_list[args.network]["features"]
     classifiers = cfg_list[args.network]["classifier"]
     build_csv(features, classifiers, 4608, 1)
-    features = make_layers(features, args, logger, 1)
-    model = MODEL(args, 4608, features, num_classes=10, logger=logger)
+    features = make_features(features, args, logger, 1)
+    classifiers = make_classifiers(classifiers, args, logger, 4608)
+    model = MODEL(args, 4608, features, classifiers, num_classes=10, logger=logger)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
