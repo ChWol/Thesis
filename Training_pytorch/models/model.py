@@ -148,7 +148,7 @@ cfg_list = {
 
 
 def cifar10(args, logger, pretrained=None):
-    cfg = cfg_list[args.network['features']] + cfg_list[args.network['classifier']]
+    cfg = cfg_list[args.network]["features"] + cfg_list[args.network]["classifier"]
     build_csv(cfg, 8192, 3)
     layers = make_layers(cfg, args, logger, 3)
     model = MODEL(args, 8192, layers, num_classes=10, logger=logger)
@@ -158,7 +158,7 @@ def cifar10(args, logger, pretrained=None):
 
 
 def cifar100(args, logger, pretrained=None):
-    cfg = cfg_list[args.network['features']] + cfg_list[args.network['classifier']]
+    cfg = cfg_list[args.network]["features"] + cfg_list[args.network]["classifier"]
     build_csv(cfg, 8192, 3)
     layers = make_layers(cfg, args, logger, 3)
     model = MODEL(args, 8192, layers, num_classes=100, logger=logger)
@@ -168,7 +168,7 @@ def cifar100(args, logger, pretrained=None):
 
 
 def mnist(args, logger, pretrained=None):
-    cfg = cfg_list[args.network['features']] + cfg_list[args.network['classifier']]
+    cfg = cfg_list[args.network]["features"] + cfg_list[args.network]["classifier"]
     build_csv(cfg, 4608, 1)
     layers = make_layers(cfg, args, logger, 1)
     model = MODEL(args, 4608, layers, num_classes=10, logger=logger)
