@@ -36,6 +36,7 @@ class QConv2d(nn.Conv2d):
         self.target = target
         self.name = name
         self.scale = wage_initializer.wage_init_(self.weight, self.wl_weight, factor=1.0)
+        print("Inference: {}".format(inference))
 
 
     def forward(self, input):
@@ -224,6 +225,8 @@ class QLinear(nn.Linear):
         self.target = target
         self.name = name
         self.scale = wage_initializer.wage_init_(self.weight, self.wl_weight, factor=1.0)
+        print("Inference: {}".format(inference))
+
 
     def forward(self, input):
 
