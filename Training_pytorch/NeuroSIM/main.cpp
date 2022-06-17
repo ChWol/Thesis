@@ -338,16 +338,16 @@ int main(int argc, char * argv[]) {
 		// show the detailed hardware performance for each layer
 		ofstream layerfile;
             layerfile.open("Layer.csv", ios::out);
-            layerfile << "# of Tiles, Speedup, Utilization, readLatency of Forward, readDynamicEnergy of Forward, readLatency of Activation Gradient, " <<
-            "readDynamicEnergy of Activation Gradient, readLatency of Weight Gradient, readDynamicEnergy of Weight Gradient, " <<
-            "writeLatency of Weight Update, writeDynamicEnergy of Weight Update, PEAK readLatency of Forward, PEAK readDynamicEnergy of Forward, " <<
-            "PEAK readLatency of Activation Gradient, PEAK readDynamicEnergy of Activation Gradient, PEAK readLatency of Weight Gradient, " <<
-            "PEAK readDynamicEnergy of Weight Gradient, PEAK writeLatency of Weight Update, PEAK writeDynamicEnergy of Weight Update, " <<
-            "leakagePower, leakageEnergy, ADC readLatency, Accumulation Circuits readLatency, Synaptic Array w/o ADC readLatency, " <<
-            "Buffer buffer latency, Interconnect latency, Weight Gradient Calculation readLatency, Weight Update writeLatency, " <<
-            "DRAM data transfer Latency, ADC readDynamicEnergy, Accumulation Circuits readDynamicEnergy, Synaptic Array w/o ADC readDynamicEnergy, " <<
-            "Buffer readDynamicEnergy, Interconnect readDynamicEnergy, Weight Gradient Calculation readDynamicEnergy, Weight Update writeDynamicEnergy, " <<
-            "DRAM data transfer Energy" << endl;
+            layerfile << "# of Tiles, Speed-up, Utilization, Read Latency of Forward (ns), Read Dynamic Energy of Forward (pJ), Read Latency of Activation Gradient (ns), " <<
+            "Read Dynamic Energy of Activation Gradient (pJ), Read Latency of Weight Gradient (ns), Read Dynamic Energy of Weight Gradient (pJ), " <<
+            "Write Latency of Weight Update (ns), Write Dynamic Energy of Weight Update (pJ), PEAK Read Latency of Forward (ns), PEAK Read Dynamic Energy of Forward (pJ), " <<
+            "PEAK Read Latency of Activation Gradient (ns), PEAK Read Dynamic Energy of Activation Gradient (pJ), PEAK Read Latency of Weight Gradient (ns), " <<
+            "PEAK Read Dynamic Energy of Weight Gradient (pJ), PEAK Write Latency of Weight Update (ns), PEAK Write Dynamic Energy of Weight Update (pJ), " <<
+            "Leakage Power (uW), Leakage Energy (pJ), ADC Read Latency (ns), Accumulation Circuits Read Latency (ns), Synaptic Array w/o ADC Read Latency (ns), " <<
+            "Buffer Buffer Latency (ns), Interconnect Latency (ns), Weight Gradient Calculation Read Latency (ns), Weight Update Write Latency (ns), " <<
+            "DRAM data transfer Latency (ns), ADC Read Dynamic Energy (pJ), Accumulation Circuits Read Dynamic Energy (pJ), Synaptic Array w/o ADC Read Dynamic Energy (pJ), " <<
+            "Buffer Read Dynamic Energy (pJ), Interconnect Read Dynamic Energy (pJ), Weight Gradient Calculation Read Dynamic Energy (pJ), Weight Update Write Dynamic Energy (pJ), " <<
+            "DRAM data transfer Energy (pJ)" << endl;
 		for (int i=0; i<netStructure.size(); i++) {
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
 			param->activityRowReadWG = atof(argv[4*i+16]);
@@ -633,15 +633,15 @@ int main(int argc, char * argv[]) {
 
         ofstream layerfile;
         layerfile.open("Layer.csv", ios::out);
-        layerfile << "# of Tiles, Speedup, Utilization, readLatency, readDynamicEnergy, readLatency of Activation Gradient, readDynamicEnergy of Activation Gradient, " <<
-        "readLatency of Weight Gradient, readDynamicEnergy of Weight Gradient, writeLatency of Weight Update, writeDynamicEnergy of Weight Update, " <<
-        "PEAK readLatency, PEAK readDynamicEnergy, PEAK readLatency of Activation Gradient, PEAK readDynamicEnergy of Activation Gradient, " <<
-        "PEAK readLatency of Weight Gradient, PEAK readDynamicEnergy of Weight Gradient, PEAK writeLatency of Weight Update, " <<
-        "PEAK writeDynamicEnergy of Weight Update, leakagePower, leakageEnergy, ADC readLatency, Accumulation Circuits readLatency, " <<
-        "Synaptic Array w/o ADC readLatency, Buffer latency, Interconnect latency, Weight Gradient Calculation readLatencyWeight Gradient Calculation readLatency, " <<
-        "Weight Update writeLatency, DRAM data transfer Latency, ADC readDynamicEnergy, Accumulation Circuits readDynamicEnergy, " <<
-        "Synaptic Array w/o ADC readDynamicEnergy, Buffer readDynamicEnergy, Interconnect readDynamicEnergy, Weight Gradient Calculation readDynamicEnergy, " <<
-        "Weight Update writeDynamicEnergy, DRAM data transfer DynamicEnergy" << endl;
+        layerfile << "# of Tiles, Speed-up, Utilization, Read Latency (ns), Read Dynamic Energy (pJ), Read Latency of Activation Gradient (ns), Read Dynamic Energy of Activation Gradient (pJ), " <<
+        "Read Latency of Weight Gradient (ns), Read Dynamic Energy of Weight Gradient (pJ), Write Latency of Weight Update (ns), Write Dynamic Energy of Weight Update (pJ), " <<
+        "PEAK Read Latency (ns), PEAK Read Dynamic Energy (pJ), PEAK Read Latency of Activation Gradient (ns), PEAK Read Dynamic Energy of Activation Gradient (pJ), " <<
+        "PEAK Read Latency of Weight Gradient (ns), PEAK Read Dynamic Energy of Weight Gradient (pJ), PEAK writeLatency of Weight Update (ns), " <<
+        "PEAK writeDynamicEnergy of Weight Update (pJ), Leakage Power (uW), Leakage Energy (pJ), ADC Read Latency (ns), Accumulation Circuits Read Latency (ns), " <<
+        "Synaptic Array w/o ADC Read Latency (ns), Buffer Latency (ns), Interconnect Latency (ns), Weight Gradient Calculation Read Latency (ns), " <<
+        "Weight Update Write Latency (ns), DRAM data transfer Latency (ns), ADC Read Dynamic Energy (pJ), Accumulation Circuits Read Dynamic Energy (pJ), " <<
+        "Synaptic Array w/o ADC Read Dynamic Energy (pJ), Buffer Read Dynamic Energy (pJ), Interconnect Read Dynamic Energy (pJ), Weight Gradient Calculation Read Dynamic Energy (pJ), " <<
+        "Weight Update Write Dynamic Energy (pJ), DRAM data transfer Dynamic Energy (pJ)" << endl;
 		for (int i=0; i<netStructure.size(); i++) {
             // Build layer estimation csv file, one row for each layer
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
@@ -767,19 +767,19 @@ int main(int argc, char * argv[]) {
 
     ofstream summaryfile;
     summaryfile.open("Summary.csv", ios::out);
-    summaryfile << "Utilization, Chip Area, Chip total CIM array, Total IC Area on chip, Total ADC Area on chip, Total Accumulation Circuits on chip, " <<
-      "Other Peripheries, Weight Gradient Calculation, Chip readLatency of Forward, Chip readDynamicEnergy of Forward, " <<
-      "Chip readLatency of Activation Gradient, Chip readDynamicEnergy of Activation Gradient, Chip readLatency of Weight Gradient, " <<
-      "Chip readDynamicEnergy of Weight Gradient, Chip writeLatency of Weight Update, Chip writeDynamicEnergy of Weight Update, " <<
-      "Chip total Latency, Chip total Energy, Chip PEAK readLatency of Forward, Chip PEAK readDynamicEnergy of Forward, " <<
-      "Chip PEAK readLatency of Activation Gradient, Chip PEAK readDynamicEnergy of Activation Gradient, Chip PEAK readLatency of Weight Gradient, " <<
-      "Chip PEAK readDynamicEnergy of Weight Gradient, Chip PEAK writeLatency of Weight Update, Chip PEAK writeDynamicEnergy of Weight Update, " <<
-      "Chip PEAK total Latency, Chip PEAK total Energy, Chip leakage Energy, Chip leakage Power, ADC readLatency, " <<
-      "Accumulation Circuits readLatency, Synaptic Array w/o ADC readLatency, Buffer readLatency, Interconnect readLatency, " <<
-      "Weight Gradient Calculation readLatency, Weight Update writeLatency, DRAM data transfer Latency, ADC readDynamicEnergy, " <<
-      "Accumulation Circuits readDynamicEnergy, Synaptic Array w/o ADC readDynamicEnergy, Buffer readDynamicEnergy, " <<
-      "Interconnect readDynamicEnergy, Weight Gradient Calculation readDynamicEnergy, Weight Update writeDynamicEnergy, " <<
-      "DRAM data transfer DynamicEnergy, Energy Efficiency TOPS/W, Throughput TOPS, Throughput FPS, Peak Energy Efficiency TOPS/W, " <<
+    summaryfile << "Memory Utilization (%), Chip Area (um^2), Chip total CIM array (um^2), Total IC Area on chip (um^2), Total ADC Area on chip (um^2), Total Accumulation Circuits on chip (um^2), " <<
+      "Other Peripheries (um^2), Weight Gradient Calculation (um^2), Chip Read Latency of Forward (ns), Chip Read Dynamic Energy of Forward (pJ), " <<
+      "Chip Read Latency of Activation Gradient (ns), Chip Read Dynamic Energy of Activation Gradient (pJ), Chip Read Latency of Weight Gradient (ns), " <<
+      "Chip Read Dynamic Energy of Weight Gradient (pJ), Chip Write Latency of Weight Update (ns), Chip Write Dynamic Energy of Weight Update (pJ), " <<
+      "Chip total Latency (ns), Chip total Energy (pJ), Chip PEAK Read Latency of Forward (ns), Chip PEAK Read Dynamic Energy of Forward (ns), " <<
+      "Chip PEAK Read Latency of Activation Gradient (ns), Chip PEAK Read Dynamic Energy of Activation Gradient (pJ), Chip PEAK Read Latency of Weight Gradient (ns), " <<
+      "Chip PEAK Read Dynamic Energy of Weight Gradient (pJ), Chip PEAK writeLatency of Weight Update (ns), Chip PEAK writeDynamicEnergy of Weight Update (pJ), " <<
+      "Chip PEAK total Latency (ns), Chip PEAK total Energy (pJ), Chip leakage Energy (pJ), Chip leakage Power (uW), ADC Read Latency (ns), " <<
+      "Accumulation Circuits Read Latency (ns), Synaptic Array w/o ADC Read Latency  (ns), Buffer Read Latency (ns), Interconnect Read Latency (ns), " <<
+      "Weight Gradient Calculation Read Latency (ns), Weight Update Write Latency (ns), DRAM data transfer Latency (ns), ADC Read Dynamic Energy (pJ), " <<
+      "Accumulation Circuits Read Dynamic Energy (pJ), Synaptic Array w/o ADC Read Dynamic Energy (pJ), Buffer Read Dynamic Energy (pJ), " <<
+      "Interconnect Read Dynamic Energy (pJ), Weight Gradient Calculation Read Dynamic Energy (pJ), Weight Update Write Dynamic Energy (pJ), " <<
+      "DRAM data transfer Dynamic Energy (pJ), Energy Efficiency TOPS/W, Throughput TOPS, Throughput FPS, Peak Energy Efficiency TOPS/W, " <<
       "Peak Throughput TOPS, Peak Throughput FPS" << endl;
 
     summaryfile << realMappedMemory/totalNumTile*100 << ", ";
