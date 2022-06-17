@@ -153,10 +153,9 @@ cfg_list = {
 def cifar10(args, logger, pretrained=None):
     features = cfg_list[args.network]["features"]
     classifiers = cfg_list[args.network]["classifier"]
-    cfg = cfg_list[args.network]["features"] + cfg_list[args.network]["classifier"]
     build_csv(features, classifiers, 8192, 3)
-    layers = make_layers(cfg, args, logger, 3)
-    model = MODEL(args, 8192, layers, num_classes=10, logger=logger)
+    features = make_layers(features, args, logger, 1)
+    model = MODEL(args, 8192, features, num_classes=10, logger=logger)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
@@ -165,10 +164,9 @@ def cifar10(args, logger, pretrained=None):
 def cifar100(args, logger, pretrained=None):
     features = cfg_list[args.network]["features"]
     classifiers = cfg_list[args.network]["classifier"]
-    cfg = cfg_list[args.network]["features"] + cfg_list[args.network]["classifier"]
     build_csv(features, classifiers, 8192, 3)
-    layers = make_layers(cfg, args, logger, 3)
-    model = MODEL(args, 8192, layers, num_classes=100, logger=logger)
+    features = make_layers(features, args, logger, 1)
+    model = MODEL(args, 8192, features, num_classes=100, logger=logger)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
@@ -177,10 +175,9 @@ def cifar100(args, logger, pretrained=None):
 def mnist(args, logger, pretrained=None):
     features = cfg_list[args.network]["features"]
     classifiers = cfg_list[args.network]["classifier"]
-    cfg = cfg_list[args.network]["features"] + cfg_list[args.network]["classifier"]
     build_csv(features, classifiers, 4608, 1)
-    layers = make_layers(cfg, args, logger, 1)
-    model = MODEL(args, 4608, layers, num_classes=10, logger=logger)
+    features = make_layers(features, args, logger, 1)
+    model = MODEL(args, 4608, features, num_classes=10, logger=logger)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
