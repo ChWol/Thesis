@@ -247,15 +247,11 @@ try:
         h = 0
         for i, layer in enumerate(model.features.modules()):
             if isinstance(layer, QConv2d) or isinstance(layer, QLinear):
-                print("Hier wird getestet")
-                print(isinstance(layer, QConv2d))
                 weight_file_name = './layer_record/weightOld' + str(layer.name) + '.csv'
                 hook.write_matrix_weight((oldWeight[h]).cpu().data.numpy(), weight_file_name)
                 h = h + 1
         for i, layer in enumerate(model.classifier.modules()):
             if isinstance(layer, QLinear):
-                print("Hier wird getestet")
-                print(isinstance(layer, QLinear))
                 weight_file_name = './layer_record/weightOld' + str(layer.name) + '.csv'
                 hook.write_matrix_weight((oldWeight[h]).cpu().data.numpy(), weight_file_name)
                 h = h + 1
