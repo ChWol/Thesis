@@ -10,7 +10,7 @@ print = misc.logger.info
 
 
 class MODEL(nn.Module):
-    def __init__(self, args, dimensions, features, classifier, num_classes, logger):
+    def __init__(self, features, classifier):
         super(MODEL, self).__init__()
         assert isinstance(features, nn.Sequential), type(features)
 
@@ -166,29 +166,16 @@ cfg_list = {
 }
 
 
-def cifar10(args, logger, pretrained=None):
+def cifar(args, logger, pretrained=None):
     features = cfg_list[args.network]["features"]
     classifiers = cfg_list[args.network]["classifier"]
     build_csv(features, classifiers, 8192, 3)
     features = make_features(features, args, logger, 1)
     classifiers = make_classifiers(classifiers, args, logger, 8192)
-    model = MODEL(args, 8192, features, classifiers, num_classes=10, logger=logger)
+    model = MODEL(args, features, classifiers)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
-
-
-def cifar100(args, logger, pretrained=None):
-    features = cfg_list[args.network]["features"]
-    classifiers = cfg_list[args.network]["classifier"]
-    build_csv(features, classifiers, 8192, 3)
-    features = make_features(features, args, logger, 1)
-    classifiers = make_classifiers(classifiers, args, logger, 8192)
-    model = MODEL(args, 8192, features, classifiers, num_classes=100, logger=logger)
-    if pretrained is not None:
-        model.load_state_dict(torch.load(pretrained))
-    return model
-
 
 def mnist(args, logger, pretrained=None):
     features = cfg_list[args.network]["features"]
@@ -196,7 +183,7 @@ def mnist(args, logger, pretrained=None):
     build_csv(features, classifiers, 4608, 1)
     features = make_features(features, args, logger, 1)
     classifiers = make_classifiers(classifiers, args, logger, 4608)
-    model = MODEL(args, 4608, features, classifiers, num_classes=10, logger=logger)
+    model = MODEL(args, features, classifiers)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model

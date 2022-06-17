@@ -105,10 +105,10 @@ if args.cuda:
 assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
-    model = model.cifar10(args=args, logger=logger)
+    model = model.cifar(args=args, logger=logger)
 if args.type == 'cifar100':
     train_loader, test_loader = dataset.get100(batch_size=args.batch_size, num_workers=1)
-    model = model.cifar100(args=args, logger=logger)
+    model = model.cifar(args=args, logger=logger)
 if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     model = model.mnist(args=args, logger=logger)
