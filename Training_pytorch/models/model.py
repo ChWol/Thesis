@@ -44,27 +44,29 @@ class MODEL(nn.Module):
         return x
 
 
-def build_csv(layers, linear_dimension, input_depth=3):
-    once = False
+def build_csv(features, classifiers, linear_dimension, input_depth=3):
     current_dir = os.path.dirname(__file__)
     path = os.path.join(current_dir, '../NeuroSIM/NetWork.csv')
+
     with open(path, 'w', newline='') as f:
         writer = csv.writer(f)
         ifm_depth = input_depth
-        for i in range(len(layers)):
+
+        for i in range(len(features)):
             pooling = 0
-            if layers[i][0] == 'M':
+            if features[i][0] == 'M':
                 continue
-            if layers[i][0] == 'C':
-                if layers[i + 1][0] == 'M':
+            if features[i][0] == 'C':
+                if features[i + 1][0] == 'M':
                     pooling = 1
-                row = [layers[i][4], layers[i][4], ifm_depth, layers[i][2], layers[i][2], layers[i][1], pooling, 1]
-            if layers[i][0] == 'L':
-                if not once:
-                    ifm_depth = linear_dimension
-                    once = True
-                row = [1, 1, ifm_depth, 1, 1, layers[i][1], 0, 1]
-            ifm_depth = layers[i][1]
+                row = [features[i][4], features[i][4], ifm_depth, features[i][2], features[i][2], features[i][1], pooling, 1]
+            writer.writerow(row)
+
+        ifm_depth = linear_dimension
+
+        for classifier in classifiers:
+            row = [1, 1, ifm_depth, 1, 1, classifier[1], 0, 1]
+            ifm_depth = classifier[1]
             writer.writerow(row)
 
 
@@ -148,8 +150,10 @@ cfg_list = {
 
 
 def cifar10(args, logger, pretrained=None):
+    features = cfg_list[args.network]["features"]
+    classifiers = cfg_list[args.network]["classifier"]
     cfg = cfg_list[args.network]["features"] + cfg_list[args.network]["classifier"]
-    build_csv(cfg, 8192, 3)
+    build_csv(features, classifiers, 8192, 3)
     layers = make_layers(cfg, args, logger, 3)
     model = MODEL(args, 8192, layers, num_classes=10, logger=logger)
     if pretrained is not None:
@@ -158,8 +162,10 @@ def cifar10(args, logger, pretrained=None):
 
 
 def cifar100(args, logger, pretrained=None):
+    features = cfg_list[args.network]["features"]
+    classifiers = cfg_list[args.network]["classifier"]
     cfg = cfg_list[args.network]["features"] + cfg_list[args.network]["classifier"]
-    build_csv(cfg, 8192, 3)
+    build_csv(features, classifiers, 8192, 3)
     layers = make_layers(cfg, args, logger, 3)
     model = MODEL(args, 8192, layers, num_classes=100, logger=logger)
     if pretrained is not None:
@@ -168,8 +174,10 @@ def cifar100(args, logger, pretrained=None):
 
 
 def mnist(args, logger, pretrained=None):
+    features = cfg_list[args.network]["features"]
+    classifiers = cfg_list[args.network]["classifier"]
     cfg = cfg_list[args.network]["features"] + cfg_list[args.network]["classifier"]
-    build_csv(cfg, 4608, 1)
+    build_csv(features, classifiers, 4608, 1)
     layers = make_layers(cfg, args, logger, 1)
     model = MODEL(args, 4608, layers, num_classes=10, logger=logger)
     if pretrained is not None:
