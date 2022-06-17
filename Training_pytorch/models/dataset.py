@@ -101,39 +101,3 @@ def get_mnist(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, v
         ds.append(test_loader)
     ds = ds[0] if len(ds) == 1 else ds
     return ds
-
-
-def get_imagenet(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, val=True, **kwargs):
-    data_root = os.path.expanduser(os.path.join(data_root, 'mnist-models'))
-    num_workers = kwargs.setdefault('num_workers', 1)
-    kwargs.pop('input_size', None)
-    print("Building ImageNet data loader with {} workers".format(num_workers))
-    ds = []
-    if train:
-        train_loader = torch.utils.data.DataLoader(
-            datasets.ImageNet(
-                root=data_root, train=True, download=True,
-                transform=transforms.Compose([
-                    transforms.Pad(4),
-                    transforms.RandomResizedCrop(224),
-                    transforms.RandomHorizontalFlip(),
-                    transforms.ToTensor(),
-                    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-                ])),
-            batch_size=batch_size, shuffle=True, **kwargs)
-        ds.append(train_loader)
-
-    if val:
-        test_loader = torch.utils.data.DataLoader(
-            datasets.ImageNet(
-                root=data_root, train=False, download=True,
-                transform=transforms.Compose([
-                    transforms.Resize(256),
-                    transforms.CenterCrop(224),
-                    transforms.ToTensor(),
-                    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-                ])),
-            batch_size=batch_size, shuffle=False, **kwargs)
-        ds.append(test_loader)
-    ds = ds[0] if len(ds) == 1 else ds
-    return ds

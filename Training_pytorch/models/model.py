@@ -181,13 +181,3 @@ def mnist(args, logger, pretrained=None):
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
-
-
-def imagenet(args, logger, pretrained=None):
-    cfg = cfg_list[args.network]
-    build_csv(cfg, 4608, 1)
-    layers = make_layers(cfg, args, logger, 3)
-    model = MODEL(args, 4608, layers, num_classes=1000, logger=logger)
-    if pretrained is not None:
-        model.load_state_dict(torch.load(pretrained))
-    return model

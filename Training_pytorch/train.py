@@ -102,7 +102,7 @@ if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
 # data loader and model
-assert args.type in ['cifar10', 'cifar100', 'mnist', 'imagenet'], args.type
+assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
     model = model.cifar10(args=args, logger=logger)
@@ -112,9 +112,7 @@ if args.type == 'cifar100':
 if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     model = model.mnist(args=args, logger=logger)
-if args.type == 'imagenet':
-    train_loader, test_loader = dataset.get_imagenet(batch_size=args.batch_size, num_workers=1)
-    model = model.imagenet(args=args, logger=logger)
+
 
 assert args.network in ['speed', 'vgg8', 'vgg16', 'alexnet'], args.network
 '''
