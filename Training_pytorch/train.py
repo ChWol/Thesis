@@ -76,7 +76,8 @@ alpha = 1 - args.momentum
 wandb.init(project=args.type.upper(), config=args, entity='duke-tum')
 wandb.run.name = args.network + ": " + wandb.run.id
 
-args = wandb.config.copy()
+config = wandb.config
+wandb.config.update(allow_val_change=True)
 
 delta_distribution = open("delta_dist.csv", 'ab')
 delta_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", "6_mean", "7_mean", "8_mean", "1_std",
@@ -88,66 +89,66 @@ weight_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", 
                               "2_std", "3_std", "4_std", "5_std", "6_std", "7_std", "8_std"]])
 np.savetxt(weight_distribution, weight_firstline, delimiter=",", fmt='%s')
 
-args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
-args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs'])
-misc.logger.init(args.logdir, 'train_log_' + current_time)
+config.logdir = os.path.join(os.path.dirname(__file__), config.logdir)
+config = make_path.makepath(config, ['log_interval', 'test_interval', 'logdir', 'epochs'])
+misc.logger.init(config.logdir, 'train_log_' + current_time)
 logger = misc.logger.info
 
 # console logger
-misc.ensure_dir(args.logdir)
+misc.ensure_dir(config.logdir)
 logger("=================FLAGS==================")
-for k, v in args.__dict__.items():
+for k, v in config.__dict__.items():
     logger('{}: {}'.format(k, v))
 logger("========================================")
 
 # seed
-args.cuda = torch.cuda.is_available()
-torch.manual_seed(args.seed)
-if args.cuda:
-    torch.cuda.manual_seed(args.seed)
+config.cuda = torch.cuda.is_available()
+torch.manual_seed(config.seed)
+if config.cuda:
+    torch.cuda.manual_seed(config.seed)
 
 # data loader and model
-assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
-if args.type == 'cifar10':
-    train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
-    model = model.cifar(args=args, logger=logger, num_classes=10)
-if args.type == 'cifar100':
-    train_loader, test_loader = dataset.get100(batch_size=args.batch_size, num_workers=1)
-    model = model.cifar(args=args, logger=logger, num_classes=100)
-if args.type == 'mnist':
-    train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
-    model = model.mnist(args=args, logger=logger)
+assert config.type in ['cifar10', 'cifar100', 'mnist'], config.type
+if config.type == 'cifar10':
+    train_loader, test_loader = dataset.get10(batch_size=config.batch_size, num_workers=1)
+    model = model.cifar(args=config, logger=logger, num_classes=10)
+if config.type == 'cifar100':
+    train_loader, test_loader = dataset.get100(batch_size=config.batch_size, num_workers=1)
+    model = model.cifar(args=config, logger=logger, num_classes=100)
+if config.type == 'mnist':
+    train_loader, test_loader = dataset.get_mnist(batch_size=config.batch_size, num_workers=1)
+    model = model.mnist(args=config, logger=logger)
 
-assert args.network in ['speed', 'vgg8', 'vgg11', 'vgg16'], args.network
+assert config.network in ['speed', 'vgg8', 'vgg11', 'vgg16'], config.network
 
-if args.cuda:
+if config.cuda:
     model.cuda()
 
 optimizer = optim.SGD(model.parameters(), lr=1)
 
-decreasing_lr = list(map(int, args.decreasing_lr.split(',')))
+decreasing_lr = list(map(int, config.decreasing_lr.split(',')))
 logger('decreasing_lr: ' + str(decreasing_lr))
 best_acc, old_file = 0, None
 t_begin = time.time()
-grad_scale = args.grad_scale
+grad_scale = config.grad_scale
 
 try:
     # ready to go
-    if args.cellBit != args.wl_weight:
+    if config.cellBit != config.wl_weight:
         print("Warning: Weight precision should be the same as the cell precison !")
     # add d2dVari
     paramALTP = {}
     paramALTD = {}
     k = 0
     for layer in list(model.parameters())[::-1]:
-        d2dVariation = torch.normal(torch.zeros_like(layer), args.d2dVari * torch.ones_like(layer))
-        NL_LTP = torch.ones_like(layer) * args.nonlinearityLTP + d2dVariation
-        NL_LTD = torch.ones_like(layer) * args.nonlinearityLTD + d2dVariation
-        paramALTP[k] = wage_quantizer.GetParamA(NL_LTP.cpu().numpy()) * args.max_level
-        paramALTD[k] = wage_quantizer.GetParamA(NL_LTD.cpu().numpy()) * args.max_level
+        d2dVariation = torch.normal(torch.zeros_like(layer), config.d2dVari * torch.ones_like(layer))
+        NL_LTP = torch.ones_like(layer) * config.nonlinearityLTP + d2dVariation
+        NL_LTD = torch.ones_like(layer) * config.nonlinearityLTD + d2dVariation
+        paramALTP[k] = wage_quantizer.GetParamA(NL_LTP.cpu().numpy()) * config.max_level
+        paramALTD[k] = wage_quantizer.GetParamA(NL_LTD.cpu().numpy()) * config.max_level
         k = k + 1
 
-    for epoch in range(args.epochs):
+    for epoch in range(config.epochs):
         model.train()
 
         velocity = {}
@@ -163,7 +164,7 @@ try:
         wandb.watch(model, log="all", log_freq=10)
         for batch_idx, (data, target) in enumerate(train_loader):
             indx_target = target.clone()
-            if args.cuda:
+            if config.cuda:
                 data, target = data.cuda(), target.cuda()
             data, target = Variable(data), Variable(target)
             optimizer.zero_grad()
@@ -177,20 +178,20 @@ try:
             for name, param in list(model.named_parameters())[::-1]:
                 velocity[j] = gamma * velocity[j] + alpha * param.grad.data
                 param.grad.data = velocity[j]
-                param.grad.data = wage_quantizer.QG(param.data, args.wl_weight, param.grad.data, args.wl_grad,
+                param.grad.data = wage_quantizer.QG(param.data, config.wl_weight, param.grad.data, config.wl_grad,
                                                     grad_scale,
                                                     torch.from_numpy(paramALTP[j]).cuda(),
-                                                    torch.from_numpy(paramALTD[j]).cuda(), args.max_level,
-                                                    args.max_level)
+                                                    torch.from_numpy(paramALTD[j]).cuda(), config.max_level,
+                                                    config.max_level)
                 j = j + 1
 
             # Update function
             optimizer.step()
 
             for name, param in list(model.named_parameters())[::-1]:
-                param.data = wage_quantizer.W(param.data, param.grad.data, args.wl_weight, args.c2cVari)
+                param.data = wage_quantizer.W(param.data, param.grad.data, config.wl_weight, config.c2cVari)
 
-            if batch_idx % args.log_interval == 0 and batch_idx > 0:
+            if batch_idx % config.log_interval == 0 and batch_idx > 0:
                 pred = output.data.max(1)[1]  # get the index of the max log-probability
                 correct = pred.cpu().eq(indx_target).sum()
                 acc = float(correct) * 1.0 / len(data)
@@ -202,11 +203,11 @@ try:
         elapse_time = time.time() - t_begin
         speed_epoch = elapse_time / (epoch + 1)
         speed_batch = speed_epoch / len(train_loader)
-        eta = speed_epoch * args.epochs - elapse_time
+        eta = speed_epoch * config.epochs - elapse_time
         logger("Elapsed {:.2f}s, {:.2f} s/epoch, {:.2f} s/batch, ets {:.2f}s".format(
             elapse_time, speed_epoch, speed_batch, eta))
 
-        misc.model_save(model, os.path.join(args.logdir, 'latest.pth'))
+        misc.model_save(model, os.path.join(config.logdir, 'latest.pth'))
 
         if not os.path.exists('./layer_record'):
             os.makedirs('./layer_record')
@@ -251,20 +252,20 @@ try:
                 h = h + 1
 
         # Run tests including hardware simulation
-        if epoch % args.test_interval == 0:
+        if epoch % config.test_interval == 0:
             model.eval()
             test_loss = 0
             correct = 0
             logger("testing phase")
             for i, (data, target) in enumerate(test_loader):
                 if i == 0:
-                    hook_handle_list = hook.hardware_evaluation(model, args.wl_weight, args.wl_activate,
-                                                                epoch, args.batch_size, args.cellBit, args.technode,
-                                                                args.wireWidth, args.relu, args.memcelltype,
-                                                                2 ** args.ADCprecision,
-                                                                args.onoffratio)
+                    hook_handle_list = hook.hardware_evaluation(model, config.wl_weight, config.wl_activate,
+                                                                epoch, config.batch_size, config.cellBit, config.technode,
+                                                                config.wireWidth, config.relu, config.memcelltype,
+                                                                2 ** config.ADCprecision,
+                                                                config.onoffratio)
                 indx_target = target.clone()
-                if args.cuda:
+                if config.cuda:
                     data, target = data.cuda(), target.cuda()
                 with torch.no_grad():
                     data, target = Variable(data), Variable(target)
@@ -284,7 +285,7 @@ try:
             accuracy = acc.cpu().data.numpy()
 
             if acc > best_acc:
-                new_file = os.path.join(args.logdir, 'best-{}.pth'.format(epoch))
+                new_file = os.path.join(config.logdir, 'best-{}.pth'.format(epoch))
                 misc.model_save(model, new_file, old_file=old_file, verbose=True)
                 best_acc = acc
                 old_file = new_file
