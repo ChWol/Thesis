@@ -122,6 +122,8 @@ def hardware_evaluation(model, wl_weight, wl_activation, numEpoch, batchSize, ce
     if os.path.exists('./layer_record/trace_command.sh'):
         os.remove('./layer_record/trace_command.sh')
     f = open('./layer_record/trace_command.sh', "w")
+    # Todo: From V1.3
+    # ./NeuroSIM/NetWork_'+str(model_name)+'.csv
     f.write('./NeuroSIM/main ' + str(numEpoch) + ' ./NeuroSIM/NetWork.csv ' + str(wl_weight) + ' ' + str(wl_activation)
             + ' ' + str(batchSize) + ' ' + str(cellBit) + ' ' + str(technode) + ' ' + str(wireWidth) + ' '
             + str(relu) + ' ' + str(memcelltype) + ' ' + str(levelOutput) + ' ' + str(onoffratio) + ' ')

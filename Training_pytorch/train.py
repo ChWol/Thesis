@@ -114,6 +114,36 @@ if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     model = model.mnist(args=args, logger=logger)
 
+
+# Todo: From 1.3
+'''
+assert args.dataset in ['cifar10', 'cifar100', 'imagenet'], args.dataset
+if args.dataset == 'cifar10':
+    train_loader, test_loader = dataset.get_cifar10(batch_size=args.batch_size, num_workers=1)
+elif args.dataset == 'cifar100':
+    train_loader, test_loader = dataset.get_cifar100(batch_size=args.batch_size, num_workers=1)
+elif args.dataset == 'imagenet':
+    train_loader, test_loader = dataset.get_imagenet(batch_size=args.batch_size, num_workers=1)
+else:
+    raise ValueError("Unknown dataset type")
+    
+assert args.model in ['VGG8', 'DenseNet40', 'ResNet18'], args.model
+if args.model == 'VGG8':
+    from models import VGG
+    model = VGG.vgg8(args = args, logger=logger)
+    criterion = wage_util.SSE()
+elif args.model == 'DenseNet40':
+    from models import DenseNet
+    model = DenseNet.densenet40(args = args, logger=logger)
+    criterion = wage_util.SSE()
+elif args.model == 'ResNet18':
+    from models import ResNet
+    model = ResNet.resnet18(args = args, logger=logger)
+    criterion = torch.nn.CrossEntropyLoss()
+else:
+    raise ValueError("Unknown model type")
+'''
+
 if args.cuda:
     model.cuda()
 
@@ -163,6 +193,8 @@ try:
             optimizer.zero_grad()
             output = model(data)
             loss = wage_util.SSE(output, target)
+            # Todo: From 1.3
+            # criterion = torch.nn.CrossEntropyLoss()
 
             loss.backward()
 

@@ -46,7 +46,7 @@ class QConv2d(nn.Conv2d):
         bitWeight = int(self.wl_weight)
         bitActivation = int(self.wl_input)
 
-        if self.inference == 1:
+        if True:
             print("Inferenz Test")
             # retention
             weight = wage_quantizer.Retention(weight, self.t, self.v, self.detect, self.target)
@@ -236,7 +236,7 @@ class QLinear(nn.Linear):
         bitWeight = int(self.wl_weight)
         bitActivation = int(self.wl_input)
 
-        if self.inference == 1:
+        if True:
             print("Inferenz Test")
             # retention
             weight = wage_quantizer.Retention(weight, self.t, self.v, self.detect, self.target)
