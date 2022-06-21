@@ -80,7 +80,6 @@ def make_features(features, args, logger, in_dimension):
                 non_linearity_activation = nn.Sigmoid()
             layers += [conv2d, non_linearity_activation]
             in_channels = out_channels
-    print(layers)
     return nn.Sequential(*layers)
 
 
@@ -138,6 +137,25 @@ def get_model(num_classes, network):
                          ('C', 512, 3, 'same', 8),
                          ('M', 2, 2)],
             'classifier': [('L', 1024, 1, 'same', 1),
+                           ('L', num_classes, 1, 'same', 1)]
+        },
+        'vgg11': {
+            'features': [('C', 64, 3, 'same', 32),
+                         ('M', 2, 2),
+                         ('C', 128, 3, 'same', 16),
+                         ('C', 128, 3, 'same', 16),
+                         ('M', 2, 2),
+                         ('C', 256, 3, 'same', 8),
+                         ('C', 256, 3, 'same', 8),
+                         ('M', 2, 2),
+                         ('C', 512, 3, 'same', 4),
+                         ('C', 512, 3, 'same', 4),
+                         ('M', 2, 2),
+                         ('C', 512, 3, 'same', 2),
+                         ('C', 512, 3, 'same', 2),
+                         ('M', 2, 2)],
+            'classifier': [('L', 512, 1, 'same', 1),
+                           ('L', 512, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         }
     }
