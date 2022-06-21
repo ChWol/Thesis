@@ -103,7 +103,7 @@ if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
 # data loader and model
-'''
+
 assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
@@ -114,10 +114,10 @@ if args.type == 'cifar100':
 if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     model = model.mnist(args=args, logger=logger)
-    '''
 
 
 # Todo: From 1.3
+'''
 assert args.type in ['cifar10', 'cifar100', 'imagenet'], args.dataset
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
@@ -140,6 +140,7 @@ elif args.network == 'ResNet18':
     model = ResNet.resnet18(args = args, logger=logger)
 else:
     raise ValueError("Unknown model type")
+'''
 
 if args.cuda:
     model.cuda()
