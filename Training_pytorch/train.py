@@ -132,15 +132,12 @@ assert args.network in ['VGG8', 'DenseNet40', 'ResNet18'], args.model
 if args.network == 'VGG8':
     from models import VGG
     model = VGG.vgg8(args = args, logger=logger)
-    criterion = wage_util.SSE()
 elif args.network == 'DenseNet40':
     from models import DenseNet
     model = DenseNet.densenet40(args = args, logger=logger)
-    criterion = wage_util.SSE()
 elif args.network == 'ResNet18':
     from models import ResNet
     model = ResNet.resnet18(args = args, logger=logger)
-    criterion = torch.nn.CrossEntropyLoss()
 else:
     raise ValueError("Unknown model type")
 
