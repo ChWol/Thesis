@@ -279,6 +279,9 @@ try:
                 epoch, test_loss, correct, len(test_loader.dataset), acc))
             accuracy = acc.cpu().data.numpy()
 
+            torch.onnx.export(model, data, "model.oonx", verbose=False, input_names=data, output_names=output, export_params=True)
+            wandb.save("model.onnx")
+
             if acc > best_acc:
                 new_file = os.path.join(args.logdir, 'best-{}.pth'.format(epoch))
                 misc.model_save(model, new_file, old_file=old_file, verbose=True)
@@ -298,9 +301,6 @@ try:
                 exponential = '%.2E' % Decimal(value[0])
                 log_input[key] = exponential
             wandb.log(log_input, step=epoch)
-
-    model.to_onnx()
-    wandb.save("model.onnx")
 
 
 except Exception as e:
