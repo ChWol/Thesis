@@ -26,7 +26,7 @@ model_urls = {
 def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1,args=None,logger=None):
     """3x3 convolution with padding"""
     global name
-    if args.mode == "WAGE":       
+    if True:
         conv2d = QConv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=dilation, 
                      logger=logger,wl_input = args.wl_activate,wl_activate=args.wl_activate,
                      wl_error=args.wl_error,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
@@ -46,7 +46,7 @@ def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1,args=None,logg
 def conv1x1(in_planes, out_planes, stride=1,args=None,logger=None):
     """1x1 convolution"""
     global name
-    if args.mode == "WAGE":        
+    if True:
         conv2d = QConv2d(in_planes, out_planes, kernel_size=1, stride=stride, logger=logger,wl_input = args.wl_activate,wl_activate=args.wl_activate,
                          wl_error=args.wl_error,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                          subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
@@ -63,7 +63,7 @@ def conv1x1(in_planes, out_planes, stride=1,args=None,logger=None):
 def Conv2d(in_planes, out_planes, kernel_size, stride, padding, args=None, logger=None):
     """convolution"""
     global name
-    if args.mode == "WAGE":        
+    if True:
         conv2d = QConv2d(in_planes, out_planes, kernel_size, stride, padding, logger=logger,wl_input = args.wl_activate,wl_activate=args.wl_activate,
                          wl_error=args.wl_error,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                          subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
@@ -80,7 +80,7 @@ def Conv2d(in_planes, out_planes, kernel_size, stride, padding, args=None, logge
 def Linear(in_planes, out_planes, args=None, logger=None):
     """convolution"""
     global name
-    if args.mode == "WAGE":
+    if True:
         linear = QLinear(in_planes, out_planes, 
                         logger=logger, wl_input = args.wl_activate,wl_activate=args.wl_activate,wl_error=args.wl_error,
                         wl_weight=args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,

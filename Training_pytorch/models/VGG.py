@@ -36,7 +36,7 @@ def make_layers(cfg, args, logger ):
                 padding = v[2]//2
             else:
                 padding = 0
-            if args.mode == "WAGE":
+            if True:
                 conv2d = QConv2d(in_channels, out_channels, kernel_size=v[2], padding=padding,
                                  logger=logger,wl_input = args.wl_activate,wl_activate=args.wl_activate,
                                  wl_error=args.wl_error,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
@@ -51,7 +51,7 @@ def make_layers(cfg, args, logger ):
             layers += [conv2d, non_linearity_activation]
             in_channels = out_channels
         if v[0] == 'L':
-            if args.mode == "WAGE":
+            if True:
                 linear = QLinear(in_features=v[1], out_features=v[2], 
                                 logger=logger, wl_input = args.wl_activate,wl_activate=args.wl_activate,wl_error=args.wl_error,
                                 wl_weight=args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
