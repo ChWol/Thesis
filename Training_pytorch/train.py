@@ -103,6 +103,7 @@ if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
 # data loader and model
+'''
 assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
@@ -113,36 +114,35 @@ if args.type == 'cifar100':
 if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     model = model.mnist(args=args, logger=logger)
+    '''
 
 
 # Todo: From 1.3
-'''
-assert args.dataset in ['cifar10', 'cifar100', 'imagenet'], args.dataset
-if args.dataset == 'cifar10':
-    train_loader, test_loader = dataset.get_cifar10(batch_size=args.batch_size, num_workers=1)
-elif args.dataset == 'cifar100':
-    train_loader, test_loader = dataset.get_cifar100(batch_size=args.batch_size, num_workers=1)
-elif args.dataset == 'imagenet':
+assert args.type in ['cifar10', 'cifar100', 'imagenet'], args.dataset
+if args.type == 'cifar10':
+    train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
+elif args.type == 'cifar100':
+    train_loader, test_loader = dataset.get100(batch_size=args.batch_size, num_workers=1)
+elif args.type == 'imagenet':
     train_loader, test_loader = dataset.get_imagenet(batch_size=args.batch_size, num_workers=1)
 else:
     raise ValueError("Unknown dataset type")
     
-assert args.model in ['VGG8', 'DenseNet40', 'ResNet18'], args.model
-if args.model == 'VGG8':
+assert args.network in ['VGG8', 'DenseNet40', 'ResNet18'], args.model
+if args.network == 'VGG8':
     from models import VGG
     model = VGG.vgg8(args = args, logger=logger)
     criterion = wage_util.SSE()
-elif args.model == 'DenseNet40':
+elif args.network == 'DenseNet40':
     from models import DenseNet
     model = DenseNet.densenet40(args = args, logger=logger)
     criterion = wage_util.SSE()
-elif args.model == 'ResNet18':
+elif args.network == 'ResNet18':
     from models import ResNet
     model = ResNet.resnet18(args = args, logger=logger)
     criterion = torch.nn.CrossEntropyLoss()
 else:
     raise ValueError("Unknown model type")
-'''
 
 if args.cuda:
     model.cuda()
@@ -288,7 +288,7 @@ try:
                                                                 epoch, args.batch_size, args.cellBit, args.technode,
                                                                 args.wireWidth, args.relu, args.memcelltype,
                                                                 2 ** args.ADCprecision,
-                                                                args.onoffratio)
+                                                                args.onoffratio, args.network)
                 indx_target = target.clone()
                 if args.cuda:
                     data, target = data.cuda(), target.cuda()

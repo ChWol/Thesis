@@ -104,7 +104,6 @@ def get_mnist(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, v
 
 
 # Todo: From 1.3
-'''
 def get_imagenet(batch_size, data_root='/home/shimeng/Documents/Data', train=True, val=True, **kwargs):
     # data_root = data_root
     num_workers = kwargs.setdefault('num_workers', 1)
@@ -144,4 +143,3 @@ def get_imagenet(batch_size, data_root='/home/shimeng/Documents/Data', train=Tru
         ds.append(test_loader)
     ds = ds[0] if len(ds) == 1 else ds
     return ds
-'''
