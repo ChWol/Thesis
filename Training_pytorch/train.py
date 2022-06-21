@@ -104,7 +104,7 @@ torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
-wandb.config.update(args)
+wandb.config.update(args, allow_val_change=True)
 
 # data loader and model
 assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
