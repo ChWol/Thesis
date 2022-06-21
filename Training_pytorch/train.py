@@ -114,8 +114,6 @@ if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     model = model.mnist(args=args, logger=logger)
 
-assert args.network in ['speed', 'vgg8', 'vgg11', 'vgg16'], args.network
-
 if args.cuda:
     model.cuda()
 
