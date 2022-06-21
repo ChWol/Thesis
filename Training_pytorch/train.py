@@ -298,8 +298,8 @@ try:
                 log_input[key] = value[0]
             wandb.log(log_input, step=epoch)
 
-    torch.onnx.export(model, "model.onnx")
-    wandb.save("model.onnx")
+            torch.onnx.export(model, data, "model.onnx")
+            wandb.save("model.onnx")
 
 except Exception as e:
     import traceback
