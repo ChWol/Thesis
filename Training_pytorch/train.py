@@ -155,8 +155,7 @@ try:
             grad_scale = grad_scale / 8.0
 
         logger("training phase")
-        criterion = wage_util.SSE()
-        wandb.watch(model, criterion, log="all", log_freq=10)
+        wandb.watch(model, log="all", log_freq=10)
         for batch_idx, (data, target) in enumerate(train_loader):
             indx_target = target.clone()
             if args.cuda:
