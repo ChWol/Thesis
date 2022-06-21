@@ -155,7 +155,7 @@ try:
             grad_scale = grad_scale / 8.0
 
         logger("training phase")
-        wandb.watch(model, log="all", log_freq=10)
+        wandb.watch(model)
         for batch_idx, (data, target) in enumerate(train_loader):
             indx_target = target.clone()
             if args.cuda:
@@ -298,8 +298,6 @@ try:
                 log_input[key] = value[0]
             wandb.log(log_input, step=epoch)
 
-            torch.onnx.export(model, data, "model.onnx")
-            wandb.save("model.onnx")
 
 except Exception as e:
     import traceback
