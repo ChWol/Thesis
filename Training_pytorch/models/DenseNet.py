@@ -98,7 +98,7 @@ def make_layers(cfg, args, logger):
                                  logger=logger,wl_input = args.wl_activate,wl_activate=args.wl_activate,
                                  wl_error=args.wl_error,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                                  subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
-                                 name = 'Conv'+str(name)+'_', model = args.model)
+                                 name = 'Conv'+str(name)+'_', model = args.network)
             name += 1
             batchnorm = nn.BatchNorm2d(out_channels)
             non_linearity_activation =  nn.ReLU()
@@ -110,7 +110,7 @@ def make_layers(cfg, args, logger):
                                 logger=logger, wl_input = args.wl_activate,wl_activate=args.wl_activate,wl_error=args.wl_error,
                                 wl_weight=args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                                 subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target, 
-                                name='FC'+str(i)+'_', model = args.model)
+                                name='FC'+str(i)+'_', model = args.network)
             layers += [linear]
     return nn.Sequential(*layers)
     

@@ -30,7 +30,7 @@ def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1,args=None,logg
                      logger=logger,wl_input = args.wl_activate,wl_activate=args.wl_activate,
                      wl_error=args.wl_error,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                      subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
-                     name = 'Conv3x3'+'_'+str(name)+'_', model = args.model)
+                     name = 'Conv3x3'+'_'+str(name)+'_', model = args.network)
     name += 1
     return conv2d
 
@@ -42,7 +42,7 @@ def conv1x1(in_planes, out_planes, stride=1,args=None,logger=None):
         conv2d = QConv2d(in_planes, out_planes, kernel_size=1, stride=stride, logger=logger,wl_input = args.wl_activate,wl_activate=args.wl_activate,
                          wl_error=args.wl_error,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                          subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
-                         name = 'Conv1x1'+'_'+str(name)+'_', model = args.model)
+                         name = 'Conv1x1'+'_'+str(name)+'_', model = args.network)
     name += 1
     return conv2d
 
@@ -54,7 +54,7 @@ def Conv2d(in_planes, out_planes, kernel_size, stride, padding, args=None, logge
         conv2d = QConv2d(in_planes, out_planes, kernel_size, stride, padding, logger=logger,wl_input = args.wl_activate,wl_activate=args.wl_activate,
                          wl_error=args.wl_error,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                          subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
-                         name = 'Conv'+'_'+str(name)+'_', model = args.model)
+                         name = 'Conv'+'_'+str(name)+'_', model = args.network)
     name += 1
     return conv2d
 
@@ -67,7 +67,7 @@ def Linear(in_planes, out_planes, args=None, logger=None):
                         logger=logger, wl_input = args.wl_activate,wl_activate=args.wl_activate,wl_error=args.wl_error,
                         wl_weight=args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                         subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target, 
-                        name='FC'+'_'+str(name)+'_', model = args.model)
+                        name='FC'+'_'+str(name)+'_', model = args.network)
     name += 1
     return linear
     

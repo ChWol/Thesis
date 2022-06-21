@@ -40,7 +40,7 @@ def make_layers(cfg, args, logger ):
                                  logger=logger,wl_input = args.wl_activate,wl_activate=args.wl_activate,
                                  wl_error=args.wl_error,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                                  subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
-                                 name = 'Conv'+str(i)+'_', model = args.model)
+                                 name = 'Conv'+str(i)+'_', model = args.network)
             non_linearity_activation =  nn.ReLU()
             layers += [conv2d, non_linearity_activation]
             in_channels = out_channels
@@ -50,7 +50,7 @@ def make_layers(cfg, args, logger ):
                                 logger=logger, wl_input = args.wl_activate,wl_activate=args.wl_activate,wl_error=args.wl_error,
                                 wl_weight=args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                                 subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target, 
-                                name='FC'+str(i)+'_', model = args.model)
+                                name='FC'+str(i)+'_', model = args.network)
             if i < len(cfg)-1:
                 non_linearity_activation =  nn.ReLU()
                 layers += [linear, non_linearity_activation]
