@@ -19,8 +19,6 @@ from subprocess import call
 import wandb
 from decimal import Decimal
 
-os.environ["WANDB_SILENT"] = "True"
-
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
 parser.add_argument('--type', default='cifar10', help='dataset for training')
 parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training')
@@ -103,8 +101,6 @@ args.cuda = torch.cuda.is_available()
 torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
-
-wandb.config.update(args, allow_val_change=True)
 
 # data loader and model
 assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
