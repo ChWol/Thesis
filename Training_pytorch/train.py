@@ -76,7 +76,7 @@ alpha = 1 - args.momentum
 wandb.init(project=args.type.upper(), config=args, entity='duke-tum')
 wandb.run.name = args.network + ": " + wandb.run.id
 
-args = wandb.config
+args = wandb.config.copy()
 
 delta_distribution = open("delta_dist.csv", 'ab')
 delta_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", "6_mean", "7_mean", "8_mean", "1_std",
