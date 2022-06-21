@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 from modules.quantization_cpu_np_infer import QConv2d, QLinear
-from modules.floatrange_cpu_np_infer import FConv2d, FLinear
 from torchvision.models.utils import load_state_dict_from_url
 name=0
 
@@ -32,13 +31,6 @@ def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1,args=None,logg
                      wl_error=args.wl_error,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                      subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
                      name = 'Conv3x3'+'_'+str(name)+'_', model = args.model)
-        
-    elif args.mode == "FP":
-        conv2d = FConv2d(in_planes, out_planes, kernel_size=3, stride=stride,
-                     padding=dilation, groups=groups, bias=False, dilation=dilation,
-                     logger=logger,wl_input = args.wl_activate,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
-                     subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target, cuda=args.cuda,
-                     name = 'Conv3x3'+'_'+str(name)+'_' )
     name += 1
     return conv2d
 
@@ -51,11 +43,6 @@ def conv1x1(in_planes, out_planes, stride=1,args=None,logger=None):
                          wl_error=args.wl_error,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                          subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
                          name = 'Conv1x1'+'_'+str(name)+'_', model = args.model)
-    elif args.mode == "FP":
-        conv2d = FConv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False,
-                         logger=logger,wl_input = args.wl_activate,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
-                         subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target, cuda=args.cuda,
-                         name = 'Conv1x1'+'_'+str(name)+'_' )
     name += 1
     return conv2d
 
@@ -68,11 +55,6 @@ def Conv2d(in_planes, out_planes, kernel_size, stride, padding, args=None, logge
                          wl_error=args.wl_error,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                          subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
                          name = 'Conv'+'_'+str(name)+'_', model = args.model)
-    elif args.mode == "FP":
-        conv2d = FConv2d(in_planes, out_planes, kernel_size, stride, padding, bias=False,
-                         logger=logger,wl_input = args.wl_activate,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
-                         subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target, cuda=args.cuda,
-                         name = 'Conv'+'_'+str(name)+'_' )
     name += 1
     return conv2d
 
@@ -86,11 +68,6 @@ def Linear(in_planes, out_planes, args=None, logger=None):
                         wl_weight=args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                         subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target, 
                         name='FC'+'_'+str(name)+'_', model = args.model)
-    elif args.mode == "FP":
-        linear = FLinear(in_planes, out_planes, bias=False,
-                         logger=logger,wl_input = args.wl_activate,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
-                         subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target, cuda=args.cuda,
-                         name='FC'+'_'+str(name)+'_')
     name += 1
     return linear
     

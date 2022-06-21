@@ -2,7 +2,6 @@ from utee import misc
 print = misc.logger.info
 import torch.nn as nn
 from modules.quantization_cpu_np_infer import QConv2d,  QLinear
-from modules.floatrange_cpu_np_infer import FConv2d, FLinear
 import torch
 import math
 name=0
@@ -94,17 +93,12 @@ def make_layers(cfg, args, logger):
                 padding = v[3]//2
             else:
                 padding = 0
-            if True":
+            if True:
                 conv2d = QConv2d(in_channels, out_channels, kernel_size=v[3], stride=v[5], padding=padding,
                                  logger=logger,wl_input = args.wl_activate,wl_activate=args.wl_activate,
                                  wl_error=args.wl_error,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                                  subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
                                  name = 'Conv'+str(name)+'_', model = args.model)
-            elif args.mode == "FP":
-                conv2d = FConv2d(in_channels, out_channels, kernel_size=v[3], stride=v[5], padding=padding,
-                                 logger=logger,wl_input = args.wl_activate,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
-                                 subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
-                                 name = 'Conv'+str(name)+'_' )
             name += 1
             batchnorm = nn.BatchNorm2d(out_channels)
             non_linearity_activation =  nn.ReLU()
@@ -117,11 +111,6 @@ def make_layers(cfg, args, logger):
                                 wl_weight=args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                                 subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target, 
                                 name='FC'+str(i)+'_', model = args.model)
-            elif args.mode == "FP":
-                linear = FLinear(in_features=v[1], out_features=v[2],
-                                 logger=logger,wl_input = args.wl_activate,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
-                                 subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
-                                 name='FC'+str(i)+'_')
             layers += [linear]
     return nn.Sequential(*layers)
     

@@ -2,7 +2,6 @@ from utee import misc
 print = misc.logger.info
 import torch.nn as nn
 from modules.quantization_cpu_np_infer import QConv2d,  QLinear
-from modules.floatrange_cpu_np_infer import FConv2d, FLinear
 import torch
 
 class VGG(nn.Module):
@@ -42,11 +41,6 @@ def make_layers(cfg, args, logger ):
                                  wl_error=args.wl_error,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                                  subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
                                  name = 'Conv'+str(i)+'_', model = args.model)
-            elif args.mode == "FP":
-                conv2d = FConv2d(in_channels, out_channels, kernel_size=v[2], padding=padding,
-                                 logger=logger,wl_input = args.wl_activate,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
-                                 subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
-                                 name = 'Conv'+str(i)+'_' )
             non_linearity_activation =  nn.ReLU()
             layers += [conv2d, non_linearity_activation]
             in_channels = out_channels
@@ -57,11 +51,6 @@ def make_layers(cfg, args, logger ):
                                 wl_weight=args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                                 subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target, 
                                 name='FC'+str(i)+'_', model = args.model)
-            elif args.mode == "FP":
-                linear = FLinear(in_features=v[1], out_features=v[2],
-                                 logger=logger,wl_input = args.wl_activate,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
-                                 subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
-                                 name='FC'+str(i)+'_')
             if i < len(cfg)-1:
                 non_linearity_activation =  nn.ReLU()
                 layers += [linear, non_linearity_activation]
