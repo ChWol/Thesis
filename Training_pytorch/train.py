@@ -155,7 +155,7 @@ try:
             grad_scale = grad_scale / 8.0
 
         logger("training phase")
-        wandb.watch(model)
+        wandb.watch(model, log="all", log_freq=10)
         for batch_idx, (data, target) in enumerate(train_loader):
             indx_target = target.clone()
             if args.cuda:
@@ -295,8 +295,11 @@ try:
             log_input = {"Epoch": epoch + 1}
             for key, value in summary_out.items():
                 exponential = '%.2E' % Decimal(value[0])
-                log_input[key] = value[0]
+                log_input[key] = exponential
             wandb.log(log_input, step=epoch)
+
+    model.to_onnx()
+    wandb.save("model.onnx")
 
 
 except Exception as e:
