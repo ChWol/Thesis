@@ -155,6 +155,8 @@ try:
             grad_scale = grad_scale / 8.0
 
         logger("training phase")
+        criterion = wage_util.SSE()
+        wandb.watch(model, criterion, log="all", log_freq=10)
         for batch_idx, (data, target) in enumerate(train_loader):
             indx_target = target.clone()
             if args.cuda:
@@ -188,7 +190,7 @@ try:
                 pred = output.data.max(1)[1]  # get the index of the max log-probability
                 correct = pred.cpu().eq(indx_target).sum()
                 acc = float(correct) * 1.0 / len(data)
-                wandb.log({'Epoch': epoch + 1, 'Train Accuracy': acc, 'Train Loss': loss})
+                wandb.log({'Epoch': epoch + 1, 'Train Accuracy': acc, 'Train Loss': loss}, step=epoch)
                 logger('Train Epoch: {} [{}/{}] Loss: {:.6f} Acc: {:.4f} lr: {:.2e}'.format(
                     epoch, batch_idx * len(data), len(train_loader.dataset),
                     loss.data, acc, optimizer.param_groups[0]['lr']))
@@ -272,7 +274,7 @@ try:
 
             test_loss = test_loss / len(test_loader)  # average over number of mini-batch
             acc = 100. * correct / len(test_loader.dataset)
-            wandb.log({'Epoch': epoch + 1, 'Test Accuracy': acc, 'Test Loss': test_loss})
+            wandb.log({'Epoch': epoch + 1, 'Test Accuracy': acc, 'Test Loss': test_loss}, step=epoch)
             logger('\tEpoch {} Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
                 epoch, test_loss, correct, len(test_loader.dataset), acc))
             accuracy = acc.cpu().data.numpy()
@@ -289,13 +291,16 @@ try:
             for key, value in layer_out.items():
                 for layer, result in value.items():
                     log_input["Layer {}: {}".format(layer + 1, key)] = result
-            wandb.log(log_input)
+            wandb.log(log_input, step=epoch)
             summary_out = pd.read_csv("Summary.csv").to_dict()
             log_input = {"Epoch": epoch + 1}
             for key, value in summary_out.items():
                 exponential = '%.2E' % Decimal(value[0])
                 log_input[key] = value[0]
-            wandb.log(log_input)
+            wandb.log(log_input, step=epoch)
+
+    torch.onnx.export(model, "model.onnx")
+    wandb.save("model.onnx")
 
 except Exception as e:
     import traceback
