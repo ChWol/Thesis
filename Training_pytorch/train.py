@@ -190,7 +190,7 @@ try:
                 pred = output.data.max(1)[1]  # get the index of the max log-probability
                 correct = pred.cpu().eq(indx_target).sum()
                 acc = float(correct) * 1.0 / len(data)
-                wandb.log({'Epoch': epoch + 1, 'Train Accuracy': acc, 'Train Loss': loss}, step=epoch)
+                wandb.log({'Epoch': epoch + 1, 'Train Accuracy': acc, 'Train Loss': loss})
                 logger('Train Epoch: {} [{}/{}] Loss: {:.6f} Acc: {:.4f} lr: {:.2e}'.format(
                     epoch, batch_idx * len(data), len(train_loader.dataset),
                     loss.data, acc, optimizer.param_groups[0]['lr']))
@@ -274,7 +274,7 @@ try:
 
             test_loss = test_loss / len(test_loader)  # average over number of mini-batch
             acc = 100. * correct / len(test_loader.dataset)
-            wandb.log({'Epoch': epoch + 1, 'Test Accuracy': acc, 'Test Loss': test_loss}, step=epoch)
+            wandb.log({'Epoch': epoch + 1, 'Test Accuracy': acc, 'Test Loss': test_loss})
             logger('\tEpoch {} Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
                 epoch, test_loss, correct, len(test_loader.dataset), acc))
             accuracy = acc.cpu().data.numpy()
@@ -291,13 +291,13 @@ try:
             for key, value in layer_out.items():
                 for layer, result in value.items():
                     log_input["Layer {}: {}".format(layer + 1, key)] = result
-            wandb.log(log_input, step=epoch)
+            wandb.log(log_input)
             summary_out = pd.read_csv("Summary.csv").to_dict()
             log_input = {"Epoch": epoch + 1}
             for key, value in summary_out.items():
                 exponential = '%.2E' % Decimal(value[0])
                 log_input[key] = exponential
-            wandb.log(log_input, step=epoch)
+            wandb.log(log_input)
 
 
 except Exception as e:
