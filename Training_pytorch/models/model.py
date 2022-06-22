@@ -117,7 +117,12 @@ def make_classifiers(classifiers, args, logger, in_dimension):
 def get_model(num_classes, network):
     networks = {
         'speed': {
-            'features': [],
+            'features': [('C', 16, 3, 'same', 32),
+                         ('M', 2, 2),
+                         ('C', 32, 3, 'same', 16),
+                         ('M', 2, 2),
+                         ('C', 64, 3, 'same', 8),
+                         ('M', 2, 2)],
             'classifier': [('L', 512, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         },
@@ -191,10 +196,10 @@ def mnist(args, logger, pretrained=None):
     features = model["features"]
     classifiers = model["classifier"]
 
-    build_csv(features, classifiers, 784, 1)
+    build_csv(features, classifiers, 576, 1)
 
     features = make_features(features, args, logger, 1)
-    classifiers = make_classifiers(classifiers, args, logger, 784)
+    classifiers = make_classifiers(classifiers, args, logger, 576)
 
     model = MODEL(features, classifiers)
     if pretrained is not None:
