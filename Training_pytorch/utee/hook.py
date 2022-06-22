@@ -10,11 +10,10 @@ from utee import wage_quantizer
 
 def Neural_Sim(self, input, output):
     global model_n, FP
-
     print("quantize layer ", self.name)
-    input_file_name = './layer_record_' + str(model_n) + '/input' + str(self.name) + '.csv'
-    weight_file_name = './layer_record_' + str(model_n) + '/weight' + str(self.name) + '.csv'
-    f = open('./layer_record_' + str(model_n) + '/trace_command.sh', "a")
+    input_file_name = './layer_record/input' + str(self.name) + '.csv'
+    weight_file_name = './layer_record/weight' + str(self.name) + '.csv'
+    f = open('./layer_record/trace_command.sh', "a")
     f.write(weight_file_name + ' ' + input_file_name + ' ')
     if FP:
         weight_q = float_quantizer.float_range_quantize(self.weight, self.wl_weight)
