@@ -105,7 +105,7 @@ def make_classifiers(classifiers, args, logger, in_dimension):
                          t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + str(i) + '_')
 
         if i == len(classifiers) - 1:
-            layers += [linear, nn.Softmax(dim=1)]
+            layers += [linear]
         else:
             layers += [linear, activation]
 
@@ -117,12 +117,7 @@ def make_classifiers(classifiers, args, logger, in_dimension):
 def get_model(num_classes, network):
     networks = {
         'speed': {
-            'features': [('C', 16, 3, 'same', 32),
-                         ('M', 2, 2),
-                         ('C', 32, 3, 'same', 16),
-                         ('M', 2, 2),
-                         ('C', 64, 3, 'same', 8),
-                         ('M', 2, 2)],
+            'features': [],
             'classifier': [('L', 512, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         },
