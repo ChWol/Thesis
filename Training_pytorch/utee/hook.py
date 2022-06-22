@@ -1,29 +1,19 @@
-# from modules.quantize import quantize, quantize_grad, QConv2d, QLinear, RangeBN
 import os
-import torch.nn as nn
-import shutil
-from modules.quantization_cpu_np_infer import QConv2d, QLinear
+
 import numpy as np
-import torch
+from modules.quantization_cpu_np_infer import QConv2d, QLinear
 from utee import wage_quantizer
 
 
 def Neural_Sim(self, input, output):
-    print("quantize layer ", self.name)
     input_file_name = './layer_record/input' + str(self.name) + '.csv'
     weight_file_name = './layer_record/weight' + str(self.name) + '.csv'
+    weightOld_file_name = './layer_record/weightOld' + str(self.name) + '.csv'
     f = open('./layer_record/trace_command.sh', "a")
-    f.write(weight_file_name + ' ' + input_file_name + ' ')
+    input_activity = open('./input_activity.csv', "a")
     weight_q = wage_quantizer.Q(self.weight, self.wl_weight)
     write_matrix_weight(weight_q.cpu().data.numpy(), weight_file_name)
-    if len(self.weight.shape) > 2:
-        k = self.weight.shape[-1]
-        padding = self.padding
-        stride = self.stride
-        write_matrix_activation_conv(stretch_input(input[0].cpu().data.numpy(), k, padding, stride), None,
-                                     self.wl_input, input_file_name)
-    else:
-        write_matrix_activation_fc(input[0].cpu().data.numpy(), None, self.wl_input, input_file_name)
+    f.write(weight_file_name + ' ' + weightOld_file_name + ' ' + input_file_name + ' ')
 
 
 def write_matrix_weight(input_matrix, filename):
@@ -127,3 +117,11 @@ def hardware_evaluation(model, wl_weight, wl_activation, numEpoch, batchSize, ce
         if isinstance(layer, QLinear):
             hook_handle_list.append(layer.register_forward_hook(Neural_Sim))
     return hook_handle_list
+
+
+def pre_save_old_weight(oldWeight, name, wl_weight):
+    if not os.path.exists('./layer_record'):
+        os.makedirs('./layer_record')
+    weight_file_name = './layer_record/Oldweight' + str(name) + '.csv'
+    weight_q = wage_quantizer.Q(oldWeight, wl_weight)
+    write_matrix_weight(weight_q.cpu().data.numpy(), weight_file_name)
