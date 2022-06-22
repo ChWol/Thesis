@@ -126,11 +126,6 @@ def get_model(num_classes, network):
             'classifier': [('L', 1024, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         },
-        'simple': {
-            'features': [],
-            'classifier': [('L', 1024, 1, 'same', 1),
-                           ('L', num_classes, 1, 'same', 1)]
-        },
         'vgg8': {
             'features': [('C', 128, 3, 'same', 32),
                          ('C', 128, 3, 'same', 32),
@@ -188,10 +183,10 @@ def mnist(args, logger, pretrained=None):
     features = model["features"]
     classifiers = model["classifier"]
 
-    build_csv(features, classifiers, 784, 1)
+    build_csv(features, classifiers, 4608, 1)
 
     features = make_features(features, args, logger, 1)
-    classifiers = make_classifiers(classifiers, args, logger, 784)
+    classifiers = make_classifiers(classifiers, args, logger, 4608)
 
     model = MODEL(features, classifiers)
     if pretrained is not None:
