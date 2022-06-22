@@ -237,6 +237,7 @@ class QLinear(nn.Linear):
         bitActivation = int(self.wl_input)
 
         if self.inference == 1:
+            print("INFERENCE IS ON: {}".format(self.name))
             # retention
             weight = wage_quantizer.Retention(weight, self.t, self.v, self.detect, self.target)
             # set parameters for Hardware Inference
