@@ -51,7 +51,7 @@ def QW(x, bits, scale=1.0):
 
 def QE(x, bits):
     max_entry = x.abs().max()
-    assert max_entry != 0, "QE blow"
+    #assert max_entry != 0, "QE blow"
     #if max_entry != 0:
     x /= shift(max_entry)
     return Q(C(x, bits), bits)
