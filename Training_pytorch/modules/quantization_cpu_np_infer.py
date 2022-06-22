@@ -47,7 +47,7 @@ class QConv2d(nn.Conv2d):
         bitActivation = int(self.wl_input)
 
         if self.inference == 1:
-
+            print("HERE WE GO")
             # set parameters for Hardware Inference
             onoffratio = self.onoffratio
             upper = 1
@@ -238,6 +238,7 @@ class QLinear(nn.Linear):
         bitActivation = int(self.wl_input)
 
         if self.inference == 1:
+            print("HERE WE GO")
             # set parameters for Hardware Inference
             onoffratio = self.onoffratio
             upper = 1
