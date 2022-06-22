@@ -6,7 +6,6 @@ from modules.quantization_cpu_np_infer import QConv2d, QLinear
 import numpy as np
 import torch
 from utee import wage_quantizer
-from utee import float_quantizer
 
 
 def Neural_Sim(self, input, output):
