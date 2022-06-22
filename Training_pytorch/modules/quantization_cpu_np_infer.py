@@ -185,12 +185,10 @@ class QConv2d(nn.Conv2d):
                         output = output + outputIN / (2 ** bitActivation)
             output = output / (2 ** bitWeight)  # since weight range was convert from [-1, 1] to [-256, 256]
         else:
+            # original WAGE QCov2d
             weight1 = self.weight * self.scale + (self.weight - self.weight * self.scale).detach()
             weight = weight1 + (wage_quantizer.Q(weight1, self.wl_weight) - weight1).detach()
-            weight = wage_quantizer.Retention(weight, self.t, self.v, self.detect, self.target)
-            input = wage_quantizer.Q(input, self.wl_input)
             output = F.conv2d(input, weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
-            output = wage_quantizer.LinearQuantizeOut(output, self.ADCprecision)
         output = output / self.scale
         output = wage_quantizer.WAGEQuantizer_f(output, self.wl_activate, self.wl_error)
 
@@ -329,12 +327,10 @@ class QLinear(nn.Linear):
                 output = output + outputIN / (2 ** bitActivation)
             output = output / (2 ** bitWeight)
         else:
+            # original WAGE QCov2d
             weight1 = self.weight * self.scale + (self.weight - self.weight * self.scale).detach()
             weight = weight1 + (wage_quantizer.Q(weight1, self.wl_weight) - weight1).detach()
-            weight = wage_quantizer.Retention(weight, self.t, self.v, self.detect, self.target)
-            input = wage_quantizer.Q(input, self.wl_input)
             output = F.linear(input, weight, self.bias)
-            output = wage_quantizer.LinearQuantizeOut(output, self.ADCprecision)
 
         output = output / self.scale
         output = wage_quantizer.WAGEQuantizer_f(output, self.wl_activate, self.wl_error)
