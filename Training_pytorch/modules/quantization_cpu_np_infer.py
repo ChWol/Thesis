@@ -85,7 +85,7 @@ class QConv2d(nn.Conv2d):
                                             cellRange - 1) * lower  # weight cannot map to 0, but to Gmin
                                 remainderQ = remainderQ + remainderQ * torch.normal(0., torch.full(remainderQ.size(),
                                                                                                    self.vari,
-                                                                                                   device='cuda'))
+                                                                                                   device='cuda').float())
                                 outputPartial = F.conv2d(input, remainderQ * mask, self.bias, self.stride, self.padding,
                                                          self.dilation, self.groups)
                                 outputDummyPartial = F.conv2d(input, dummyP * mask, self.bias, self.stride,
@@ -119,7 +119,7 @@ class QConv2d(nn.Conv2d):
                                     remainderQ = remainderQ + remainderQ * torch.normal(0.,
                                                                                         torch.full(remainderQ.size(),
                                                                                                    self.vari,
-                                                                                                   device='cuda'))
+                                                                                                   device='cuda').float())
                                     outputPartial = F.conv2d(inputB, remainderQ * mask, self.bias, self.stride,
                                                              self.padding, self.dilation, self.groups)
                                     outputDummyPartial = F.conv2d(inputB, dummyP * mask, self.bias, self.stride,
@@ -162,7 +162,7 @@ class QConv2d(nn.Conv2d):
                                     remainderQ = remainderQ + remainderQ * torch.normal(0.,
                                                                                         torch.full(remainderQ.size(),
                                                                                                    self.vari,
-                                                                                                   device='cuda'))
+                                                                                                   device='cuda').float())
                                     outputPartial = F.conv2d(inputB, remainderQ * mask, self.bias, self.stride,
                                                              self.padding, self.dilation, self.groups)
                                     outputDummyPartial = F.conv2d(inputB, dummyP * mask, self.bias, self.stride,
@@ -274,7 +274,7 @@ class QLinear(nn.Linear):
                         remainderQ = (upper - lower) * (remainder - 0) + (
                                     cellRange - 1) * lower  # weight cannot map to 0, but to Gmin
                         remainderQ = remainderQ + remainderQ * torch.normal(0., torch.full(remainderQ.size(), self.vari,
-                                                                                           device='cuda'))
+                                                                                           device='cuda').float())
                         outputPartial = F.linear(inputB, remainderQ * mask, self.bias)
                         outputDummyPartial = F.linear(inputB, dummyP * mask, self.bias)
                         # Add ADC quanization effects here !!!
@@ -312,7 +312,7 @@ class QLinear(nn.Linear):
                                         cellRange - 1) * lower  # weight cannot map to 0, but to Gmin
                             remainderQ = remainderQ + remainderQ * torch.normal(0.,
                                                                                 torch.full(remainderQ.size(), self.vari,
-                                                                                           device='cuda'))
+                                                                                           device='cuda').float())
                             outputPartial = F.linear(inputB, remainderQ * mask, self.bias)
                             outputDummyPartial = F.linear(inputB, dummyP * mask, self.bias)
                             # Add ADC quanization effects here !!!
