@@ -105,7 +105,7 @@ def make_classifiers(classifiers, args, logger, in_dimension):
                          t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + str(i) + '_')
 
         if i == len(classifiers) - 1:
-            layers += [linear]
+            layers += [linear, nn.Softmax()]
         else:
             layers += [linear, activation]
 
