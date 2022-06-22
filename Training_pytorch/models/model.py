@@ -117,24 +117,24 @@ def make_classifiers(classifiers, args, logger, in_dimension):
 def get_model(num_classes, network):
     networks = {
         'speed': {
-            'features': [('C', 128, 3, 'same', 32),
+            'features': [('C', 16, 3, 'same', 32),
                          ('M', 2, 2),
-                         ('C', 128, 3, 'same', 16),
+                         ('C', 32, 3, 'same', 16),
                          ('M', 2, 2),
-                         ('C', 128, 3, 'same', 8),
+                         ('C', 64, 3, 'same', 8),
                          ('M', 2, 2)],
             'classifier': [('L', 1024, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         },
         'vgg8': {
-            'features': [('C', 128, 3, 'same', 32),
-                         ('C', 128, 3, 'same', 32),
+            'features': [('C', 16, 3, 'same', 32),
+                         ('C', 16, 3, 'same', 32),
                          ('M', 2, 2),
-                         ('C', 256, 3, 'same', 16),
-                         ('C', 256, 3, 'same', 16),
+                         ('C', 32, 3, 'same', 16),
+                         ('C', 32, 3, 'same', 16),
                          ('M', 2, 2),
-                         ('C', 512, 3, 'same', 8),
-                         ('C', 512, 3, 'same', 8),
+                         ('C', 64, 3, 'same', 8),
+                         ('C', 64, 3, 'same', 8),
                          ('M', 2, 2)],
             'classifier': [('L', 1024, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
