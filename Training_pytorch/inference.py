@@ -89,10 +89,10 @@ model_path = (args.logdir + '/best-{}.pth').format(args.epochs - 1)
 assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
-    model = model.cifar10(args=args, logger=logger, pretrained=model_path)
+    model = model.cifar(args=args, logger=logger, num_classes=10, pretrained=model_path)
 if args.type == 'cifar100':
     train_loader, test_loader = dataset.get100(batch_size=args.batch_size, num_workers=1)
-    model = model.cifar100(args=args, logger=logger, pretrained=model_path)
+    model = model.cifar(args=args, logger=logger, num_classes=100, pretrained=model_path)
 if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     model = model.mnist(args=args, logger=logger, pretrained=model_path)
