@@ -327,7 +327,7 @@ try:
                 log_input[key] = exponential
             wandb.log(log_input)
 
-            torch.onnx.export(model, data, "model.onnx", input_names=["input"], output_names=["output"])
+            torch.onnx.export(model, data, "model.onnx", opset_version=11, input_names=["input"], output_names=["output"])
             wandb.save("model.onnx")
 
 
