@@ -115,8 +115,8 @@ Param::Param() {
 	treeFoldedRatio = 4;                // the H-Tree is assumed to be able to folding in layout (save area)
 	maxGlobalBusWidth = 8192;           // the max buswidth allowed on chip level (just a upper_bound, the actual bus width is defined according to the auto floorplan)
 
-	numRowSubArray = 128;               // # of rows in single subArray
-	numColSubArray = 128;               // # of columns in single subArray
+	numRowSubArray = 32;               // # of rows in single subArray
+	numColSubArray = 32;               // # of columns in single subArray
 	
 	/*** option to relax subArray layout ***/
 	relaxArrayCellHeight = 0;           // relax ArrayCellHeight or not
@@ -175,8 +175,8 @@ Param::Param() {
 	bufferOverHeadConstraint = 1;       // N times of overhead of the original buffer designed for inference only
 										// For example: if N=3, the buffer size will be at most 4*original buffer size
 	
-	numRowSubArrayWG = 128;             // # of rows of single SRAM subArray in "gradient calculation of weight"
-	numColSubArrayWG = 128;             // # of columns of single SRAM subArray in "gradient calculation of weight"
+	numRowSubArrayWG = 32;             // # of rows of single SRAM subArray in "gradient calculation of weight"
+	numColSubArrayWG = 32;             // # of columns of single SRAM subArray in "gradient calculation of weight"
 	
 	numRowMuxedAG = 8;                  // How many columns share 1 ADC (for Transpose array) in transpose subarray (gradient calculation of activation)
 	levelOutputAG = 64;                 // # of levels of the multilevelSenseAmp output, in transpose subarray (gradient calculation of activation)
