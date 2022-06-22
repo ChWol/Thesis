@@ -123,7 +123,7 @@ def get_model(num_classes, network):
                          ('M', 2, 2),
                          ('C', 64, 3, 'same', 8),
                          ('M', 2, 2)],
-            'classifier': [('L', 1024, 1, 'same', 1),
+            'classifier': [('L', 512, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         },
         'vgg8': {
@@ -136,7 +136,7 @@ def get_model(num_classes, network):
                          ('C', 64, 3, 'same', 8),
                          ('C', 64, 3, 'same', 8),
                          ('M', 2, 2)],
-            'classifier': [('L', 1024, 1, 'same', 1),
+            'classifier': [('L', 512, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         },
         'vgg11': {

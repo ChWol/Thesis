@@ -8,6 +8,8 @@ import math as m
 
 def shift(x):
     #TODO: edge case, when x contains 0
+    if x == 0:
+        x = 0.0001
     return 2.**torch.round(torch.log2(x))
 
 def S(bits):
