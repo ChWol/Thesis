@@ -126,6 +126,12 @@ def get_model(num_classes, network):
             'classifier': [('L', 1024, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         },
+        'simple': {
+            'features': [('C', 128, 3, 'same', 32),
+                         ('M', 2, 2)],
+            'classifier': [('L', 1024, 1, 'same', 1),
+                           ('L', num_classes, 1, 'same', 1)]
+        },
         'vgg8': {
             'features': [('C', 128, 3, 'same', 32),
                          ('C', 128, 3, 'same', 32),
