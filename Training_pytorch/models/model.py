@@ -167,10 +167,10 @@ def cifar(args, logger, num_classes, pretrained=None):
     features = model["features"]
     classifiers = model["classifier"]
 
-    build_csv(features, classifiers, 8192, 3)
+    build_csv(features, classifiers, 1024, 3)
 
     features = make_features(features, args, logger, 3)
-    classifiers = make_classifiers(classifiers, args, logger, 8192)
+    classifiers = make_classifiers(classifiers, args, logger, 1024)
 
     model = MODEL(features, classifiers)
     if pretrained is not None:
@@ -183,10 +183,10 @@ def mnist(args, logger, pretrained=None):
     features = model["features"]
     classifiers = model["classifier"]
 
-    build_csv(features, classifiers, 4608, 1)
+    build_csv(features, classifiers, 576, 1)
 
     features = make_features(features, args, logger, 1)
-    classifiers = make_classifiers(classifiers, args, logger, 4608)
+    classifiers = make_classifiers(classifiers, args, logger, 576)
 
     model = MODEL(features, classifiers)
     if pretrained is not None:
