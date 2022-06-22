@@ -3,7 +3,6 @@ import os
 import torch.nn as nn
 import shutil
 from modules.quantization_cpu_np_infer import QConv2d, QLinear
-from modules.floatrange_cpu_np_infer import FConv2d, FLinear
 import numpy as np
 import torch
 from utee import wage_quantizer
@@ -129,6 +128,6 @@ def hardware_evaluation(model, wl_weight, wl_activation, model_name, mode):
         wl_activation) + ' ')
 
     for i, layer in enumerate(model.modules()):
-        if isinstance(layer, (FConv2d, QConv2d, nn.Conv2d)) or isinstance(layer, (FLinear, QLinear, nn.Linear)):
+        if isinstance(layer, (QConv2d, nn.Conv2d)) or isinstance(layer, (QLinear, nn.Linear)):
             hook_handle_list.append(layer.register_forward_hook(Neural_Sim))
     return hook_handle_list
