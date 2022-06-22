@@ -1,32 +1,36 @@
+# from modules.quantize import quantize, quantize_grad, QConv2d, QLinear, RangeBN
 import os
-
-import numpy as np
+import torch.nn as nn
+import shutil
 from modules.quantization_cpu_np_infer import QConv2d, QLinear
+from modules.floatrange_cpu_np_infer import FConv2d, FLinear
+import numpy as np
+import torch
 from utee import wage_quantizer
+from utee import float_quantizer
 
 
 def Neural_Sim(self, input, output):
-    input_file_name = './layer_record/input' + str(self.name) + '.csv'
-    weight_file_name = './layer_record/weight' + str(self.name) + '.csv'
-    weightOld_file_name = './layer_record/weightOld' + str(self.name) + '.csv'
-    f = open('./layer_record/trace_command.sh', "a")
-    input_activity = open('./input_activity.csv', "a")
-    weight_q = wage_quantizer.Q(self.weight, self.wl_weight)
+    global model_n, FP
+
+    print("quantize layer ", self.name)
+    input_file_name = './layer_record_' + str(model_n) + '/input' + str(self.name) + '.csv'
+    weight_file_name = './layer_record_' + str(model_n) + '/weight' + str(self.name) + '.csv'
+    f = open('./layer_record_' + str(model_n) + '/trace_command.sh', "a")
+    f.write(weight_file_name + ' ' + input_file_name + ' ')
+    if FP:
+        weight_q = float_quantizer.float_range_quantize(self.weight, self.wl_weight)
+    else:
+        weight_q = wage_quantizer.Q(self.weight, self.wl_weight)
     write_matrix_weight(weight_q.cpu().data.numpy(), weight_file_name)
     if len(self.weight.shape) > 2:
         k = self.weight.shape[-1]
         padding = self.padding
         stride = self.stride
-        activity = write_matrix_activation_conv(stretch_input(input[0].cpu().data.numpy(), k, padding, stride), None,
-                                                self.wl_input, input_file_name)
-        input_activity.write(str(activity) + ",")
+        write_matrix_activation_conv(stretch_input(input[0].cpu().data.numpy(), k, padding, stride), None,
+                                     self.wl_input, input_file_name)
     else:
-        activity = write_matrix_activation_fc(input[0].cpu().data.numpy(), None, self.wl_input, input_file_name)
-        if (str(self.name) == 'FC2_'):
-            input_activity.write(str(activity) + "\n")
-        else:
-            input_activity.write(str(activity) + ",")
-    f.write(weight_file_name + ' ' + weightOld_file_name + ' ' + input_file_name + ' ' + str(activity) + ' ')
+        write_matrix_activation_fc(input[0].cpu().data.numpy(), None, self.wl_input, input_file_name)
 
 
 def write_matrix_weight(input_matrix, filename):
@@ -40,9 +44,7 @@ def write_matrix_activation_conv(input_matrix, fill_dimension, length, filename)
     filled_matrix_bin, scale = dec2bin(input_matrix[0, :], length)
     for i, b in enumerate(filled_matrix_bin):
         filled_matrix_b[:, i::length] = b.transpose()
-    activity = np.sum(filled_matrix_b.astype(np.float), axis=None) / np.size(filled_matrix_b)
     np.savetxt(filename, filled_matrix_b, delimiter=",", fmt='%s')
-    return activity
 
 
 def write_matrix_activation_fc(input_matrix, fill_dimension, length, filename):
@@ -50,9 +52,7 @@ def write_matrix_activation_fc(input_matrix, fill_dimension, length, filename):
     filled_matrix_bin, scale = dec2bin(input_matrix[0, :], length)
     for i, b in enumerate(filled_matrix_bin):
         filled_matrix_b[:, i] = b
-    activity = np.sum(filled_matrix_b.astype(np.float), axis=None) / np.size(filled_matrix_b)
     np.savetxt(filename, filled_matrix_b, delimiter=",", fmt='%s')
-    return activity
 
 
 def stretch_input(input_matrix, window_size=5, padding=(0, 0), stride=(1, 1)):
@@ -114,31 +114,21 @@ def remove_hook_list(hook_handle_list):
         handle.remove()
 
 
-def hardware_evaluation(model, wl_weight, wl_activation, numEpoch, batchSize, cellBit, technode,
-                        wireWidth, relu, memcelltype, levelOutput, onoffratio):
+def hardware_evaluation(model, wl_weight, wl_activation, model_name, mode):
+    global model_n, FP
+    model_n = model_name
+    FP = 1 if mode == 'FP' else 0
+
     hook_handle_list = []
-    if not os.path.exists('./layer_record'):
-        os.makedirs('./layer_record')
-    if os.path.exists('./layer_record/trace_command.sh'):
-        os.remove('./layer_record/trace_command.sh')
-    f = open('./layer_record/trace_command.sh', "w")
-    # Todo: From V1.3
-    # ./NeuroSIM/NetWork_'+str(model_name)+'.csv
-    f.write('./NeuroSIM/main ' + str(numEpoch) + ' ./NeuroSIM/NetWork.csv ' + str(wl_weight) + ' ' + str(wl_activation)
-            + ' ' + str(batchSize) + ' ' + str(cellBit) + ' ' + str(technode) + ' ' + str(wireWidth) + ' '
-            + str(relu) + ' ' + str(memcelltype) + ' ' + str(levelOutput) + ' ' + str(onoffratio) + ' ')
-    for i, layer in enumerate(model.features.modules()):
-        if isinstance(layer, QConv2d) or isinstance(layer, QLinear):
-            hook_handle_list.append(layer.register_forward_hook(Neural_Sim))
-    for i, layer in enumerate(model.classifier.modules()):
-        if isinstance(layer, QLinear):
+    if not os.path.exists('./layer_record_' + str(model_name)):
+        os.makedirs('./layer_record_' + str(model_name))
+    if os.path.exists('./layer_record_' + str(model_name) + '/trace_command.sh'):
+        os.remove('./layer_record_' + str(model_name) + '/trace_command.sh')
+    f = open('./layer_record_' + str(model_name) + '/trace_command.sh', "w")
+    f.write('./NeuroSIM/main ./NeuroSIM/NetWork_' + str(model_name) + '.csv ' + str(wl_weight) + ' ' + str(
+        wl_activation) + ' ')
+
+    for i, layer in enumerate(model.modules()):
+        if isinstance(layer, (FConv2d, QConv2d, nn.Conv2d)) or isinstance(layer, (FLinear, QLinear, nn.Linear)):
             hook_handle_list.append(layer.register_forward_hook(Neural_Sim))
     return hook_handle_list
-
-
-def pre_save_old_weight(oldWeight, name, wl_weight):
-    if not os.path.exists('./layer_record'):
-        os.makedirs('./layer_record')
-    weight_file_name = './layer_record/Oldweight' + str(name) + '.csv'
-    weight_q = wage_quantizer.Q(oldWeight, wl_weight)
-    write_matrix_weight(weight_q.cpu().data.numpy(), weight_file_name)
