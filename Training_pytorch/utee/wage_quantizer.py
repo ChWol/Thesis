@@ -51,7 +51,7 @@ def QE(x, bits):
     max_entry = x.abs().max()
     #assert max_entry != 0, "QE blow"
     if max_entry != 0:
-        x += 0.000001
+        x += 2.220446049250313e-16
     x /= shift(max_entry)
     return Q(C(x, bits), bits)
 
@@ -59,7 +59,7 @@ def QG(origin, bits_W, x, bits_G, lr, paramALTP, paramALTD, maxLevelLTP, maxLeve
     max_entry = x.abs().max()
     #assert max_entry != 0, "QG blow"
     if max_entry != 0:
-        x += 0.000001
+        x += 2.220446049250313e-16
     x /= shift(max_entry)
     gradient = lr * x
     # introduce non-linearity here
