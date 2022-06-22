@@ -112,21 +112,23 @@ def remove_hook_list(hook_handle_list):
         handle.remove()
 
 
-def hardware_evaluation(model, wl_weight, wl_activation, model_name, mode):
-    global model_n, FP
-    model_n = model_name
-    FP = 1 if mode == 'FP' else 0
-
+def hardware_evaluation(model, wl_weight, wl_activation, numEpoch, batchSize, cellBit, technode,
+                        wireWidth, relu, memcelltype, levelOutput, onoffratio):
     hook_handle_list = []
-    if not os.path.exists('./layer_record_' + str(model_name)):
-        os.makedirs('./layer_record_' + str(model_name))
-    if os.path.exists('./layer_record_' + str(model_name) + '/trace_command.sh'):
-        os.remove('./layer_record_' + str(model_name) + '/trace_command.sh')
-    f = open('./layer_record_' + str(model_name) + '/trace_command.sh', "w")
-    f.write('./NeuroSIM/main ./NeuroSIM/NetWork_' + str(model_name) + '.csv ' + str(wl_weight) + ' ' + str(
-        wl_activation) + ' ')
-
-    for i, layer in enumerate(model.modules()):
-        if isinstance(layer, (QConv2d, nn.Conv2d)) or isinstance(layer, (QLinear, nn.Linear)):
+    if not os.path.exists('./layer_record'):
+        os.makedirs('./layer_record')
+    if os.path.exists('./layer_record/trace_command.sh'):
+        os.remove('./layer_record/trace_command.sh')
+    f = open('./layer_record/trace_command.sh', "w")
+    # Todo: From V1.3
+    # ./NeuroSIM/NetWork_'+str(model_name)+'.csv
+    f.write('./NeuroSIM/main ' + str(numEpoch) + ' ./NeuroSIM/NetWork.csv ' + str(wl_weight) + ' ' + str(wl_activation)
+            + ' ' + str(batchSize) + ' ' + str(cellBit) + ' ' + str(technode) + ' ' + str(wireWidth) + ' '
+            + str(relu) + ' ' + str(memcelltype) + ' ' + str(levelOutput) + ' ' + str(onoffratio) + ' ')
+    for i, layer in enumerate(model.features.modules()):
+        if isinstance(layer, QConv2d) or isinstance(layer, QLinear):
+            hook_handle_list.append(layer.register_forward_hook(Neural_Sim))
+    for i, layer in enumerate(model.classifier.modules()):
+        if isinstance(layer, QLinear):
             hook_handle_list.append(layer.register_forward_hook(Neural_Sim))
     return hook_handle_list
