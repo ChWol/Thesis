@@ -8,8 +8,6 @@ import math as m
 
 def shift(x):
     #TODO: edge case, when x contains 0
-    if x == 0:
-        x = 0.0001
     return 2.**torch.round(torch.log2(x))
 
 def S(bits):
@@ -52,7 +50,8 @@ def QW(x, bits, scale=1.0):
 def QE(x, bits):
     max_entry = x.abs().max()
     #assert max_entry != 0, "QE blow"
-    #if max_entry != 0:
+    if max_entry != 0:
+        x += 0.000001
     x /= shift(max_entry)
     return Q(C(x, bits), bits)
 
