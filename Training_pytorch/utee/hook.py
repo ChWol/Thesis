@@ -36,10 +36,8 @@ def write_matrix_weight(input_matrix, filename):
 
 
 def write_matrix_activation_conv(input_matrix, fill_dimension, length, filename, name):
-    if name == "Conv7_":
+    if name == "Conv8_":
         print(input_matrix)
-        print(fill_dimension)
-        print(length)
     filled_matrix_b = np.zeros([input_matrix.shape[2], input_matrix.shape[1] * length], dtype=np.str)
     filled_matrix_bin, scale = dec2bin(input_matrix[0, :], length)
     for i, b in enumerate(filled_matrix_bin):
