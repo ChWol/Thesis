@@ -84,10 +84,8 @@ weight_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", 
                               "2_std", "3_std", "4_std", "5_std", "6_std", "7_std", "8_std"]])
 np.savetxt(weight_distribution, weight_firstline, delimiter=",", fmt='%s')
 
-args.inference = 0
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
 args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs'])
-args.inference = 1
 misc.logger.init(args.logdir, 'train_log_' + current_time)
 logger = misc.logger.info
 
