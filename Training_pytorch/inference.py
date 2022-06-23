@@ -123,7 +123,7 @@ for i, (data, target) in enumerate(test_loader):
     with torch.no_grad():
         data, target = Variable(data), Variable(target)
         output = model(data)
-        test_loss_i = torch.nn.CrossEntropyLoss(output, target)
+        test_loss_i = wage_util.SSE(output, target)
         test_loss += test_loss_i.data
         pred = output.data.max(1)[1]  # get the index of the max log-probability
         correct += pred.cpu().eq(indx_target).sum()
