@@ -188,10 +188,10 @@ def cifar(args, logger, num_classes, pretrained=None):
     features = model["features"]
     classifiers = model["classifier"]
 
-    build_csv(features, classifiers, 2048, 3)
+    build_csv(features, classifiers, 1024, 3)
 
     features = make_features(features, args, logger, 3)
-    classifiers = make_classifiers(classifiers, args, logger, 2048)
+    classifiers = make_classifiers(classifiers, args, logger, 1024)
 
     model = MODEL(features, classifiers)
     if pretrained is not None:

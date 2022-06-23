@@ -1,6 +1,8 @@
 import argparse
 import os
 import time
+
+from Training_pytorch.utee import wage_util
 from utee import misc
 import torch
 import torch.nn.functional as F
@@ -122,7 +124,8 @@ for i, (data, target) in enumerate(test_loader):
     with torch.no_grad():
         data, target = Variable(data), Variable(target)
         output = model(data)
-        test_loss += F.cross_entropy(output, target).data
+        test_loss_i = wage_util.SSE(output, target)
+        test_loss += test_loss_i.data
         pred = output.data.max(1)[1]  # get the index of the max log-probability
         correct += pred.cpu().eq(indx_target).sum()
     if i == 0:
