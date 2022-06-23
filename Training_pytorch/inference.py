@@ -71,6 +71,8 @@ args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epo
 misc.logger.init(args.logdir, 'test_log' + current_time)
 logger = misc.logger.info
 
+args.inference = 1
+
 
 misc.ensure_dir(args.logdir)
 logger("=================FLAGS==================")
