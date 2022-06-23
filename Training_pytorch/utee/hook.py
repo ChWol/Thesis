@@ -6,7 +6,6 @@ from utee import wage_quantizer
 
 
 def Neural_Sim(self, input, output):
-    print(self.name)
     input_file_name = './layer_record/input' + str(self.name) + '.csv'
     weight_file_name = './layer_record/weight' + str(self.name) + '.csv'
     weightOld_file_name = './layer_record/weightOld' + str(self.name) + '.csv'
@@ -22,6 +21,7 @@ def Neural_Sim(self, input, output):
                                                 self.wl_input, input_file_name)
         input_activity.write(str(activity) + ",")
     else:
+        print(self.name)
         activity = write_matrix_activation_fc(input[0].cpu().data.numpy(), None, self.wl_input, input_file_name)
         if (str(self.name) == 'FC2_'):
             input_activity.write(str(activity) + "\n")
