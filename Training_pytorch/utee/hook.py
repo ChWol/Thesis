@@ -21,7 +21,6 @@ def Neural_Sim(self, input, output):
                                                 self.wl_input, input_file_name)
         input_activity.write(str(activity) + ",")
     else:
-        print(self.name)
         activity = write_matrix_activation_fc(input[0].cpu().data.numpy(), None, self.wl_input, input_file_name)
         if (str(self.name) == 'FC2_'):
             input_activity.write(str(activity) + "\n")
@@ -47,6 +46,11 @@ def write_matrix_activation_conv(input_matrix, fill_dimension, length, filename)
 
 
 def write_matrix_activation_fc(input_matrix, fill_dimension, length, filename):
+    print("This is the first linear layer")
+    print(input_matrix)
+    print(fill_dimension)
+    print(length)
+    print(filename)
     filled_matrix_b = np.zeros([input_matrix.shape[1], length], dtype=np.str)
     filled_matrix_bin, scale = dec2bin(input_matrix[0, :], length)
     for i, b in enumerate(filled_matrix_bin):
