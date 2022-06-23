@@ -84,10 +84,12 @@ weight_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", 
                               "2_std", "3_std", "4_std", "5_std", "6_std", "7_std", "8_std"]])
 np.savetxt(weight_distribution, weight_firstline, delimiter=",", fmt='%s')
 
+args.inference = 0
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
 args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs'])
 misc.logger.init(args.logdir, 'train_log_' + current_time)
 logger = misc.logger.info
+args.inference = 1
 
 # console logger
 misc.ensure_dir(args.logdir)
@@ -115,7 +117,7 @@ if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     model = model.mnist(args=args, logger=logger)
 
-#model.load_state_dict(torch.load(os.path.abspath(os.path.expanduser(os.path.join(args.logdir, 'best-4.pth')))))
+model.load_state_dict(torch.load(os.path.abspath(os.path.expanduser(os.path.join(args.logdir, 'best-6.pth')))))
 #/home/chwolters/Thesis/Training_pytorch/log/default/ADCprecision=5/batch_size=200/c2cVari=0.003/cellBit=6/d2dVari=0/decreasing_lr=200,250/detect=0/grad_scale=1/inference=0/max_level=64/memcelltype=3/momentum=0.9/network=speed/nonlinearityLTD=1.46/nonlinearityLTP=1.75/onoffratio=10/relu=1/seed=117/subArray=32/t=0/target=0/technode=7/type=cifar10/v=0/vari=0/wireWidth=14/wl_activate=8/wl_error=8/wl_grad=6/wl_weight=6/best-4.pth
 #/home/chwolters/Thesis/Training_pytorch/log/default/ADCprecision=5/batch_size=200/c2cVari=0.003/cellBit=6/d2dVari=0/decreasing_lr=200,250/detect=0/grad_scale=1/inference=0/max_level=64/memcelltype=3/momentum=0.9/network=speed/nonlinearityLTD=1.46/nonlinearityLTP=1.75/onoffratio=10/relu=1/seed=117/subArray=32/t=0/target=0/technode=7/type=cifar10/v=0/vari=0/wireWidth=14/wl_activate=8/wl_error=8/wl_grad=6/wl_weight=6/best-{4}.pth'
 # Todo: From 1.3
