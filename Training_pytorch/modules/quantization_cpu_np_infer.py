@@ -37,7 +37,6 @@ class QConv2d(nn.Conv2d):
         self.name = name
         self.scale = wage_initializer.wage_init_(self.weight, self.wl_weight, factor=1.0)
 
-    @weak_script_method
     def forward(self, input):
 
         weight1 = self.weight * self.scale + (self.weight - self.weight * self.scale).detach()
