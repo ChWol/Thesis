@@ -18,7 +18,7 @@ def Neural_Sim(self, input, output):
         padding = self.padding
         stride = self.stride
         activity = write_matrix_activation_conv(stretch_input(input[0].cpu().data.numpy(), k, padding, stride), None,
-                                                self.wl_input, input_file_name)
+                                                self.wl_input, input_file_name, self.name)
         input_activity.write(str(activity) + ",")
     else:
         activity = write_matrix_activation_fc(input[0].cpu().data.numpy(), None, self.wl_input, input_file_name)
@@ -35,7 +35,11 @@ def write_matrix_weight(input_matrix, filename):
     np.savetxt(filename, weight_matrix, delimiter=",", fmt='%10.5f')
 
 
-def write_matrix_activation_conv(input_matrix, fill_dimension, length, filename):
+def write_matrix_activation_conv(input_matrix, fill_dimension, length, filename, name):
+    if name == "Conv7_":
+        print(input_matrix)
+        print(fill_dimension)
+        print(length)
     filled_matrix_b = np.zeros([input_matrix.shape[2], input_matrix.shape[1] * length], dtype=np.str)
     filled_matrix_bin, scale = dec2bin(input_matrix[0, :], length)
     for i, b in enumerate(filled_matrix_bin):
@@ -46,11 +50,6 @@ def write_matrix_activation_conv(input_matrix, fill_dimension, length, filename)
 
 
 def write_matrix_activation_fc(input_matrix, fill_dimension, length, filename):
-    print("This is the first linear layer")
-    print(input_matrix)
-    print(fill_dimension)
-    print(length)
-    print(filename)
     filled_matrix_b = np.zeros([input_matrix.shape[1], length], dtype=np.str)
     filled_matrix_bin, scale = dec2bin(input_matrix[0, :], length)
     for i, b in enumerate(filled_matrix_bin):
