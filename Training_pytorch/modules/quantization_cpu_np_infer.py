@@ -10,7 +10,7 @@ class QConv2d(nn.Conv2d):
                  stride=1, padding=0, dilation=1, groups=1, bias=False, logger=None, clip_weight=False, wage_init=False,
                  quantize_weight=False, clip_output=False, quantize_output=False,
                  wl_input=8, wl_activate=8, wl_error=8, wl_weight=8, inference=0, onoffratio=10, cellBit=1,
-                 subArray=128, ADCprecision=5, vari=0, t=0, v=0, detect=0, target=0, debug=0, name='Qconv'):
+                 subArray=128, ADCprecision=5, vari=0, t=0, v=0, detect=0, target=0, debug=0, name='Qconv', model=None):
         super(QConv2d, self).__init__(in_channels, out_channels, kernel_size,
                                       stride, padding, dilation, groups, bias)
         self.logger = logger
@@ -37,8 +37,9 @@ class QConv2d(nn.Conv2d):
         self.name = name
         self.scale = wage_initializer.wage_init_(self.weight, self.wl_weight, factor=1.0)
 
-
+    @weak_script_method
     def forward(self, input):
+
         weight1 = self.weight * self.scale + (self.weight - self.weight * self.scale).detach()
         weight = weight1 + (wage_quantizer.Q(weight1, self.wl_weight) - weight1).detach()
         outputOrignal = F.conv2d(input, weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
@@ -47,9 +48,7 @@ class QConv2d(nn.Conv2d):
         bitActivation = int(self.wl_input)
 
         if self.inference == 1:
-            print("INFERENCE IS ON: {}".format(self.name))
-            # retention
-            weight = wage_quantizer.Retention(weight, self.t, self.v, self.detect, self.target)
+
             # set parameters for Hardware Inference
             onoffratio = self.onoffratio
             upper = 1
@@ -63,8 +62,8 @@ class QConv2d(nn.Conv2d):
             dummyP = torch.zeros_like(weight)
             dummyP[:, :, :, :] = (cellRange - 1) * (upper + lower) / 2
 
-            for i in range(3):
-                for j in range(3):
+            for i in range(self.weight.shape[2]):
+                for j in range(self.weight.shape[3]):
                     # need to divide to different subArray
                     numSubArray = int(weight.shape[1] / self.subArray)
                     # cut into different subArrays
@@ -78,14 +77,16 @@ class QConv2d(nn.Conv2d):
                             outputD = torch.zeros_like(output)
                             for k in range(int(bitWeight / self.cellBit)):
                                 remainder = torch.fmod(X_decimal, cellRange) * mask
+                                # Todo: remainder = wage_quantizer.Retention(remainder,self.t,self.v,self.detect,self.target)
                                 X_decimal = torch.round((X_decimal - remainder) / cellRange) * mask
                                 # Now also consider weight has on/off ratio effects
                                 # Here remainder is the weight mapped to Hardware, so we introduce on/off ratio in this value
                                 # the range of remainder is [0, cellRange-1], we truncate it to [lower, upper]
                                 remainderQ = (upper - lower) * (remainder - 0) + (
                                             cellRange - 1) * lower  # weight cannot map to 0, but to Gmin
-                                remainderQ = remainderQ + torch.normal(0., torch.full(remainderQ.size(), self.vari,
-                                                                                      device='cuda').float())
+                                remainderQ = remainderQ + remainderQ * torch.normal(0., torch.full(remainderQ.size(),
+                                                                                                   self.vari,
+                                                                                                   device='cuda').float())
                                 outputPartial = F.conv2d(input, remainderQ * mask, self.bias, self.stride, self.padding,
                                                          self.dilation, self.groups)
                                 outputDummyPartial = F.conv2d(input, dummyP * mask, self.bias, self.stride,
@@ -108,6 +109,8 @@ class QConv2d(nn.Conv2d):
                                 outputD = torch.zeros_like(output)
                                 for k in range(int(bitWeight / self.cellBit)):
                                     remainder = torch.fmod(X_decimal, cellRange) * mask
+                                    remainder = wage_quantizer.Retention(remainder, self.t, self.v, self.detect,
+                                                                         self.target)
                                     X_decimal = torch.round((X_decimal - remainder) / cellRange) * mask
                                     # Now also consider weight has on/off ratio effects
                                     # Here remainder is the weight mapped to Hardware, so we introduce on/off ratio in this value
@@ -149,6 +152,8 @@ class QConv2d(nn.Conv2d):
                                 outputD = torch.zeros_like(output)
                                 for k in range(int(bitWeight / self.cellBit)):
                                     remainder = torch.fmod(X_decimal, cellRange) * mask
+                                    remainder = wage_quantizer.Retention(remainder, self.t, self.v, self.detect,
+                                                                         self.target)
                                     X_decimal = torch.round((X_decimal - remainder) / cellRange) * mask
                                     # Now also consider weight has on/off ratio effects
                                     # Here remainder is the weight mapped to Hardware, so we introduce on/off ratio in this value
@@ -170,13 +175,7 @@ class QConv2d(nn.Conv2d):
                                     scaler = cellRange ** k
                                     outputSP = outputSP + outputPartialQ * scaler * 2 / (1 - 1 / onoffratio)
                                     outputD = outputD + outputDummyPartialQ * scaler * 2 / (1 - 1 / onoffratio)
-                                    if (weight.shape[0] == 256) & (weight.shape[1] == 128):
-                                        weightMatrix = (remainderQ * mask).cpu().data.numpy()
-                                        weight_file_name = './layer_record/weightForLayer3_subarray' + str(
-                                            s) + '_weightBitNo_' + str(k) + ".csv"
-                                        cout = weightMatrix.shape[0]
-                                        weight_matrix = weightMatrix.reshape(cout, -1).transpose()
-                                        np.savetxt(weight_file_name, weight_matrix, delimiter=",", fmt='%10.5f')
+
                                 # !!! Important !!! the dummy need to be multiplied by a ratio
                                 outputSP = outputSP - outputD  # minus dummy column
                                 outputP = outputP + outputSP
@@ -184,10 +183,19 @@ class QConv2d(nn.Conv2d):
                             outputIN = outputIN + outputP * scalerIN
                         output = output + outputIN / (2 ** bitActivation)
             output = output / (2 ** bitWeight)  # since weight range was convert from [-1, 1] to [-256, 256]
+
+        elif self.inference == 1:
+            weight1 = self.weight * self.scale + (self.weight - self.weight * self.scale).detach()
+            weight = weight1 + (wage_quantizer.Q(weight1, self.wl_weight) - weight1).detach()
+            weight = wage_quantizer.Retention(weight, self.t, self.v, self.detect, self.target)
+            input = wage_quantizer.Q(input, self.wl_input)
+            output = F.conv2d(input, weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
+            output = wage_quantizer.LinearQuantizeOut(output, self.ADCprecision)
         else:
             # original WAGE QCov2d
             weight1 = self.weight * self.scale + (self.weight - self.weight * self.scale).detach()
             weight = weight1 + (wage_quantizer.Q(weight1, self.wl_weight) - weight1).detach()
+            weight = wage_quantizer.Retention(weight, self.t, self.v, self.detect, self.target)
             output = F.conv2d(input, weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
         output = output / self.scale
         output = wage_quantizer.WAGEQuantizer_f(output, self.wl_activate, self.wl_error)
@@ -199,7 +207,8 @@ class QLinear(nn.Linear):
     def __init__(self, in_features, out_features, bias=False, logger=None, clip_weight=False, wage_init=False,
                  quantize_weight=False, clip_output=False, quantize_output=False,
                  wl_input=8, wl_activate=8, wl_error=8, wl_weight=8, inference=0, onoffratio=10, cellBit=1,
-                 subArray=128, ADCprecision=5, vari=0, t=0, v=0, detect=0, target=0, debug=0, name='Qlinear'):
+                 subArray=128, ADCprecision=5, vari=0, t=0, v=0, detect=0, target=0, debug=0, name='Qlinear',
+                 model=None):
         super(QLinear, self).__init__(in_features, out_features, bias)
         self.logger = logger
         self.clip_weight = clip_weight
@@ -225,7 +234,6 @@ class QLinear(nn.Linear):
         self.name = name
         self.scale = wage_initializer.wage_init_(self.weight, self.wl_weight, factor=1.0)
 
-
     def forward(self, input):
 
         weight1 = self.weight * self.scale + (self.weight - self.weight * self.scale).detach()
@@ -237,9 +245,6 @@ class QLinear(nn.Linear):
         bitActivation = int(self.wl_input)
 
         if self.inference == 1:
-            print("INFERENCE IS ON: {}".format(self.name))
-            # retention
-            weight = wage_quantizer.Retention(weight, self.t, self.v, self.detect, self.target)
             # set parameters for Hardware Inference
             onoffratio = self.onoffratio
             upper = 1
@@ -267,6 +272,8 @@ class QLinear(nn.Linear):
                     outputD = torch.zeros_like(outputOrignal)
                     for k in range(int(bitWeight / self.cellBit)):
                         remainder = torch.fmod(X_decimal, cellRange) * mask
+                        # retention
+                        remainder = wage_quantizer.Retention(remainder, self.t, self.v, self.detect, self.target)
                         X_decimal = torch.round((X_decimal - remainder) / cellRange) * mask
                         # Now also consider weight has on/off ratio effects
                         # Here remainder is the weight mapped to Hardware, so we introduce on/off ratio in this value
@@ -302,6 +309,8 @@ class QLinear(nn.Linear):
                         outputD = torch.zeros_like(outputOrignal)
                         for k in range(int(bitWeight / self.cellBit)):
                             remainder = torch.fmod(X_decimal, cellRange) * mask
+                            # retention
+                            remainder = wage_quantizer.Retention(remainder, self.t, self.v, self.detect, self.target)
                             X_decimal = torch.round((X_decimal - remainder) / cellRange) * mask
                             # Now also consider weight has on/off ratio effects
                             # Here remainder is the weight mapped to Hardware, so we introduce on/off ratio in this value
@@ -326,13 +335,23 @@ class QLinear(nn.Linear):
                     outputIN = outputIN + outputP * scalerIN
                 output = output + outputIN / (2 ** bitActivation)
             output = output / (2 ** bitWeight)
+
+        elif self.inference == 1:
+            weight1 = self.weight * self.scale + (self.weight - self.weight * self.scale).detach()
+            weight = weight1 + (wage_quantizer.Q(weight1, self.wl_weight) - weight1).detach()
+            weight = wage_quantizer.Retention(weight, self.t, self.v, self.detect, self.target)
+            input = wage_quantizer.Q(input, self.wl_input)
+            output = F.linear(input, weight, self.bias)
+            output = wage_quantizer.LinearQuantizeOut(output, self.ADCprecision)
         else:
             # original WAGE QCov2d
             weight1 = self.weight * self.scale + (self.weight - self.weight * self.scale).detach()
             weight = weight1 + (wage_quantizer.Q(weight1, self.wl_weight) - weight1).detach()
+            weight = wage_quantizer.Retention(weight, self.t, self.v, self.detect, self.target)
             output = F.linear(input, weight, self.bias)
 
         output = output / self.scale
         output = wage_quantizer.WAGEQuantizer_f(output, self.wl_activate, self.wl_error)
 
         return output
+
