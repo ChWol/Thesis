@@ -6,7 +6,7 @@ from utee import wage_quantizer
 
 
 def Neural_Sim(self, input, output):
-    if self.name == "FC1_":
+    if self.name == "FC0_":
         print(input)
         print("Output")
         print(output)
