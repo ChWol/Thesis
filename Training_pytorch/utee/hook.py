@@ -6,17 +6,28 @@ from utee import wage_quantizer
 
 
 def Neural_Sim(self, input, output):
+    print(self.name)
     input_file_name = './layer_record/input' + str(self.name) + '.csv'
     weight_file_name = './layer_record/weight' + str(self.name) + '.csv'
     weightOld_file_name = './layer_record/weightOld' + str(self.name) + '.csv'
     f = open('./layer_record/trace_command.sh', "a")
+    input_activity = open('./input_activity.csv', "a")
     weight_q = wage_quantizer.Q(self.weight, self.wl_weight)
     write_matrix_weight(weight_q.cpu().data.numpy(), weight_file_name)
     if len(self.weight.shape) > 2:
         k = self.weight.shape[-1]
         padding = self.padding
         stride = self.stride
-    f.write(weight_file_name + ' ' + weightOld_file_name + ' ' + input_file_name + ' ')
+        activity = write_matrix_activation_conv(stretch_input(input[0].cpu().data.numpy(), k, padding, stride), None,
+                                                self.wl_input, input_file_name)
+        input_activity.write(str(activity) + ",")
+    else:
+        activity = write_matrix_activation_fc(input[0].cpu().data.numpy(), None, self.wl_input, input_file_name)
+        if (str(self.name) == 'FC2_'):
+            input_activity.write(str(activity) + "\n")
+        else:
+            input_activity.write(str(activity) + ",")
+    f.write(weight_file_name + ' ' + weightOld_file_name + ' ' + input_file_name + ' ' + str(activity) + ' ')
 
 
 def write_matrix_weight(input_matrix, filename):
@@ -30,7 +41,9 @@ def write_matrix_activation_conv(input_matrix, fill_dimension, length, filename)
     filled_matrix_bin, scale = dec2bin(input_matrix[0, :], length)
     for i, b in enumerate(filled_matrix_bin):
         filled_matrix_b[:, i::length] = b.transpose()
+    activity = np.sum(filled_matrix_b.astype(np.float), axis=None) / np.size(filled_matrix_b)
     np.savetxt(filename, filled_matrix_b, delimiter=",", fmt='%s')
+    return activity
 
 
 def write_matrix_activation_fc(input_matrix, fill_dimension, length, filename):
@@ -38,7 +51,9 @@ def write_matrix_activation_fc(input_matrix, fill_dimension, length, filename):
     filled_matrix_bin, scale = dec2bin(input_matrix[0, :], length)
     for i, b in enumerate(filled_matrix_bin):
         filled_matrix_b[:, i] = b
+    activity = np.sum(filled_matrix_b.astype(np.float), axis=None) / np.size(filled_matrix_b)
     np.savetxt(filename, filled_matrix_b, delimiter=",", fmt='%s')
+    return activity
 
 
 def stretch_input(input_matrix, window_size=5, padding=(0, 0), stride=(1, 1)):
