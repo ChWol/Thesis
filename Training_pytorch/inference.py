@@ -134,8 +134,6 @@ for i, (data, target) in enumerate(test_loader):
 test_loss = test_loss / len(test_loader)  # average over number of mini-batch
 acc = 100. * correct / len(test_loader.dataset)
 
-accuracy = acc.cpu().data.numpy()
-
 print(" --- Hardware Properties --- ")
 print("subArray size: ")
 print(args.subArray)
@@ -150,6 +148,8 @@ print(args.vari)
 
 logger('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
     test_loss, correct, len(test_loader.dataset), acc))
+
+accuracy = acc.cpu().data.numpy()
 
 # Running C++ files for layer estimation
 call(["/bin/bash", "./layer_record/trace_command.sh"])
