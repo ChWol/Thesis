@@ -6,6 +6,10 @@ from utee import wage_quantizer
 
 
 def Neural_Sim(self, input, output):
+    if self.name == "FC0_":
+        print(input)
+        print("Output")
+        print(output)
     input_file_name = './layer_record/input' + str(self.name) + '.csv'
     weight_file_name = './layer_record/weight' + str(self.name) + '.csv'
     weightOld_file_name = './layer_record/weightOld' + str(self.name) + '.csv'
@@ -18,7 +22,7 @@ def Neural_Sim(self, input, output):
         padding = self.padding
         stride = self.stride
         activity = write_matrix_activation_conv(stretch_input(input[0].cpu().data.numpy(), k, padding, stride), None,
-                                                self.wl_input, input_file_name, self.name)
+                                                self.wl_input, input_file_name)
         input_activity.write(str(activity) + ",")
     else:
         activity = write_matrix_activation_fc(input[0].cpu().data.numpy(), None, self.wl_input, input_file_name)
@@ -35,9 +39,7 @@ def write_matrix_weight(input_matrix, filename):
     np.savetxt(filename, weight_matrix, delimiter=",", fmt='%10.5f')
 
 
-def write_matrix_activation_conv(input_matrix, fill_dimension, length, filename, name):
-    if name == "Conv8_":
-        print(input_matrix)
+def write_matrix_activation_conv(input_matrix, fill_dimension, length, filename):
     filled_matrix_b = np.zeros([input_matrix.shape[2], input_matrix.shape[1] * length], dtype=np.str)
     filled_matrix_bin, scale = dec2bin(input_matrix[0, :], length)
     for i, b in enumerate(filled_matrix_bin):
