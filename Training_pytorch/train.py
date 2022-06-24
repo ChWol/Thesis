@@ -281,9 +281,12 @@ try:
 
             misc.model_save(model, 'test.pth', old_file='test.pth', verbose=True)
             args.inference = 1
-            test_model = model.cifar(args=args, logger=logger, num_classes=10)
+            test_model = test_model.cifar(args=args, logger=logger, num_classes=10)
             test_model.load_state_dict(torch.load('test.pth'))
             args.inference = 0
+
+            if args.cuda:
+                test_model.cuda()
 
             test_model.eval()
             test_loss = 0
