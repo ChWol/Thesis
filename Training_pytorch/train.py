@@ -84,12 +84,10 @@ weight_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", 
                               "2_std", "3_std", "4_std", "5_std", "6_std", "7_std", "8_std"]])
 np.savetxt(weight_distribution, weight_firstline, delimiter=",", fmt='%s')
 
-args.inference = 0
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
 args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs'])
 misc.logger.init(args.logdir, 'train_log_' + current_time)
 logger = misc.logger.info
-args.inference = 1
 
 # console logger
 misc.ensure_dir(args.logdir)
@@ -117,7 +115,7 @@ if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     model = model.mnist(args=args, logger=logger)
 
-model.load_state_dict(torch.load(os.path.abspath(os.path.expanduser(os.path.join(args.logdir, 'best-6.pth')))))
+#model.load_state_dict(torch.load(os.path.abspath(os.path.expanduser(os.path.join(args.logdir, 'best-6.pth')))))
 #/home/chwolters/Thesis/Training_pytorch/log/default/ADCprecision=5/batch_size=200/c2cVari=0.003/cellBit=6/d2dVari=0/decreasing_lr=200,250/detect=0/grad_scale=1/inference=0/max_level=64/memcelltype=3/momentum=0.9/network=speed/nonlinearityLTD=1.46/nonlinearityLTP=1.75/onoffratio=10/relu=1/seed=117/subArray=32/t=0/target=0/technode=7/type=cifar10/v=0/vari=0/wireWidth=14/wl_activate=8/wl_error=8/wl_grad=6/wl_weight=6/best-4.pth
 #/home/chwolters/Thesis/Training_pytorch/log/default/ADCprecision=5/batch_size=200/c2cVari=0.003/cellBit=6/d2dVari=0/decreasing_lr=200,250/detect=0/grad_scale=1/inference=0/max_level=64/memcelltype=3/momentum=0.9/network=speed/nonlinearityLTD=1.46/nonlinearityLTP=1.75/onoffratio=10/relu=1/seed=117/subArray=32/t=0/target=0/technode=7/type=cifar10/v=0/vari=0/wireWidth=14/wl_activate=8/wl_error=8/wl_grad=6/wl_weight=6/best-{4}.pth'
 # Todo: From 1.3
@@ -280,13 +278,20 @@ try:
 
         # Run tests including hardware simulation
         if epoch % args.test_interval == 0:
-            model.eval()
+
+            misc.model_save(model, 'test.pth', old_file='test.pth', verbose=True)
+            args.inference = 1
+            test_model = model.cifar(args=args, logger=logger, num_classes=10)
+            test_model.load_state_dict(torch.load('test.pth'))
+            args.inference = 0
+
+            test_model.eval()
             test_loss = 0
             correct = 0
             logger("testing phase")
             for i, (data, target) in enumerate(test_loader):
                 if i == 0:
-                    hook_handle_list = hook.hardware_evaluation(model, args.wl_weight, args.wl_activate,
+                    hook_handle_list = hook.hardware_evaluation(test_model, args.wl_weight, args.wl_activate,
                                                                 epoch, args.batch_size, args.cellBit, args.technode,
                                                                 args.wireWidth, args.relu, args.memcelltype,
                                                                 2 ** args.ADCprecision,
@@ -296,7 +301,7 @@ try:
                     data, target = data.cuda(), target.cuda()
                 with torch.no_grad():
                     data, target = Variable(data), Variable(target)
-                    output = model(data)
+                    output = test_model(data)
                     test_loss_i = wage_util.SSE(output, target)
                     test_loss += test_loss_i.data
                     pred = output.data.max(1)[1]  # get the index of the max log-probability
