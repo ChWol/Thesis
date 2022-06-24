@@ -25,7 +25,8 @@ parser.add_argument('--batch_size', type=int, default=200, help='input batch siz
 parser.add_argument('--epochs', type=int, default=257, help='number of epochs to train')
 parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
 parser.add_argument('--seed', type=int, default=117, help='random seed')
-parser.add_argument('--log_interval', type=int, default=100, help='how many batches to wait before logging training status')
+parser.add_argument('--log_interval', type=int, default=100,
+                    help='how many batches to wait before logging training status')
 parser.add_argument('--test_interval', type=int, default=1, help='how many epochs to wait before another test')
 parser.add_argument('--logdir', default='log/default', help='folder to save to the log')
 parser.add_argument('--decreasing_lr', default='200,250', help='decreasing strategy')
@@ -44,8 +45,10 @@ parser.add_argument('--v', default=0)
 parser.add_argument('--detect', default=0)
 parser.add_argument('--target', default=0)
 parser.add_argument('--nonlinearityLTP', type=float, default=1.75, help='nonlinearity in LTP')
-parser.add_argument('--nonlinearityLTD', type=float, default=1.46, help='nonlinearity in LTD (negative if LTP and LTD are asymmetric)')
-parser.add_argument('--max_level', type=int, default=32, help='Maximum number of conductance states during weight update (floor(log2(max_level))=cellBit)')
+parser.add_argument('--nonlinearityLTD', type=float, default=1.46,
+                    help='nonlinearity in LTD (negative if LTP and LTD are asymmetric)')
+parser.add_argument('--max_level', type=int, default=32,
+                    help='Maximum number of conductance states during weight update (floor(log2(max_level))=cellBit)')
 parser.add_argument('--d2dVari', type=float, default=0, help='device-to-device variation')
 parser.add_argument('--c2cVari', type=float, default=0.003, help='cycle-to-cycle variation')
 parser.add_argument('--momentum', type=float, default=0.9)
@@ -116,8 +119,8 @@ if args.type == 'mnist':
     model = model.mnist(args=args, logger=logger)
 
 #model.load_state_dict(torch.load(os.path.abspath(os.path.expanduser(os.path.join(args.logdir, 'best-6.pth')))))
-#/home/chwolters/Thesis/Training_pytorch/log/default/ADCprecision=5/batch_size=200/c2cVari=0.003/cellBit=6/d2dVari=0/decreasing_lr=200,250/detect=0/grad_scale=1/inference=0/max_level=64/memcelltype=3/momentum=0.9/network=speed/nonlinearityLTD=1.46/nonlinearityLTP=1.75/onoffratio=10/relu=1/seed=117/subArray=32/t=0/target=0/technode=7/type=cifar10/v=0/vari=0/wireWidth=14/wl_activate=8/wl_error=8/wl_grad=6/wl_weight=6/best-4.pth
-#/home/chwolters/Thesis/Training_pytorch/log/default/ADCprecision=5/batch_size=200/c2cVari=0.003/cellBit=6/d2dVari=0/decreasing_lr=200,250/detect=0/grad_scale=1/inference=0/max_level=64/memcelltype=3/momentum=0.9/network=speed/nonlinearityLTD=1.46/nonlinearityLTP=1.75/onoffratio=10/relu=1/seed=117/subArray=32/t=0/target=0/technode=7/type=cifar10/v=0/vari=0/wireWidth=14/wl_activate=8/wl_error=8/wl_grad=6/wl_weight=6/best-{4}.pth'
+# /home/chwolters/Thesis/Training_pytorch/log/default/ADCprecision=5/batch_size=200/c2cVari=0.003/cellBit=6/d2dVari=0/decreasing_lr=200,250/detect=0/grad_scale=1/inference=0/max_level=64/memcelltype=3/momentum=0.9/network=speed/nonlinearityLTD=1.46/nonlinearityLTP=1.75/onoffratio=10/relu=1/seed=117/subArray=32/t=0/target=0/technode=7/type=cifar10/v=0/vari=0/wireWidth=14/wl_activate=8/wl_error=8/wl_grad=6/wl_weight=6/best-4.pth
+# /home/chwolters/Thesis/Training_pytorch/log/default/ADCprecision=5/batch_size=200/c2cVari=0.003/cellBit=6/d2dVari=0/decreasing_lr=200,250/detect=0/grad_scale=1/inference=0/max_level=64/memcelltype=3/momentum=0.9/network=speed/nonlinearityLTD=1.46/nonlinearityLTP=1.75/onoffratio=10/relu=1/seed=117/subArray=32/t=0/target=0/technode=7/type=cifar10/v=0/vari=0/wireWidth=14/wl_activate=8/wl_error=8/wl_grad=6/wl_weight=6/best-{4}.pth'
 # Todo: From 1.3
 '''
 assert args.type in ['cifar10', 'cifar100', 'imagenet'], args.dataset
@@ -129,7 +132,7 @@ elif args.type == 'imagenet':
     train_loader, test_loader = dataset.get_imagenet(batch_size=args.batch_size, num_workers=1)
 else:
     raise ValueError("Unknown dataset type")
-    
+
 assert args.network in ['VGG8', 'DenseNet40', 'ResNet18'], args.model
 if args.network == 'VGG8':
     from models import VGG
@@ -278,23 +281,13 @@ try:
 
         # Run tests including hardware simulation
         if epoch % args.test_interval == 0:
-
-            misc.model_save(model, 'test.pth', old_file='test.pth', verbose=True)
-            args.inference = 1
-            test_model = test_model.cifar(args=args, logger=logger, num_classes=10)
-            test_model.load_state_dict(torch.load('test.pth'))
-            args.inference = 0
-
-            if args.cuda:
-                test_model.cuda()
-
-            test_model.eval()
+            model.eval()
             test_loss = 0
             correct = 0
             logger("testing phase")
             for i, (data, target) in enumerate(test_loader):
                 if i == 0:
-                    hook_handle_list = hook.hardware_evaluation(test_model, args.wl_weight, args.wl_activate,
+                    hook_handle_list = hook.hardware_evaluation(model, args.wl_weight, args.wl_activate,
                                                                 epoch, args.batch_size, args.cellBit, args.technode,
                                                                 args.wireWidth, args.relu, args.memcelltype,
                                                                 2 ** args.ADCprecision,
@@ -304,7 +297,7 @@ try:
                     data, target = data.cuda(), target.cuda()
                 with torch.no_grad():
                     data, target = Variable(data), Variable(target)
-                    output = test_model(data)
+                    output = model(data)
                     test_loss_i = wage_util.SSE(output, target)
                     test_loss += test_loss_i.data
                     pred = output.data.max(1)[1]  # get the index of the max log-probability
