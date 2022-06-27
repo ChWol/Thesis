@@ -60,6 +60,7 @@ current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
 
+print("Cell bit: {}".format(args.cellBit))
 args.max_level = 2 ** args.cellBit
 
 if args.memcelltype == 1:
@@ -67,6 +68,9 @@ if args.memcelltype == 1:
 
 args.wl_weight = args.cellBit
 args.wl_grad = args.cellBit
+
+print("Wl weight: {}".format(args.wl_weight))
+print("Wl grad: {}".format(args.wl_grad))
 
 technode_to_width = {7: 14, 10: 14, 14: 22, 22: 32, 32: 40, 45: 50, 65: 100, 90: 200, 130: 200}
 args.wireWidth = technode_to_width[args.technode]
