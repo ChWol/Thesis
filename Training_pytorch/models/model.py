@@ -116,35 +116,27 @@ def make_classifiers(classifiers, args, logger, in_dimension):
 
 def get_model(num_classes, network):
     networks = {
-        'short': {
-            'features': [('C', 16, 3, 'same', 32),
-                         ('M', 2, 2),
-                         ('C', 32, 3, 'same', 16),
-                         ('M', 2, 2)],
-            'classifier': [('L', 256, 1, 'same', 1),
-                           ('L', num_classes, 1, 'same', 1)]
-        },
         'speed': {
-            'features': [('C', 16, 3, 'same', 32),
+            'features': [('C', 128, 3, 'same', 32),
                          ('M', 2, 2),
-                         ('C', 32, 3, 'same', 16),
+                         ('C', 256, 3, 'same', 16),
                          ('M', 2, 2),
-                         ('C', 64, 3, 'same', 8),
+                         ('C', 512, 3, 'same', 8),
                          ('M', 2, 2)],
-            'classifier': [('L', 512, 1, 'same', 1),
+            'classifier': [('L', 1024, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         },
         'vgg8': {
-            'features': [('C', 16, 3, 'same', 32),
-                         ('C', 16, 3, 'same', 32),
+            'features': [('C', 128, 3, 'same', 32),
+                         ('C', 128, 3, 'same', 32),
                          ('M', 2, 2),
-                         ('C', 32, 3, 'same', 16),
-                         ('C', 32, 3, 'same', 16),
+                         ('C', 256, 3, 'same', 16),
+                         ('C', 256, 3, 'same', 16),
                          ('M', 2, 2),
-                         ('C', 64, 3, 'same', 8),
-                         ('C', 64, 3, 'same', 8),
+                         ('C', 512, 3, 'same', 8),
+                         ('C', 512, 3, 'same', 8),
                          ('M', 2, 2)],
-            'classifier': [('L', 512, 1, 'same', 1),
+            'classifier': [('L', 1024, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         },
         'old': {
@@ -188,10 +180,10 @@ def cifar(args, logger, num_classes, pretrained=None):
     features = model["features"]
     classifiers = model["classifier"]
 
-    build_csv(features, classifiers, 1024, 3)
+    build_csv(features, classifiers, 8192, 3)
 
     features = make_features(features, args, logger, 3)
-    classifiers = make_classifiers(classifiers, args, logger, 1024)
+    classifiers = make_classifiers(classifiers, args, logger, 8192)
 
     model = MODEL(features, classifiers)
     if pretrained is not None:
@@ -204,10 +196,10 @@ def mnist(args, logger, pretrained=None):
     features = model["features"]
     classifiers = model["classifier"]
 
-    build_csv(features, classifiers, 576, 1)
+    build_csv(features, classifiers, 4608, 1)
 
     features = make_features(features, args, logger, 1)
-    classifiers = make_classifiers(classifiers, args, logger, 576)
+    classifiers = make_classifiers(classifiers, args, logger, 4608)
 
     model = MODEL(features, classifiers)
     if pretrained is not None:
