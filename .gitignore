@@ -42,3 +42,5 @@ layer_record/
 wandb/
 weight_dist.csv
 delta_dist.csv
+Layer.csv
+Summary.csv
