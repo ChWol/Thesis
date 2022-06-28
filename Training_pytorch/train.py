@@ -30,11 +30,16 @@ parser.add_argument('--log_interval', type=int, default=100,
 parser.add_argument('--test_interval', type=int, default=1, help='how many epochs to wait before another test')
 parser.add_argument('--logdir', default='log/default', help='folder to save to the log')
 parser.add_argument('--decreasing_lr', default='200,250', help='decreasing strategy')
+#changeable
 parser.add_argument('--wl_weight', type=int, default=6, help='weight precision')
+#changeable
 parser.add_argument('--wl_grad', type=int, default=6, help='gradient precision')
+#changeable
 parser.add_argument('--wl_activate', type=int, default=8)
+#changeable
 parser.add_argument('--wl_error', type=int, default=8)
 parser.add_argument('--onoffratio', type=int, default=10)
+#changeable
 parser.add_argument('--cellBit', type=int, default=6, help='cell precision (cellBit==wl_weight==wl_grad)')
 parser.add_argument('--inference', type=int, default=0)
 parser.add_argument('--subArray', type=int, default=128)
@@ -44,12 +49,16 @@ parser.add_argument('--t', default=0)
 parser.add_argument('--v', default=0)
 parser.add_argument('--detect', default=0)
 parser.add_argument('--target', default=0)
+#changeable
 parser.add_argument('--nonlinearityLTP', type=float, default=1.75, help='nonlinearity in LTP')
+#changeable
 parser.add_argument('--nonlinearityLTD', type=float, default=1.46,
                     help='nonlinearity in LTD (negative if LTP and LTD are asymmetric)')
 parser.add_argument('--max_level', type=int, default=32,
                     help='Maximum number of conductance states during weight update (floor(log2(max_level))=cellBit)')
+#changeable
 parser.add_argument('--d2dVari', type=float, default=0, help='device-to-device variation')
+#changeable
 parser.add_argument('--c2cVari', type=float, default=0.003, help='cycle-to-cycle variation')
 parser.add_argument('--momentum', type=float, default=0.9)
 parser.add_argument('--network', default='vgg8')
@@ -60,7 +69,6 @@ current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
 
-print("Cell bit: {}".format(args.cellBit))
 args.max_level = 2 ** args.cellBit
 
 if args.memcelltype == 1:
@@ -68,9 +76,6 @@ if args.memcelltype == 1:
 
 args.wl_weight = args.cellBit
 args.wl_grad = args.cellBit
-
-print("Wl weight: {}".format(args.wl_weight))
-print("Wl grad: {}".format(args.wl_grad))
 
 technode_to_width = {7: 14, 10: 14, 14: 22, 22: 32, 32: 40, 45: 50, 65: 100, 90: 200, 130: 200}
 args.wireWidth = technode_to_width[args.technode]
@@ -159,6 +164,7 @@ optimizer = optim.SGD(model.parameters(), lr=1)
 decreasing_lr = list(map(int, args.decreasing_lr.split(',')))
 logger('decreasing_lr: ' + str(decreasing_lr))
 best_acc, old_file = 0, None
+accumulated_time = 0
 t_begin = time.time()
 grad_scale = args.grad_scale
 
@@ -179,6 +185,7 @@ try:
         k = k + 1
 
     for epoch in range(args.epochs):
+        split_time = time.time()
         model.train()
 
         velocity = {}
@@ -284,6 +291,7 @@ try:
                 h = h + 1
 
         # Run tests including hardware simulation
+        accumulated_time += time.time() - split_time
         if epoch % args.test_interval == 0:
             model.eval()
             test_loss = 0
@@ -339,7 +347,7 @@ try:
 
 except Exception as e:
     import traceback
-
     traceback.print_exc()
 finally:
+    wandb.log({'Training time': accumulated_time})
     logger("Total Elapse: {:.2f}, Best Result: {:.3f}%".format(time.time() - t_begin, best_acc))
