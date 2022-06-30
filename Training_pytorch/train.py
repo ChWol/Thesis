@@ -199,7 +199,7 @@ try:
 
             if args.rule == 'dfa':
                 gradients = [*transposed(loss), loss]
-                print(gradients.size)
+                print(gradients[0].size())
                 print('#########################')
                 for i, param in enumerate(model.parameters()):
                     print(param.size())
