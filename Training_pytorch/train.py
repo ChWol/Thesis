@@ -201,8 +201,7 @@ try:
                 gradients = [*transposed(loss), loss]
 
                 for i, param in enumerate(model.parameters()):
-                    print(param.grad)
-                    print("#######")
+                    print(param.grad.size())
                     print(param.grad.data)
                     param.grad = gradients[i]
             else:
