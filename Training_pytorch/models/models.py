@@ -260,10 +260,10 @@ def mnist(args, logger, input, pretrained=None):
     features = model["features"]
     classifiers = model["classifier"]
 
-    build_csv(features, classifiers, 4608, 1)
+    build_csv(features, classifiers, input, 1)
 
     features = make_features(features, args, logger, 1)
-    classifiers = make_classifiers(classifiers, args, logger, 4608)
+    classifiers = make_classifiers(classifiers, args, logger, input)
 
     model = MODEL(features, classifiers)
     if pretrained is not None:
