@@ -194,10 +194,7 @@ try:
             data, target = Variable(data), Variable(target)
             optimizer.zero_grad()
             output = model(data)
-            print("Output")
-            print(output)
-            #loss = wage_util.SSE(output, target)
-            loss = torch.nn.CrossEntropyLoss(output, target)
+            loss = wage_util.SSE(output, target)
 
             print("This is the loss")
             print(loss)
