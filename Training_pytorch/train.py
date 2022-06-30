@@ -201,14 +201,14 @@ try:
             print("Dimension: {}".format(loss.size()))
 
             # Here we go
-            gradients = dfa(loss)
+            #gradients = dfa(loss)
             print("These are the gradients computed by the second model (DFA)")
-            print(gradients)
-            for i, param in enumerate(model.parameters()):
-                param.grad = gradients[i]
+            #print(gradients)
+            #for i, param in enumerate(model.parameters()):
+            #    param.grad = gradients[i]
 
             # Only for BP
-            # loss.backward()
+            loss.backward()
 
             # introduce non-ideal property
             j = 0
@@ -232,6 +232,9 @@ try:
                 pred = output.data.max(1)[1]  # get the index of the max log-probability
                 correct = pred.cpu().eq(indx_target).sum()
                 acc = float(correct) * 1.0 / len(data)
+                print("Test hier")
+                print(loss)
+                print(loss.data)
                 wandb.log({'Epoch': epoch + 1, 'Train Accuracy': acc, 'Train Loss': loss})
                 logger('Train Epoch: {} [{}/{}] Loss: {:.6f} Acc: {:.4f} lr: {:.2e}'.format(
                     epoch, batch_idx * len(data), len(train_loader.dataset),
