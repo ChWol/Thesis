@@ -59,7 +59,7 @@ class TRANSPOSE(nn.Module):
     def __init__(self, args, logger):
         super(TRANSPOSE, self).__init__()
 
-        self.layer1 = QLinear(512, 784, logger=logger,
+        self.layer1 = QLinear(10, 784, logger=logger,
                               wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
                               wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
                               cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
