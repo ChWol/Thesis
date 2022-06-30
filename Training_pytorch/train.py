@@ -201,7 +201,7 @@ try:
             print("Dimension: {}".format(loss.size()))
 
             # Here we go
-            gradients = dfa(loss)
+            gradients = dfa(loss.data)
             print("These are the gradients computed by the second model (DFA)")
             print(gradients)
             for i, param in enumerate(model.parameters()):
