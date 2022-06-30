@@ -196,6 +196,9 @@ try:
             output = model(data)
             loss = wage_util.SSE(output, target)
 
+            print("This is the loss")
+            print(loss)
+
             # Here we go
             gradients = dfa(loss)
             print("These are the gradients computed by the second model (DFA)")

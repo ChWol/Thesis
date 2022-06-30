@@ -49,7 +49,9 @@ class SIMPLE(nn.Module):
     def forward(self, x):
         x = x.view(x.size(0), -1)
         x = self.layer1(x)
+        x = self.relu1(x)
         x = self.layer2(x)
+        x = self.relu2(x)
         return x
 
 
@@ -63,16 +65,20 @@ class TRANSPOSE(nn.Module):
                               cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
                               vari=args.vari,
                               t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '1' + '_')
+        self.relu1 = nn.ReLU()
         self.layer2 = QLinear(10, 512, logger=logger,
                               wl_input=args.wl_activate, wl_activate=-1, wl_error=args.wl_error,
                               wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
                               cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
                               vari=args.vari,
                               t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '2' + '_')
+        self.relu2 = nn.ReLU()
 
     def forward(self, x):
         y1 = self.layer1(x)
+        y1 = self.relu1(y1)
         y2 = self.layer2(x)
+        y2 = self.relu2(y2)
         return [y1, y2]
 
 
