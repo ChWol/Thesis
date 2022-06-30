@@ -72,13 +72,11 @@ class TRANSPOSE(nn.Module):
                               cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
                               vari=args.vari,
                               t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '2' + '_')
-        self.relu2 = nn.ReLU()
 
     def forward(self, x):
         y1 = self.layer1(x)
         y1 = self.relu1(y1)
         y2 = self.layer2(x)
-        y2 = self.relu2(y2)
         return [y1, y2]
 
 

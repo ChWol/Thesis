@@ -106,7 +106,8 @@ if args.type == 'mnist':
 if args.type == 'simple':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     if args.rule == 'dfa':
-        model, transposed = models.mnist(args=args, logger=logger, input=784)
+        model = models.mnist(args=args, logger=logger, input=784)
+        transposed = models.transposedModel(args=args, logger=logger)
     else:
         model = models.mnist(args=args, logger=logger, input=784)
 
