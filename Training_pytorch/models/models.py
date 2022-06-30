@@ -49,9 +49,7 @@ class SIMPLE(nn.Module):
     def forward(self, x):
         x = x.view(x.size(0), -1)
         x = self.layer1(x)
-        x = self.relu1(x)
         x = self.layer2(x)
-        x = self.relu2(x)
         return x
 
 
@@ -74,7 +72,6 @@ class TRANSPOSE(nn.Module):
 
     def forward(self, x):
         y1 = self.layer1(x)
-        y1 = nn.ReLU(y1)
         y2 = self.layer2(x)
         return [y1, y2]
 
