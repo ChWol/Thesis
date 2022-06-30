@@ -198,6 +198,7 @@ try:
 
             print("This is the loss")
             print(loss)
+            print("Dimension: {}".format(loss.size()))
 
             # Here we go
             gradients = dfa(loss)
