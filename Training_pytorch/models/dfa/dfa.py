@@ -21,6 +21,7 @@ from torch.autograd import Variable
 class DFANet(torch.nn.Module):
     def __init__(self):
         super(DFANet, self).__init__()
+        layers = []
 
     def add_module(self, name, module):
         super().add_module(name, module)  # maintain the same base functionality
@@ -34,6 +35,12 @@ class DFANet(torch.nn.Module):
             # Use the randomly initialized weights to propagate error in parallel through the network
             layer.grad =
         # Make compatible with existing PyTorch optimizers: Store the result in the .grad attribute of all the layers
+
+    def __setattr__(self, name, value):
+        super().__setattr__(name, value)
+        if isinstance(name)
+            add feedback_layers
+            self.feedback_layers.append(torch.nn.Linear(self.output_dim, value.out_features))
 
     # Todo: Activation functions
     def forward(self, x):

@@ -21,7 +21,7 @@ import wandb
 from decimal import Decimal
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
-parser.add_argument('--type', default='cifar10', help='dataset for training')
+parser.add_argument('--type', default='simple', help='dataset for training')
 parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training')
 parser.add_argument('--epochs', type=int, default=257, help='number of epochs to train')
 parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
@@ -94,7 +94,6 @@ if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
 
-assert args.type in ['cifar10', 'cifar100', 'mnist', 'dfa'], args.type
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
     model = models.cifar(args=args, logger=logger, num_classes=10)
@@ -103,12 +102,13 @@ if args.type == 'cifar100':
     model = models.cifar(args=args, logger=logger, num_classes=100)
 if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
-    model = models.mnist(args=args, logger=logger)
-if args.type == 'dfa':
+    model = models.mnist(args=args, logger=logger, input=4608)
+if args.type == 'simple':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
-    model = models.simple(args=args, logger=logger)
     if args.rule == 'dfa':
-        dfa = models.transposedModel(args=args, logger=logger)
+        model, transposed = models.mnist(args=args, logger=logger, input=784)
+    else:
+        model = models.mnist(args=args, logger=logger, input=784)
 
 
 #model.load_state_dict(torch.load(os.path.abspath(os.path.expanduser(os.path.join(args.logdir, 'best-6.pth')))))
@@ -143,7 +143,7 @@ else:
 if args.cuda:
     model.cuda()
     if args.rule == 'dfa':
-        dfa.cuda()
+        transposed.cuda()
 
 #Todo: Add momentum and weight decay
 # torch.optim.SGD(model_fa.parameters(), lr=1e-4, momentum=0.9, weight_decay=0.001, nesterov=True)
@@ -196,19 +196,16 @@ try:
             output = model(data)
             loss = wage_util.SSE(output, target)
 
-            print("This is the loss: {}".format(loss.data))
-            print(loss)
-            print("Dimension: {}".format(loss.size()))
-
-            # Here we go
-            gradients = dfa(loss.data)
-            print("These are the gradients computed by the second model (DFA)")
-            print(gradients)
-            for i, param in enumerate(model.parameters()):
-                param.grad = gradients[i]
-
-            # Only for BP
             loss.backward()
+
+            gradients = []
+            for param in model.parameters():
+                gradients.append(param.grad)
+
+            if args.rule == 'dfa':
+                gradients = transposed(gradients[-1])
+                for i, param in enumerate(model.parameters()):
+                    param.grad = gradients[i]
 
             # introduce non-ideal property
             j = 0
