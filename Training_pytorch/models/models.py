@@ -31,7 +31,7 @@ class SIMPLE(nn.Module):
     def __init__(self, args, logger):
         super(SIMPLE, self).__init__()
 
-        self.layer1 = QLinear(1024, 512, logger=logger,
+        self.layer1 = QLinear(784, 512, logger=logger,
                               wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
                               wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
                               cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
@@ -57,7 +57,7 @@ class TRANSPOSE(nn.Module):
     def __init__(self, args, logger):
         super(TRANSPOSE, self).__init__()
 
-        self.layer1 = QLinear(512, 1024, logger=logger,
+        self.layer1 = QLinear(512, 784, logger=logger,
                               wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
                               wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
                               cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
@@ -271,7 +271,7 @@ def simple(args, logger, pretrained=None):
     features = []
     classifiers = model["classifier"]
 
-    build_csv(features, classifiers, 1024, 1)
+    build_csv(features, classifiers, 784, 1)
 
     model = SIMPLE(args, logger)
     if pretrained is not None:
