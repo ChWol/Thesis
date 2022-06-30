@@ -199,9 +199,11 @@ try:
 
             if args.rule == 'dfa':
                 gradients = [*transposed(loss), loss]
-                print(gradients)
+                print(gradients[0])
+                print('#########################')
                 for i, param in enumerate(model.parameters()):
-                    param.grad = gradients[i]
+                    print(param)
+                    #param.grad = gradients[i]
             else:
                 loss = loss.sum()
                 loss.backward()
