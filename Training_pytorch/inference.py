@@ -10,7 +10,7 @@ from torch.autograd import Variable
 from utee import make_path
 from utee import hook
 from models import dataset
-from models import model
+from models import models
 from datetime import datetime
 from subprocess import call
 

@@ -12,7 +12,7 @@ from utee import wage_util
 from utee import wage_quantizer
 from utee import hook
 from models import dataset
-from models import model
+from models import models
 from models import dfa
 from modules.quantization_cpu_np_infer import QConv2d, QLinear
 from datetime import datetime
@@ -97,18 +97,18 @@ if args.cuda:
 assert args.type in ['cifar10', 'cifar100', 'mnist', 'dfa'], args.type
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
-    model = model.cifar(args=args, logger=logger, num_classes=10)
+    model = models.cifar(args=args, logger=logger, num_classes=10)
 if args.type == 'cifar100':
     train_loader, test_loader = dataset.get100(batch_size=args.batch_size, num_workers=1)
-    model = model.cifar(args=args, logger=logger, num_classes=100)
+    model = models.cifar(args=args, logger=logger, num_classes=100)
 if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
-    model = model.mnist(args=args, logger=logger)
+    model = models.mnist(args=args, logger=logger)
 if args.type == 'dfa':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
-    model = model.simple(args=args, logger=logger)
+    model = models.simple(args=args, logger=logger)
     if args.rule == 'dfa':
-        dfa = model.transposed(args=args, logger=logger)
+        dfa = models.transposedModel(args=args, logger=logger)
 
 
 #model.load_state_dict(torch.load(os.path.abspath(os.path.expanduser(os.path.join(args.logdir, 'best-6.pth')))))
