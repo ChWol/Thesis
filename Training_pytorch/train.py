@@ -198,7 +198,6 @@ try:
             loss = wage_util.SSE(output, target)
 
             if args.rule == 'dfa':
-                print(model.parameters().size())
                 print(model.parameters())
 
                 gradients = [*transposed(loss), loss]
