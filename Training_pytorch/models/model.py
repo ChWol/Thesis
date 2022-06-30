@@ -110,12 +110,21 @@ def make_classifiers(classifiers, args, logger, in_dimension):
             layers += [linear, activation]
 
         in_size = classifiers[i][1]
-    print(layers)
     return nn.Sequential(*layers)
 
 
 def get_model(num_classes, network):
     networks = {
+        'simple': {
+            'features': [],
+            'classifier': [('L', 1024, 1, 'same', 1),
+                           ('L', num_classes, 1, 'same', 1)]
+        },
+        'transposed': {
+            'features': [],
+            'classifier': [('L', 1024, 1, 'same', 1),
+                           ('L', num_classes, 1, 'same', 1)]
+        },
         'speed': {
             'features': [('C', 128, 3, 'same', 32),
                          ('M', 2, 2),
@@ -197,6 +206,86 @@ def mnist(args, logger, pretrained=None):
     classifiers = model["classifier"]
 
     build_csv(features, classifiers, 4608, 1)
+
+    features = make_features(features, args, logger, 1)
+    classifiers = make_classifiers(classifiers, args, logger, 4608)
+
+    model = MODEL(features, classifiers)
+    if pretrained is not None:
+        model.load_state_dict(torch.load(pretrained))
+    return model
+
+
+class SIMPLE(nn.Module):
+    def __init__(self, args, logger):
+        super(SIMPLE, self).__init__()
+
+        self.layer1 = QLinear(1024, 512, logger=logger,
+                              wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
+                              wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
+                              cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
+                              vari=args.vari,
+                              t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + str(i) + '_')
+        self.layer2 = QLinear(512, 10, logger=logger,
+                              wl_input=args.wl_activate, wl_activate=-1, wl_error=args.wl_error,
+                              wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
+                              cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
+                              vari=args.vari,
+                              t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + str(i) + '_')
+
+    def forward(self, x):
+        x = x.view(x.size(0), -1)
+        x = self.layer1(x)
+        x = nn.ReLU(x)
+        x = self.layer2(x)
+        x = nn.ReLU(x)
+        return x
+
+
+def simple(args, logger, pretrained=None):
+    model = get_model(10, 'simple')
+    features = []
+    classifiers = model["classifier"]
+
+    build_csv(features, classifiers, 1024, 1)
+
+    features = make_features(features, args, logger, 1)
+    classifiers = make_classifiers(classifiers, args, logger, 1024)
+
+    model = MODEL(features, classifiers)
+    if pretrained is not None:
+        model.load_state_dict(torch.load(pretrained))
+    return model
+
+
+class TRANSPOSE(nn.Module):
+    def __init__(self, args, logger):
+        super(TRANSPOSE, self).__init__()
+
+        self.layer1 = QLinear(512, 1024, logger=logger,
+                              wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
+                              wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
+                              cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
+                              vari=args.vari,
+                              t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '1' + '_')
+        self.layer2 = QLinear(10, 512, logger=logger,
+                              wl_input=args.wl_activate, wl_activate=-1, wl_error=args.wl_error,
+                              wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
+                              cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
+                              vari=args.vari,
+                              t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '2' + '_')
+
+    def forward(self, x):
+        y1 = self.layer1(x)
+        y1 = nn.ReLU(y1)
+        y2 = self.layer2(x)
+        return [y1, y2]
+
+
+def transposed(args, logger, pretrained=None):
+    model = get_model(10, 'transposed')
+    features = []
+    classifiers = model["classifier"]
 
     features = make_features(features, args, logger, 1)
     classifiers = make_classifiers(classifiers, args, logger, 4608)

@@ -13,6 +13,7 @@ from utee import wage_quantizer
 from utee import hook
 from models import dataset
 from models import model
+from models import dfa
 from modules.quantization_cpu_np_infer import QConv2d, QLinear
 from datetime import datetime
 from subprocess import call
@@ -25,21 +26,15 @@ parser.add_argument('--batch_size', type=int, default=200, help='input batch siz
 parser.add_argument('--epochs', type=int, default=257, help='number of epochs to train')
 parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
 parser.add_argument('--seed', type=int, default=117, help='random seed')
-parser.add_argument('--log_interval', type=int, default=100,
-                    help='how many batches to wait before logging training status')
+parser.add_argument('--log_interval', type=int, default=100, help='how many batches to wait before logging training status')
 parser.add_argument('--test_interval', type=int, default=1, help='how many epochs to wait before another test')
 parser.add_argument('--logdir', default='log/default', help='folder to save to the log')
 parser.add_argument('--decreasing_lr', default='200,250', help='decreasing strategy')
-#changeable
 parser.add_argument('--wl_weight', type=int, default=6, help='weight precision')
-#changeable
 parser.add_argument('--wl_grad', type=int, default=6, help='gradient precision')
-#changeable
 parser.add_argument('--wl_activate', type=int, default=8)
-#changeable
 parser.add_argument('--wl_error', type=int, default=8)
 parser.add_argument('--onoffratio', type=int, default=10)
-#changeable
 parser.add_argument('--cellBit', type=int, default=6, help='cell precision (cellBit==wl_weight==wl_grad)')
 parser.add_argument('--inference', type=int, default=0)
 parser.add_argument('--subArray', type=int, default=128)
@@ -49,37 +44,27 @@ parser.add_argument('--t', default=0)
 parser.add_argument('--v', default=0)
 parser.add_argument('--detect', default=0)
 parser.add_argument('--target', default=0)
-#changeable
 parser.add_argument('--nonlinearityLTP', type=float, default=1.75, help='nonlinearity in LTP')
-#changeable
-parser.add_argument('--nonlinearityLTD', type=float, default=1.46,
-                    help='nonlinearity in LTD (negative if LTP and LTD are asymmetric)')
-parser.add_argument('--max_level', type=int, default=32,
-                    help='Maximum number of conductance states during weight update (floor(log2(max_level))=cellBit)')
-#changeable
+parser.add_argument('--nonlinearityLTD', type=float, default=1.46, help='nonlinearity in LTD (negative if LTP and LTD are asymmetric)')
+parser.add_argument('--max_level', type=int, default=32, help='Maximum number of conductance states during weight update (floor(log2(max_level))=cellBit)')
 parser.add_argument('--d2dVari', type=float, default=0, help='device-to-device variation')
-#changeable
 parser.add_argument('--c2cVari', type=float, default=0.003, help='cycle-to-cycle variation')
 parser.add_argument('--momentum', type=float, default=0.9)
 parser.add_argument('--network', default='vgg8')
 parser.add_argument('--technode', type=int, default='32')
 parser.add_argument('--memcelltype', type=int, default=3)
 parser.add_argument('--relu', type=int, default=1)
+parser.add_argument('--rule', default='dfa')
+
 current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
-
 args = parser.parse_args()
-
 args.max_level = 2 ** args.cellBit
-
 if args.memcelltype == 1:
     args.cellBit = 1
-
 args.wl_weight = args.cellBit
 args.wl_grad = args.cellBit
-
 technode_to_width = {7: 14, 10: 14, 14: 22, 22: 32, 32: 40, 45: 50, 65: 100, 90: 200, 130: 200}
 args.wireWidth = technode_to_width[args.technode]
-
 gamma = args.momentum
 alpha = 1 - args.momentum
 
@@ -87,36 +72,29 @@ wandb.init(project=args.type.upper(), config=args, entity='duke-tum')
 wandb.run.name = args.network + ": " + wandb.run.id
 
 delta_distribution = open("delta_dist.csv", 'ab')
-delta_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", "6_mean", "7_mean", "8_mean", "1_std",
-                             "2_std", "3_std", "4_std", "5_std", "6_std", "7_std", "8_std"]])
+delta_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", "6_mean", "7_mean", "8_mean", "1_std", "2_std", "3_std", "4_std", "5_std", "6_std", "7_std", "8_std"]])
 np.savetxt(delta_distribution, delta_firstline, delimiter=",", fmt='%s')
-
 weight_distribution = open("weight_dist.csv", 'ab')
-weight_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", "6_mean", "7_mean", "8_mean", "1_std",
-                              "2_std", "3_std", "4_std", "5_std", "6_std", "7_std", "8_std"]])
+weight_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", "6_mean", "7_mean", "8_mean", "1_std", "2_std", "3_std", "4_std", "5_std", "6_std", "7_std", "8_std"]])
 np.savetxt(weight_distribution, weight_firstline, delimiter=",", fmt='%s')
-
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
 args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs'])
 misc.logger.init(args.logdir, 'train_log_' + current_time)
 logger = misc.logger.info
 
-# console logger
 misc.ensure_dir(args.logdir)
 logger("=================FLAGS==================")
 for k, v in args.__dict__.items():
     logger('{}: {}'.format(k, v))
 logger("========================================")
 
-# seed
 args.cuda = torch.cuda.is_available()
 torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
-# data loader and model
 
-assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
+assert args.type in ['cifar10', 'cifar100', 'mnist', 'dfa'], args.type
 if args.type == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
     model = model.cifar(args=args, logger=logger, num_classes=10)
@@ -126,6 +104,12 @@ if args.type == 'cifar100':
 if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     model = model.mnist(args=args, logger=logger)
+if args.type == 'dfa':
+    train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
+    model = model.simple(args=args, logger=logger)
+    if args.rule == 'dfa':
+        dfa = model.transposed(args=args, logger=logger)
+
 
 #model.load_state_dict(torch.load(os.path.abspath(os.path.expanduser(os.path.join(args.logdir, 'best-6.pth')))))
 # /home/chwolters/Thesis/Training_pytorch/log/default/ADCprecision=5/batch_size=200/c2cVari=0.003/cellBit=6/d2dVari=0/decreasing_lr=200,250/detect=0/grad_scale=1/inference=0/max_level=64/memcelltype=3/momentum=0.9/network=speed/nonlinearityLTD=1.46/nonlinearityLTP=1.75/onoffratio=10/relu=1/seed=117/subArray=32/t=0/target=0/technode=7/type=cifar10/v=0/vari=0/wireWidth=14/wl_activate=8/wl_error=8/wl_grad=6/wl_weight=6/best-4.pth
@@ -158,7 +142,11 @@ else:
 
 if args.cuda:
     model.cuda()
+    if args.rule == 'dfa':
+        dfa.cuda()
 
+#Todo: Add momentum and weight decay
+# torch.optim.SGD(model_fa.parameters(), lr=1e-4, momentum=0.9, weight_decay=0.001, nesterov=True)
 optimizer = optim.SGD(model.parameters(), lr=1)
 
 decreasing_lr = list(map(int, args.decreasing_lr.split(',')))
@@ -207,10 +195,16 @@ try:
             optimizer.zero_grad()
             output = model(data)
             loss = wage_util.SSE(output, target)
-            # Todo: From 1.3
-            # criterion = torch.nn.CrossEntropyLoss()
 
-            loss.backward()
+            # Here we go
+            gradients = dfa(loss)
+            print("These are the gradients computed by the second model (DFA)")
+            print(gradients)
+            for i, param in enumerate(model.parameters()):
+                param.grad = gradients[i]
+
+            # Only for BP
+            # loss.backward()
 
             # introduce non-ideal property
             j = 0
