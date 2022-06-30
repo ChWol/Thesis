@@ -196,16 +196,14 @@ try:
             output = model(data)
             loss = wage_util.SSE(output, target)
 
-            loss.backward()
-
-            gradients = []
-            for param in model.parameters():
-                gradients.append(param.grad)
-
             if args.rule == 'dfa':
-                gradients = transposed(gradients[-1])
+                gradients = transposed(loss)
                 for i, param in enumerate(model.parameters()):
                     param.grad = gradients[i]
+            else:
+                loss = loss.sum()
+                loss.backward()
+
 
             # introduce non-ideal property
             j = 0
