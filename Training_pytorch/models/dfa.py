@@ -30,20 +30,24 @@ class DFANet(torch.nn.Module):
                               wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
                               cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
                               vari=args.vari,
-                              t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '1' + '_', rule='dfa')
+                              t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '1' + '_',
+                               rule='dfa')
         self.linear2 = QLinear(512, 1024, logger=logger,
                               wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
                               wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
                               cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
                               vari=args.vari,
-                              t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '2' + '_', rule='dfa')
+                              t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '2' + '_',
+                               rule='dfa')
         self.linear3 =QLinear(1024, 10, logger=logger,
                               wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
                               wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
                               cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
                               vari=args.vari,
-                              t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '3' + '_', rule='dfa')
+                              t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '3' + '_',
+                              rule='dfa')
         self.layers = [self.linear1, self.linear2, self.linear3]
+
 
     def forward(self, x):
         x = x.view(x.size(0), -1)
