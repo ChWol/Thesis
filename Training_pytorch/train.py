@@ -200,7 +200,7 @@ try:
                 loss = loss.sum()
                 i = 0
                 for name, param in list(model.named_parameters()):
-                    param.grad.data = model.layers[i].grad
+                    param.grad = model.layers[i].grad
                     i += 1
             else:
                 loss = loss.sum()
