@@ -55,7 +55,6 @@ class DFANet(torch.nn.Module):
         self.linear3.input = x
         x = self.linear3(x)
         self.linear3.output = x
-        x = self.classifiers(x)
         return x
 
     def dfa(self, error):
