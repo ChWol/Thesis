@@ -62,7 +62,7 @@ class DFANet(torch.nn.Module):
         for layer in self.layers:
             B = layer.dfa_matrix
             e = torch.transpose(error, 0, 1)
-            a = torch.transpose(layer.output, 0, 1)
+            a = torch.ones_like(torch.transpose(layer.output, 0, 1))
             i = layer.input
 
             B = B.cuda()
@@ -71,6 +71,7 @@ class DFANet(torch.nn.Module):
             i = i.cuda()
 
             layer.grad = torch.matmul(torch.matmul(B, e) * a, i)
+
 
 class LinearFANetwork(nn.Module):
     def __init__(self, in_features, num_layers, num_hidden_list):
