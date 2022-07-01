@@ -70,16 +70,7 @@ class DFANet(torch.nn.Module):
             a = a.cuda()
             i = i.cuda()
 
-            print(layer)
-            print(self.named_parameters())
-
-            print("Size dfa matrix: {}".format(B.size()))
-            print("Size error: {}".format(e.size()))
-            print("Size output: {}".format(a.size()))
-            print("Size input: {}".format(i.size()))
             layer.grad = torch.matmul(torch.matmul(B, e) * a, i)
-            print("Size of grad: {}".format(layer.grad.size()))
-
 
 class LinearFANetwork(nn.Module):
     def __init__(self, in_features, num_layers, num_hidden_list):
