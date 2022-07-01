@@ -65,10 +65,10 @@ class DFANet(torch.nn.Module):
             a = torch.transpose(layer.output, 0, 1)
             i = layer.input
 
-            B.cpu()
-            e.cpu()
-            a.cpu()
-            i.cpu()
+            B.cuda()
+            e.cuda()
+            a.cuda()
+            i.cuda()
 
             print("Size dfa matrix: {}".format(B.size()))
             print("Size error: {}".format(e.size()))
