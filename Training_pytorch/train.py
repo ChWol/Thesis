@@ -50,7 +50,7 @@ parser.add_argument('--max_level', type=int, default=32, help='Maximum number of
 parser.add_argument('--d2dVari', type=float, default=0, help='device-to-device variation')
 parser.add_argument('--c2cVari', type=float, default=0.003, help='cycle-to-cycle variation')
 parser.add_argument('--momentum', type=float, default=0.9)
-parser.add_argument('--network', default='vgg8')
+parser.add_argument('--network', default='simple')
 parser.add_argument('--technode', type=int, default='32')
 parser.add_argument('--memcelltype', type=int, default=3)
 parser.add_argument('--relu', type=int, default=1)
@@ -203,7 +203,7 @@ try:
                 print('#########################')
                 for i, param in enumerate(model.parameters()):
                     print(param.size())
-                    #param.grad = gradients[i]
+                    param.grad = gradients[i]
             else:
                 loss = loss.sum()
                 loss.backward()
