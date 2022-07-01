@@ -198,6 +198,9 @@ try:
             if args.rule == 'dfa':
                 model.dfa(loss)
                 loss = loss.sum()
+                for idx, param in enumerate(list(model.named_parameters())):
+                    print(idx)
+                    print(param)
             else:
                 loss = loss.sum()
                 loss.backward()
