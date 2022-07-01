@@ -199,11 +199,10 @@ try:
 
             if args.rule == 'dfa':
                 gradients = [*transposed(loss), loss]
-                print(gradients[0].size())
-                print('#########################')
                 for i, param in enumerate(model.parameters()):
                     print(param.size())
                     param.grad = gradients[i]
+                loss = loss.sum()
             else:
                 loss = loss.sum()
                 loss.backward()
@@ -212,6 +211,7 @@ try:
             # introduce non-ideal property
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
+                print("Param.grad.data: {}".format(param.grad.size()))
                 velocity[j] = gamma * velocity[j] + alpha * param.grad.data
                 param.grad.data = velocity[j]
                 param.grad.data = wage_quantizer.QG(param.data, args.wl_weight, param.grad.data, args.wl_grad,
