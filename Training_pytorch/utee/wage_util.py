@@ -5,7 +5,5 @@ def SSE(logits, label):
     target = torch.zeros_like(logits)
     target[torch.arange(target.size(0)).long(), label] = 1
     out = 0.5 * ((logits - target) ** 2)
-    print(len(logits))
-    print(len(label))
-    print("SSE output: {}".format(len(out)))
+    print("SSE output: {}".format(len(out[0])))
     return out
