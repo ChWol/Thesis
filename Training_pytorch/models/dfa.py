@@ -5,20 +5,12 @@ from torch.autograd import Variable
 from modules.quantization_cpu_np_infer import QConv2d, QLinear
 
 
-# Implement FA first?
 # Activation functions?
 # Quantization routine as before? Connect to hooks
 
-# Constructing net as before but with added matrices?
-# Instead of x = ... use add_module? Reshaping for linear? How for activations?
-# How to initialize weights
 # How to Convolutional Layer?
-# Error passed by multiplication?
-# How to make use of this backward instead of wage?
 # Parallelizable?
 
-# Automatically create list of random feedback weights upon initialization
-# Create dfanet.backward(logit_error) using initialized random feedback weights to project error,
 # use 'with torch.no_grad()' in backward operation
 
 
@@ -32,21 +24,21 @@ class DFANet(torch.nn.Module):
                                cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
                                vari=args.vari,
                                t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '1' + '_',
-                               rule='dfa')
+                               rule='dfa', activation=1)
         self.linear2 = QLinear(512, 1024, logger=logger,
                                wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
                                wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
                                cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
                                vari=args.vari,
                                t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '2' + '_',
-                               rule='dfa')
+                               rule='dfa', activation=1)
         self.linear3 = QLinear(1024, 10, logger=logger,
                                wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
                                wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
                                cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
                                vari=args.vari,
                                t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '3' + '_',
-                               rule='dfa')
+                               rule='dfa', activation=0)
         self.layers = [self.linear1, self.linear2, self.linear3]
 
     def forward(self, x):
@@ -54,11 +46,11 @@ class DFANet(torch.nn.Module):
         self.linear1.input = x
         x = self.linear1(x)
         self.linear1.output = x
-        # activation
+        x = nn.ReLU(x)
         self.linear2.input = x
         x = self.linear2(x)
         self.linear2.output = x
-        # activation
+        x = nn.ReLU()
         self.linear3.input = x
         x = self.linear3(x)
         self.linear3.output = x
@@ -67,8 +59,12 @@ class DFANet(torch.nn.Module):
     def dfa(self, error):
         for layer in self.layers:
             B = layer.dfa_matrix.cuda()
+            a = torch.transpose(layer.output, 0, 1).cuda()
             e = torch.transpose(error, 0, 1).cuda()
-            a = torch.ones_like(torch.transpose(layer.output, 0, 1)).cuda()
             y = layer.input.cuda()
+            if layer.activation:
+                a = torch.where(a > 0, 1, 0)
+            else:
+                a = torch.ones_like(a)
 
             layer.grad = torch.matmul(torch.matmul(B, e) * a, y)
