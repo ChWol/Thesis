@@ -64,8 +64,9 @@ class DFANet(torch.nn.Module):
             print("Size error: {}".format(error.size()))
             print("Size output: {}".format(layer.output.size()))
             print("Size input: {}".format(layer.input.size()))
-            layer.grad = torch.matmul(torch.matmul(layer.dfa_matrix, error) * layer.output,
+            layer.grad = torch.matmul(torch.matmul(layer.dfa_matrix, torch.transpose(error, 0, 1)) * torch.transpose(layer.output, 0, 1),
                                       layer.input)
+            print("Size of grad: {}".format(layer.grad.size()))
 
 
 class LinearFANetwork(nn.Module):
