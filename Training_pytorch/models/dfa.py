@@ -70,8 +70,8 @@ class DFANet(torch.nn.Module):
             a = a.cuda()
             i = i.cuda()
 
-            print(self)
-            print(self.parameters())
+            print(layer)
+            print(self.named_parameters())
 
             print("Size dfa matrix: {}".format(B.size()))
             print("Size error: {}".format(e.size()))
