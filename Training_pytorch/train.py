@@ -143,8 +143,6 @@ else:
 
 if args.cuda:
     model.cuda()
-    if args.rule == 'dfa':
-        transposed.cuda()
 
 #Todo: Add momentum and weight decay
 # torch.optim.SGD(model_fa.parameters(), lr=1e-4, momentum=0.9, weight_decay=0.001, nesterov=True)
