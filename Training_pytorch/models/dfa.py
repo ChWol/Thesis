@@ -74,7 +74,7 @@ class DFANet(torch.nn.Module):
             print("Size error: {}".format(e.size()))
             print("Size output: {}".format(a.size()))
             print("Size input: {}".format(i.size()))
-            layer.grad = torch.matmul(torch.matmul(B, e) * a, i)
+            layer.grad.data = torch.matmul(torch.matmul(B, e) * a, i)
             print("Size of grad: {}".format(layer.grad.size()))
 
 
