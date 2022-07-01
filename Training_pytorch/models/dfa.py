@@ -43,6 +43,7 @@ class DFANet(torch.nn.Module):
                               cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
                               vari=args.vari,
                               t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '3' + '_', rule='dfa')
+        self.layers = [self.linear1, self.linear2, self.linear3]
 
     def forward(self, x):
         x = x.view(x.size(0), -1)
@@ -58,7 +59,7 @@ class DFANet(torch.nn.Module):
         return x
 
     def dfa(self, error):
-        for layer in self.classifiers:
+        for layer in self.layers:
             print("Size dfa matrix: {}".format(self.dfa_matrix.size()))
             print("Size error: {}".format(error.size()))
             print("Size output: {}".format(layer.output.size()))
