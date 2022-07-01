@@ -198,7 +198,7 @@ class QLinear(nn.Linear):
     def __init__(self, in_features, out_features, bias=False, logger=None, clip_weight=False, wage_init=False,
                  quantize_weight=False, clip_output=False, quantize_output=False,
                  wl_input=8, wl_activate=8, wl_error=8, wl_weight=8, inference=0, onoffratio=10, cellBit=1,
-                 subArray=128, ADCprecision=5, vari=0, t=0, v=0, detect=0, target=0, debug=0, name='Qlinear'):
+                 subArray=128, ADCprecision=5, vari=0, t=0, v=0, detect=0, target=0, debug=0, name='Qlinear', rule='bp'):
         super(QLinear, self).__init__(in_features, out_features, bias)
         self.logger = logger
         self.clip_weight = clip_weight
@@ -223,6 +223,8 @@ class QLinear(nn.Linear):
         self.target = target
         self.name = name
         self.scale = wage_initializer.wage_init_(self.weight, self.wl_weight, factor=1.0)
+        if rule == 'dfa':
+            self.dfa_matrix = torch.rand(in_features, 10)
 
 
     def forward(self, input):

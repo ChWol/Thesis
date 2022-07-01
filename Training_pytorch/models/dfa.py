@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torch import autograd
 from torch.autograd import Variable
+from modules.quantization_cpu_np_infer import QConv2d, QLinear
 
 # Implement FA first?
 # Activation functions?
@@ -18,43 +19,53 @@ from torch.autograd import Variable
 # Automatically create list of random feedback weights upon initialization
 # Create dfanet.backward(logit_error) using initialized random feedback weights to project error,
 # use 'with torch.no_grad()' in backward operation
+
+
 class DFANet(torch.nn.Module):
-    def __init__(self):
+    def __init__(self, args, logger):
         super(DFANet, self).__init__()
-        layers = []
 
-    def add_module(self, name, module):
-        super().add_module(name, module)  # maintain the same base functionality
-        if type(module) is torch.nn.Linear:
-            ### code for implementing random error projection matrices
-            self.dfa_matrices.append(torch.nn.Linear(self.logit_dim, module.out_features))
+        self.linear1 = QLinear(784, 512, logger=logger,
+                              wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
+                              wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
+                              cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
+                              vari=args.vari,
+                              t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '1' + '_', rule='dfa')
+        self.linear2 = QLinear(512, 1024, logger=logger,
+                              wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
+                              wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
+                              cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
+                              vari=args.vari,
+                              t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '2' + '_', rule='dfa')
+        self.linear3 =QLinear(1024, 10, logger=logger,
+                              wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
+                              wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
+                              cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
+                              vari=args.vari,
+                              t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '3' + '_', rule='dfa')
 
-    def backward(self, error):
-        # Iterates through the dfa_matrices list
-        for layer in layers:
-            # Use the randomly initialized weights to propagate error in parallel through the network
-            layer.grad =
-        # Make compatible with existing PyTorch optimizers: Store the result in the .grad attribute of all the layers
-
-    def __setattr__(self, name, value):
-        super().__setattr__(name, value)
-        if isinstance(name)
-            add feedback_layers
-            self.feedback_layers.append(torch.nn.Linear(self.output_dim, value.out_features))
-
-    # Todo: Activation functions
     def forward(self, x):
-        x = self.features(x)
         x = x.view(x.size(0), -1)
-        x = self.classifier(x)
+        self.linear1.input = x
+        x = self.linear1(x)
+        self.linear1.output = x
+        self.linear2.input = x
+        x = self.linear2(x)
+        self.linear2.output = x
+        self.linear3.input = x
+        x = self.linear3(x)
+        self.linear3.output = x
+        x = self.classifiers(x)
         return x
 
-
-#########################
-
-# 2 different models: Forward = trained module, take the loss as input for backward
-# Backward: Single layer of parallel matrices, calculate output
-# Overwrite gradients of forward with output of backward
+    def dfa(self, error):
+        for layer in self.classifiers:
+            print("Size dfa matrix: {}".format(self.dfa_matrix.size()))
+            print("Size error: {}".format(error.size()))
+            print("Size output: {}".format(layer.output.size()))
+            print("Size input: {}".format(layer.input.size()))
+            layer.grad = torch.matmul(torch.matmul(self.dfa_matrix, error) * layer.output,
+                                      layer.input)
 
 
 class LinearFANetwork(nn.Module):

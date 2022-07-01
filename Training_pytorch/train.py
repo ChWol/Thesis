@@ -17,6 +17,7 @@ from models import dfa
 from modules.quantization_cpu_np_infer import QConv2d, QLinear
 from datetime import datetime
 from subprocess import call
+from models import dfa
 import wandb
 from decimal import Decimal
 
@@ -106,8 +107,7 @@ if args.type == 'mnist':
 if args.type == 'simple':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     if args.rule == 'dfa':
-        model = models.mnist(args=args, logger=logger, input=784)
-        transposed = models.transposedModel(args=args, logger=logger)
+        model = dfa.DFANet(args, logger)
     else:
         model = models.mnist(args=args, logger=logger, input=784)
 
@@ -198,10 +198,7 @@ try:
             loss = wage_util.SSE(output, target)
 
             if args.rule == 'dfa':
-                gradients = [*transposed(loss), loss]
-                for i, param in enumerate(model.parameters()):
-                    print(param.size())
-                    param.grad = gradients[i]
+                model.dfa(loss)
                 loss = loss.sum()
             else:
                 loss = loss.sum()
