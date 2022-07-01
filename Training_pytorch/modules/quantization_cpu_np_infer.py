@@ -224,7 +224,9 @@ class QLinear(nn.Linear):
         self.name = name
         self.scale = wage_initializer.wage_init_(self.weight, self.wl_weight, factor=1.0)
         if rule == 'dfa':
-            self.dfa_matrix = torch.rand(out_features, 10)
+            B = torch.empty(out_features, 10)
+            nn.init.xavier_uniform_(B, gain=nn.init.calculate_gain('relu'))
+            self.dfa_matrix = B
 
 
     def forward(self, input):

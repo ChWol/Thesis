@@ -54,9 +54,11 @@ class DFANet(torch.nn.Module):
         self.linear1.input = x
         x = self.linear1(x)
         self.linear1.output = x
+        # activation
         self.linear2.input = x
         x = self.linear2(x)
         self.linear2.output = x
+        # activation
         self.linear3.input = x
         x = self.linear3(x)
         self.linear3.output = x
