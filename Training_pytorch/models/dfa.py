@@ -60,11 +60,11 @@ class DFANet(torch.nn.Module):
 
     def dfa(self, error):
         for layer in self.layers:
-            print("Size dfa matrix: {}".format(self.dfa_matrix.size()))
+            print("Size dfa matrix: {}".format(layer.dfa_matrix.size()))
             print("Size error: {}".format(error.size()))
             print("Size output: {}".format(layer.output.size()))
             print("Size input: {}".format(layer.input.size()))
-            layer.grad = torch.matmul(torch.matmul(self.dfa_matrix, error) * layer.output,
+            layer.grad = torch.matmul(torch.matmul(layer.dfa_matrix, error) * layer.output,
                                       layer.input)
 
 
