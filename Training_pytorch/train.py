@@ -203,7 +203,9 @@ try:
                 for name, param in list(model.named_parameters()):
                     if param.grad is None:
                         loss.backward()
+                        print("Backprop: {}".format(param.grad.data))
                     param.grad.data = model.layers[i].grad
+                    print("DFA: {}".format(param.grad.data))
                     #param.grad.data.set_(model.layers[i].grad)
                     i += 1
             else:
