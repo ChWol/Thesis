@@ -201,7 +201,7 @@ try:
                 model.dfa(error)
                 i = 0
                 for name, param in list(model.parameters()):
-                    param.grad = model.layers[i].grad
+                    param.grad.data = model.layers[i].grad
                     i += 1
             else:
                 loss.backward()
