@@ -194,7 +194,7 @@ try:
             optimizer.zero_grad()
             output = model(data)
             error = wage_util.SSE(output, target)
-            loss = 0.5 * error ** 2
+            loss = 0.5 * (error ** 2)
             loss = loss.sum()
 
             if args.rule == 'dfa':
@@ -204,7 +204,6 @@ try:
                     param.grad = model.layers[i].grad
                     i += 1
             else:
-                loss = loss.sum()
                 loss.backward()
 
 
