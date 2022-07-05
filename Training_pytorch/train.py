@@ -193,11 +193,12 @@ try:
             data, target = Variable(data), Variable(target)
             optimizer.zero_grad()
             output = model(data)
-            loss = wage_util.SSE(output, target)
+            error = wage_util.SSE(output, target)
+            loss = 0.5 * error ** 2
+            loss = loss.sum()
 
             if args.rule == 'dfa':
-                model.dfa(loss)
-                loss = loss.sum()
+                model.dfa(error)
                 i = 0
                 for name, param in list(model.named_parameters()):
                     param.grad = model.layers[i].grad

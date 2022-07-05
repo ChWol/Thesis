@@ -226,7 +226,7 @@ class QLinear(nn.Linear):
         self.scale = wage_initializer.wage_init_(self.weight, self.wl_weight, factor=1.0)
         self.activation = activation
         if rule == 'dfa':
-            B = torch.empty(out_features, 10)
+            B = torch.empty(out_features, 10, requires_grad=False)
             nn.init.xavier_uniform_(B, gain=nn.init.calculate_gain('relu'))
             self.dfa_matrix = B
 
