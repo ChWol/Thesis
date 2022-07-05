@@ -201,7 +201,10 @@ try:
                 model.dfa(error)
                 i = 0
                 for param in model.parameters():
-                    param.grad = model.layers[i].grad
+                    if param.grad == None:
+                        loss.backward()
+                    param.grad.data = model.layers[i].grad
+                    #param.grad.data.set_(model.layers[i].grad)
                     i += 1
             else:
                 loss.backward()
