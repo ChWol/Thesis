@@ -209,7 +209,8 @@ try:
                     i += 1
             else:
                 loss.backward()
-                print(param.grad.data)
+                for name, param in list(model.named_parameters()):
+                    print(param.grad.data)
 
 
             # introduce non-ideal property
