@@ -203,15 +203,10 @@ try:
                 for name, param in list(model.named_parameters()):
                     if param.grad is None:
                         loss.backward()
-                    print(name)
                     param.grad.data = model.layers[i].grad
-                    print(param.grad.data)
-                    #param.grad.data.set_(model.layers[i].grad)
                     i += 1
             else:
                 loss.backward()
-                for name, param in list(model.named_parameters()):
-                    print(param.grad.data)
 
 
             # introduce non-ideal property
