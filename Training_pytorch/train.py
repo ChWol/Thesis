@@ -200,8 +200,8 @@ try:
             if args.rule == 'dfa':
                 model.dfa(error)
                 i = 0
-                for param in list(model.parameters()):
-                    param.grad.data = model.layers[i].grad
+                for param in model.parameters():
+                    param.grad = model.layers[i].grad
                     i += 1
             else:
                 loss.backward()
