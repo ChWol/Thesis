@@ -215,8 +215,8 @@ try:
             # Update function
             optimizer.step()
 
-            for name, param in list(model.named_parameters())[::-1]:
-                param.data = wage_quantizer.W(param.data, param.grad.data, args.wl_weight, args.c2cVari)
+            #for name, param in list(model.named_parameters())[::-1]:
+                #param.data = wage_quantizer.W(param.data, param.grad.data, args.wl_weight, args.c2cVari)
 
             if batch_idx % args.log_interval == 0 and batch_idx > 0:
                 pred = output.data.max(1)[1]  # get the index of the max log-probability
