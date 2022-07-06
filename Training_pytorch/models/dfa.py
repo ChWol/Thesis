@@ -9,8 +9,8 @@ class DFANet(torch.nn.Module):
     def __init__(self, args, logger):
         super(DFANet, self).__init__()
 
-        activation = 'relu'
-        activation_function = nn.ReLU()
+        activation = 'tanh'
+        activation_function = nn.Tanh()
 
         self.linear1 = QLinear(784, 512, logger=logger,
                                wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
@@ -69,5 +69,4 @@ class DFANet(torch.nn.Module):
             else:
                 a = torch.ones_like(a)
 
-            gradients = torch.matmul(torch.matmul(B, e) * a, y)
-            layer.weight.grad = gradients / torch.linalg.norm(gradients)
+            layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)

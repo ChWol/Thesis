@@ -197,8 +197,9 @@ try:
 
             if args.rule == 'dfa':
                 model.dfa(error)
-                for p in model.parameters():
-                    print(p.grad)
+                for name, param in model.named_parameters():
+                    print(name)
+                    print(param)
             else:
                 loss.backward()
 
