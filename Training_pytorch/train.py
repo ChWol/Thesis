@@ -144,7 +144,7 @@ if args.cuda:
 
 #Todo: Add momentum and weight decay
 # torch.optim.SGD(model_fa.parameters(), lr=1e-4, momentum=0.9, weight_decay=0.001, nesterov=True)
-optimizer = optim.SGD(model.parameters(), lr=1e-2)
+optimizer = optim.SGD(model.parameters(), lr=1)
 
 decreasing_lr = list(map(int, args.decreasing_lr.split(',')))
 logger('decreasing_lr: ' + str(decreasing_lr))
