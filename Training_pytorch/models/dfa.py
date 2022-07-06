@@ -60,4 +60,4 @@ class DFANet(torch.nn.Module):
             else:
                 a = torch.ones_like(a)
 
-            layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
+            layer.weight.grad.data = torch.matmul(torch.matmul(B, e) * a, y)
