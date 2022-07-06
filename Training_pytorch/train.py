@@ -203,10 +203,7 @@ try:
             # introduce non-ideal property
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
-                print("GRAD")
-                print(name)
-                print("GRAD DATA")
-                print(param.grad)
+                print("Before")
                 print(param.grad.data)
                 velocity[j] = gamma * velocity[j] + alpha * param.grad.data
                 param.grad.data = velocity[j]
@@ -216,6 +213,8 @@ try:
                                                     torch.from_numpy(paramALTD[j]).cuda(), args.max_level,
                                                     args.max_level)
                 j = j + 1
+                print("After")
+                print(param.grad.data)
 
             # Update function
             optimizer.step()
