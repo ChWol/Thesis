@@ -74,4 +74,5 @@ class DFANet(torch.nn.Module):
             if layer.name == 'FC2_':
                 print("WEIGHTS")
                 print(layer.weight)
-
+                print("GRADIENTS")
+                print(layer.weight.grad)
