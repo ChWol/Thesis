@@ -5,15 +5,6 @@ from torch.autograd import Variable
 from modules.quantization_cpu_np_infer import QConv2d, QLinear
 
 
-# Activation functions?
-# Quantization routine as before? Connect to hooks
-
-# How to Convolutional Layer?
-# Parallelizable?
-
-# use 'with torch.no_grad()' in backward operation
-
-
 class DFANet(torch.nn.Module):
     def __init__(self, args, logger):
         super(DFANet, self).__init__()

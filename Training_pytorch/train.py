@@ -13,8 +13,6 @@ from utee import wage_quantizer
 from utee import hook
 from models import dataset
 from models import models
-from models import dfa
-from modules.quantization_cpu_np_infer import QConv2d, QLinear
 from datetime import datetime
 from subprocess import call
 from models import dfa
@@ -146,7 +144,7 @@ if args.cuda:
 
 #Todo: Add momentum and weight decay
 # torch.optim.SGD(model_fa.parameters(), lr=1e-4, momentum=0.9, weight_decay=0.001, nesterov=True)
-optimizer = optim.SGD(model.parameters(), lr=1)
+
 
 decreasing_lr = list(map(int, args.decreasing_lr.split(',')))
 logger('decreasing_lr: ' + str(decreasing_lr))
@@ -191,7 +189,7 @@ try:
             if args.cuda:
                 data, target = data.cuda(), target.cuda()
             data, target = Variable(data), Variable(target)
-            optimizer.zero_grad()
+            #optimizer.zero_grad()
             output = model(data)
             error = wage_util.SSE(output, target)
             loss = 0.5 * (error ** 2)
@@ -201,7 +199,6 @@ try:
                 model.dfa(error)
             else:
                 loss.backward()
-
 
             # introduce non-ideal property
             j = 0
@@ -216,6 +213,7 @@ try:
                 j = j + 1
 
             # Update function
+            optimizer = optim.SGD(model.parameters(), lr=1)
             optimizer.step()
 
             for name, param in list(model.named_parameters())[::-1]:
