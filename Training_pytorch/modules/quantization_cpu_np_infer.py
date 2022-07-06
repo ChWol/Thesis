@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from utee import wage_initializer, wage_quantizer
 import numpy as np
-from torch.autograd import Variable
 
 
 class QConv2d(nn.Conv2d):
@@ -230,22 +229,7 @@ class QLinear(nn.Linear):
         if rule == 'dfa':
             B = torch.empty(out_features, 10, requires_grad=False)
             nn.init.xavier_uniform_(B, gain=nn.init.calculate_gain('relu'))
-            self.dfa_matrix = nn.Parameter(B)
-            self.loss_gradient = None
-            self.register_backward_hook(self.dfa_backward_hook)
-
-    @staticmethod
-    def dfa_backward_hook(module, grad_input, grad_output):
-        # If layer don't have grad w.r.t input
-        if grad_input[0] is None:
-            return grad_input
-        else:
-            grad_dfa = module.loss_gradient.mm(module.weight_backward)
-            # If no bias term
-            if len(grad_input) == 2:
-                return grad_dfa, grad_input[1]
-            else:
-                return grad_dfa, grad_input[1], grad_input[2]
+            self.dfa_matrix = B
 
 
     def forward(self, input):
