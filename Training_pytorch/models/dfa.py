@@ -71,8 +71,5 @@ class DFANet(torch.nn.Module):
 
             layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
 
-            if layer.name == 'FC2_':
-                print("WEIGHTS")
-                print(layer.weight)
-                print("GRADIENTS")
-                print(layer.weight.grad)
+            print("GRADIENTS in DFA")
+            print(layer.weight.grad)

@@ -197,6 +197,9 @@ try:
 
             if args.rule == 'dfa':
                 model.dfa(error)
+                for name, param in model.named_parameters():
+                    print("GRADIENTS in TRAIN")
+                    print(param.grad)
             else:
                 loss.backward()
 
