@@ -203,6 +203,9 @@ try:
             # introduce non-ideal property
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
+                print("GRAD")
+                print(name)
+                print("GRAD DATA")
                 print(param.grad)
                 print(param.grad.data)
                 velocity[j] = gamma * velocity[j] + alpha * param.grad.data
