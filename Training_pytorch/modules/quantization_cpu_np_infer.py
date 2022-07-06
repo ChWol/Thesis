@@ -230,6 +230,7 @@ class QLinear(nn.Linear):
             B = torch.empty(out_features, 10, requires_grad=False)
             nn.init.xavier_uniform_(B, gain=nn.init.calculate_gain('relu'))
             self.dfa_matrix = B
+            print(self.dfa_matrix)
 
 
     def forward(self, input):
