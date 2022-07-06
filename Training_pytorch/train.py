@@ -197,17 +197,14 @@ try:
 
             if args.rule == 'dfa':
                 model.dfa(error)
-                for name, param in model.named_parameters():
-                    print(name)
-                    print(param.grad)
             else:
                 loss.backward()
 
             # introduce non-ideal property
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
-                print(name)
                 print(param.grad)
+                print(param.grad.data)
                 velocity[j] = gamma * velocity[j] + alpha * param.grad.data
                 param.grad.data = velocity[j]
                 param.grad.data = wage_quantizer.QG(param.data, args.wl_weight, param.grad.data, args.wl_grad,
