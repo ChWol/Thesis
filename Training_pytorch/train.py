@@ -190,6 +190,9 @@ try:
                 data, target = data.cuda(), target.cuda()
             data, target = Variable(data), Variable(target)
             optimizer.zero_grad()
+            for name, param in model.named_parameters():
+                print("GRADIENTS in TRAIN")
+                print(param.grad)
             output = model(data)
             error = wage_util.SSE(output, target)
             loss = 0.5 * (error ** 2)
