@@ -202,15 +202,15 @@ try:
 
             # introduce non-ideal property
             j = 0
-            for name, param in list(model.named_parameters())[::-1]:
-                velocity[j] = gamma * velocity[j] + alpha * param.grad.data
-                param.grad.data = velocity[j]
+            #for name, param in list(model.named_parameters())[::-1]:
+                #velocity[j] = gamma * velocity[j] + alpha * param.grad.data
+                #param.grad.data = velocity[j]
                 #param.grad.data = wage_quantizer.QG(param.data, args.wl_weight, param.grad.data, args.wl_grad,
                  #                                   grad_scale,
                   #                                  torch.from_numpy(paramALTP[j]).cuda(),
                    #                                 torch.from_numpy(paramALTD[j]).cuda(), args.max_level,
                     #                                args.max_level)
-                j = j + 1
+                #j = j + 1
 
             # Update function
             optimizer.step()
