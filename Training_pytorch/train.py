@@ -207,6 +207,8 @@ try:
                 print(param.grad.data)
                 velocity[j] = gamma * velocity[j] + alpha * param.grad.data
                 param.grad.data = velocity[j]
+                print("Between")
+                print(param.grad.data)
                 param.grad.data = wage_quantizer.QG(param.data, args.wl_weight, param.grad.data, args.wl_grad,
                                                     grad_scale,
                                                     torch.from_numpy(paramALTP[j]).cuda(),
