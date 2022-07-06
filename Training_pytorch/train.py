@@ -299,6 +299,7 @@ try:
                 with torch.no_grad():
                     data, target = Variable(data), Variable(target)
                     output = model(data)
+                    # Todo: Update loss function to match here again
                     test_loss_i = wage_util.SSE(output, target).sum()
                     test_loss += test_loss_i.data
                     pred = output.data.max(1)[1]  # get the index of the max log-probability
