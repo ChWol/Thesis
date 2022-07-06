@@ -190,9 +190,6 @@ try:
                 data, target = data.cuda(), target.cuda()
             data, target = Variable(data), Variable(target)
             optimizer.zero_grad()
-            for name, param in model.named_parameters():
-                print("GRADIENTS in TRAIN")
-                print(param.grad)
             output = model(data)
             error = wage_util.SSE(output, target)
             loss = 0.5 * (error ** 2)
@@ -201,7 +198,7 @@ try:
             if args.rule == 'dfa':
                 model.dfa(error)
                 for name, param in model.named_parameters():
-                    print("GRADIENTS in TRAIN")
+                    print(name)
                     print(param.grad)
             else:
                 loss.backward()
@@ -209,6 +206,8 @@ try:
             # introduce non-ideal property
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
+                print(name)
+                print(param.grad)
                 velocity[j] = gamma * velocity[j] + alpha * param.grad.data
                 param.grad.data = velocity[j]
                 param.grad.data = wage_quantizer.QG(param.data, args.wl_weight, param.grad.data, args.wl_grad,
