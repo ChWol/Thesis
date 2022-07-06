@@ -9,7 +9,7 @@ class DFANet(torch.nn.Module):
     def __init__(self, args, logger):
         super(DFANet, self).__init__()
 
-        activation = 'tanh'
+        activation = 'none'
         activation_function = nn.Tanh()
 
         self.linear1 = QLinear(784, 512, logger=logger,
@@ -42,11 +42,11 @@ class DFANet(torch.nn.Module):
         self.linear1.input = x
         x = self.linear1(x)
         self.linear1.output = x
-        x = self.relu1(x)
+        #x = self.relu1(x)
         self.linear2.input = x
         x = self.linear2(x)
         self.linear2.output = x
-        x = self.relu2(x)
+        #x = self.relu2(x)
         self.linear3.input = x
         x = self.linear3(x)
         self.linear3.output = x
