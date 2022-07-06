@@ -198,8 +198,9 @@ try:
             if args.rule == 'dfa':
                 model.dfa(error)
                 for name, param in model.named_parameters():
-                    print(name)
-                    print(param)
+                    print("Layer: {}".format(name))
+                    print("Param: {}".format(param))
+                    print("Grad: {}".format(param.grad.data))
             else:
                 loss.backward()
 
