@@ -193,7 +193,6 @@ try:
             optimizer.zero_grad()
 
             output = model(data)
-            print(output)
             error = wage_util.SSE(output, target)
             loss = 0.5 * (error ** 2)
             loss = loss.sum()
@@ -216,17 +215,8 @@ try:
                 #j = j + 1
 
             # Update function
-            print("Before")
-            for name, param in list(model.named_parameters()):
-                print(name)
-                print(param.data.sum())
             optimizer.step()
             # scheduler.step()
-            print("After")
-            for name, param in list(model.named_parameters()):
-                print(name)
-                print(param.data.sum())
-
             #for name, param in list(model.named_parameters())[::-1]:
                 #param.data = wage_quantizer.W(param.data, param.grad.data, args.wl_weight, args.c2cVari)
 

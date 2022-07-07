@@ -70,19 +70,13 @@ class DFANet(torch.nn.Module):
             else:
                 a = torch.ones_like(a)
 
-            print(layer.name)
-
             if i == len(self.layers)-1:
-                if epoch < 20:
+                if epoch < 10:
                     layer.weight.grad = torch.zeros_like(torch.matmul(e, y))
                 else:
                     layer.weight.grad = torch.matmul(e, y)
-                print("Gradients")
-                print(layer.weight.grad)
             else:
-                if epoch < 20:
+                if epoch < 10:
                     layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
                 else:
                     layer.weight.grad = torch.zeros_like(torch.matmul(torch.matmul(B, e) * a, y))
-                print("Gradients")
-                print(layer.weight.grad)
