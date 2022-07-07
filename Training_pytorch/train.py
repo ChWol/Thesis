@@ -217,12 +217,12 @@ try:
             print("Before")
             for name, param in list(model.named_parameters()):
                 print(name)
-                print(param)
+                print(param.data.sum())
             optimizer.step()
             print("After")
             for name, param in list(model.named_parameters()):
                 print(name)
-                print(param)
+                print(param.data.sum())
 
             #for name, param in list(model.named_parameters())[::-1]:
                 #param.data = wage_quantizer.W(param.data, param.grad.data, args.wl_weight, args.c2cVari)
