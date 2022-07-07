@@ -42,6 +42,7 @@ class DFANet(torch.nn.Module):
 
     def forward(self, x):
         x = x.view(x.size(0), -1)
+        print("This is the input: {}".format(x))
         self.linear1.input = x
         x = self.linear1(x)
         self.linear1.output = x
@@ -65,15 +66,15 @@ class DFANet(torch.nn.Module):
                 a = torch.where(a > 0, 1, 0)
             if layer.activation == 'tanh':
                 tanh = nn.Tanh()
+                print("a before tanh: {}".format(a))
+                print(tanh(a))
                 a = torch.ones_like(a) - torch.square(tanh(a))
-                print("Using tanh")
+                print("a after tanh: {}".format(a))
             if layer.activation == 'sigmoid':
                 sigmoid = nn.Sigmoid()
                 a = torch.matmul(sigmoid(a), torch.ones_like(a) - sigmoid(a))
             else:
                 a = torch.ones_like(a)
-
-            print(layer.activation)
 
             print(layer.name)
             print("B: {}".format(B))
