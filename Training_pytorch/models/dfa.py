@@ -12,7 +12,7 @@ class DFANet(torch.nn.Module):
         activation = 'tanh'
         activation_function = nn.Tanh()
 
-        self.linear1 = QLinear(784, 512, logger=logger,
+        self.linear1 = QLinear(784, 200, logger=logger,
                                wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
                                wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
                                cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
@@ -20,7 +20,7 @@ class DFANet(torch.nn.Module):
                                t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '1' + '_',
                                rule='dfa', activation=activation)
         self.relu1 = activation_function
-        self.linear2 = QLinear(512, 1024, logger=logger,
+        self.linear2 = QLinear(200, 100, logger=logger,
                                wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
                                wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
                                cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
@@ -28,7 +28,7 @@ class DFANet(torch.nn.Module):
                                t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '2' + '_',
                                rule='dfa', activation=activation)
         self.relu2 = activation_function
-        self.linear3 = QLinear(1024, 10, logger=logger,
+        self.linear3 = QLinear(100, 10, logger=logger,
                                wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
                                wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
                                cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
@@ -77,6 +77,6 @@ class DFANet(torch.nn.Module):
                 print("Gradients")
                 print(layer.weight.grad)
             else:
-                layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
+                layer.weight.grad = torch.zeros_like(torch.matmul(torch.matmul(B, e) * a, y))
                 print("Gradients")
                 print(layer.weight.grad)
