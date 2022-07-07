@@ -22,6 +22,7 @@ class MODEL(nn.Module):
 
     def forward(self, x):
         x = self.features(x)
+        print("This is the input: {}".format(x))
         x = x.view(x.size(0), -1)
         x = self.classifier(x)
         return x
