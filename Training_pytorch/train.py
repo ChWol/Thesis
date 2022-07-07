@@ -144,7 +144,8 @@ if args.cuda:
 
 #Todo: Add momentum and weight decay
 # torch.optim.SGD(model_fa.parameters(), lr=1e-4, momentum=0.9, weight_decay=0.001, nesterov=True)
-optimizer = optim.SGD(model.parameters(), lr=1e-3)
+optimizer = optim.SGD(model.parameters(), lr=1e-1)
+scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[20, 40], gamma=0.1)
 
 decreasing_lr = list(map(int, args.decreasing_lr.split(',')))
 logger('decreasing_lr: ' + str(decreasing_lr))
@@ -219,6 +220,7 @@ try:
                 print(name)
                 print(param.data.sum())
             optimizer.step()
+            scheduler.step()
             print("After")
             for name, param in list(model.named_parameters()):
                 print(name)
