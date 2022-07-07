@@ -21,8 +21,9 @@ class MODEL(nn.Module):
         print(self.classifier)
 
     def forward(self, x):
+        print("This is the input 1: {}".format(x))
         x = self.features(x)
-        print("This is the input: {}".format(x))
+        print("This is the input 2: {}".format(x))
         x = x.view(x.size(0), -1)
         x = self.classifier(x)
         return x
