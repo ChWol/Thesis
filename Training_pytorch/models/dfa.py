@@ -73,7 +73,7 @@ class DFANet(torch.nn.Module):
             print(layer.name)
 
             if i == len(self.layers)-1:
-                layer.weight.grad = torch.zeros_like(torch.matmul(e, y))
+                layer.weight.grad = torch.matmul(e, y)
                 print("Gradients")
                 print(layer.weight.grad)
             else:
