@@ -190,8 +190,20 @@ try:
                 data, target = data.cuda(), target.cuda()
             data, target = Variable(data), Variable(target)
             optimizer.zero_grad()
+
+            print("Gradients after zeroing")
+            for name, param in list(model.named_parameters()):
+                print(name)
+                print(param.grad)
+
             output = model(data)
+
+            print("Output: {}".format(output))
+
             error = wage_util.SSE(output, target)
+
+            print("Error: {}".format(error))
+
             loss = 0.5 * (error ** 2)
             loss = loss.sum()
 
@@ -213,7 +225,15 @@ try:
                 #j = j + 1
 
             # Update function
+            print("Before")
+            for name, param in list(model.named_parameters()):
+                print(name)
+                print(param.grad)
             optimizer.step()
+            print("After")
+            for name, param in list(model.named_parameters()):
+                print(name)
+                print(param.grad)
 
             #for name, param in list(model.named_parameters())[::-1]:
                 #param.data = wage_quantizer.W(param.data, param.grad.data, args.wl_weight, args.c2cVari)
