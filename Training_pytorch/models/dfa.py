@@ -56,7 +56,7 @@ class DFANet(torch.nn.Module):
         return x
 
     def dfa(self, error):
-        for layer in self.layers:
+        for i, layer in enumerate(self.layers):
             B = layer.dfa_matrix.cuda()
             a = torch.transpose(layer.output, 0, 1).cuda()
             e = torch.transpose(error, 0, 1).cuda()
@@ -73,4 +73,7 @@ class DFANet(torch.nn.Module):
                 a = torch.ones_like(a)
 
             # Todo: Negative or positive?
-            layer.weight.grad = -torch.matmul(torch.matmul(B, e) * a, y)
+            if i == len(self.layers)-1:
+                layer.weight.grad = -torch.matmul(e, y)
+            else:
+                layer.weight.grad = -torch.matmul(torch.matmul(B, e) * a, y)
