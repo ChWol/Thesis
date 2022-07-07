@@ -71,12 +71,6 @@ class DFANet(torch.nn.Module):
                 a = torch.ones_like(a)
 
             if i == len(self.layers)-1:
-                if epoch > 10:
-                    layer.weight.grad = torch.zeros_like(torch.matmul(e, y))
-                else:
-                    layer.weight.grad = torch.matmul(e, y)
+                layer.weight.grad = torch.matmul(e, y)
             else:
-                if epoch > 10:
-                    layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
-                else:
-                    layer.weight.grad = torch.zeros_like(torch.matmul(torch.matmul(B, e) * a, y))
+                layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
