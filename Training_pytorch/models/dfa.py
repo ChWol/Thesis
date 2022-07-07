@@ -74,6 +74,10 @@ class DFANet(torch.nn.Module):
 
             # Todo: Negative or positive?
             if i == len(self.layers)-1:
+                print("Special condition")
+                print("Layer: {}".format(layer.name))
                 layer.weight.grad = -torch.matmul(e, y)
             else:
+                print("Normal update")
+                print("Layer: {}".format(layer.name))
                 layer.weight.grad = -torch.matmul(torch.matmul(B, e) * a, y)
