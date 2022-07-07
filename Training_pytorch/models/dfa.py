@@ -53,7 +53,7 @@ class DFANet(torch.nn.Module):
         self.linear3.output = x
         return x
 
-    def dfa(self, error, epoch):
+    def dfa(self, error):
         for i, layer in enumerate(self.layers):
             B = layer.dfa_matrix.cuda()
             a = torch.transpose(layer.output, 0, 1).cuda()
