@@ -73,5 +73,4 @@ class DFANet(torch.nn.Module):
                 a = torch.ones_like(a)
 
             # Todo: Negative or positive?
-            gradients = -torch.matmul(torch.matmul(B, e) * a, y) / layer.weight
-            layer.weight.grad = gradients
+            layer.weight.grad = -torch.matmul(torch.matmul(B, e) * a, y)
