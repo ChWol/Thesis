@@ -192,13 +192,7 @@ try:
             optimizer.zero_grad()
 
             output = model(data)
-
-            print("Output: {}".format(output))
-
             error = wage_util.SSE(output, target)
-
-            print("Error: {}".format(error))
-
             loss = 0.5 * (error ** 2)
             loss = loss.sum()
 

@@ -77,8 +77,6 @@ class DFANet(torch.nn.Module):
                 a = torch.ones_like(a)
 
             print(layer.name)
-            print("B: {}".format(B))
-            print(B.size())
             print("a: {}".format(a))
             print(a.size())
             print("y: {}".format(y))
