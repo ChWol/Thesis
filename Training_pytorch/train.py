@@ -191,11 +191,6 @@ try:
             data, target = Variable(data), Variable(target)
             optimizer.zero_grad()
 
-            print("Gradients after zeroing")
-            for name, param in list(model.named_parameters()):
-                print(name)
-                print(param.grad)
-
             output = model(data)
 
             print("Output: {}".format(output))

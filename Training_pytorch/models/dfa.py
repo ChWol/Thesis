@@ -66,22 +66,26 @@ class DFANet(torch.nn.Module):
             if layer.activation == 'tanh':
                 tanh = nn.Tanh()
                 a = torch.ones_like(a) - torch.square(tanh(a))
+                print("Using tanh")
             if layer.activation == 'sigmoid':
                 sigmoid = nn.Sigmoid()
                 a = torch.matmul(sigmoid(a), torch.ones_like(a) - sigmoid(a))
             else:
                 a = torch.ones_like(a)
 
+            print(layer.activation)
+
+            print(layer.name)
             print("B: {}".format(B))
             print(B.size())
             print("a: {}".format(a))
             print(a.size())
-            print("e: {}".format(e))
-            print(B.size())
             print("y: {}".format(y))
             print(y.size())
 
             if i == len(self.layers)-1:
                 layer.weight.grad = -torch.matmul(e, y)
+                print(layer.weight.grad)
             else:
                 layer.weight.grad = -torch.matmul(torch.matmul(B, e) * a, y)
+                print(layer.weight.grad)
