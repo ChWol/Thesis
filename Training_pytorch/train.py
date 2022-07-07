@@ -21,7 +21,7 @@ from decimal import Decimal
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
 parser.add_argument('--type', default='simple', help='dataset for training')
-parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training')
+parser.add_argument('--batch_size', type=int, default=128, help='input batch size for training')
 parser.add_argument('--epochs', type=int, default=257, help='number of epochs to train')
 parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
 parser.add_argument('--seed', type=int, default=117, help='random seed')
@@ -144,7 +144,8 @@ if args.cuda:
 
 #Todo: Add momentum and weight decay
 # torch.optim.SGD(model_fa.parameters(), lr=1e-4, momentum=0.9, weight_decay=0.001, nesterov=True)
-optimizer = optim.SGD(model.parameters(), lr=1)
+# optimizer = optim.SGD(model.parameters(), lr=1)
+optimizer = optim.Adam(model.parameters(), lr=1, weight_decay=0.001)
 
 decreasing_lr = list(map(int, args.decreasing_lr.split(',')))
 logger('decreasing_lr: ' + str(decreasing_lr))
