@@ -20,7 +20,6 @@ class DFANet(torch.nn.Module):
                                t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '1' + '_',
                                rule='dfa', activation=activation)
         self.relu1 = activation_function
-        '''
         self.linear2 = QLinear(512, 1024, logger=logger,
                                wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
                                wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
@@ -29,7 +28,6 @@ class DFANet(torch.nn.Module):
                                t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '2' + '_',
                                rule='dfa', activation=activation)
         self.relu2 = activation_function
-        '''
         self.linear3 = QLinear(512, 10, logger=logger,
                                wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
                                wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
@@ -37,8 +35,8 @@ class DFANet(torch.nn.Module):
                                vari=args.vari,
                                t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '3' + '_',
                                rule='dfa', activation='none')
-        # self.layers = [self.linear1, self.linear2, self.linear3]
-        self.layers = [self.linear1, self.linear3]
+        self.layers = [self.linear1, self.linear2, self.linear3]
+        # self.layers = [self.linear1, self.linear3]
 
     def forward(self, x):
         x = x.view(x.size(0), -1)
@@ -46,10 +44,10 @@ class DFANet(torch.nn.Module):
         x = self.linear1(x)
         self.linear1.output = x
         x = self.relu1(x)
-        # self.linear2.input = x
-        # x = self.linear2(x)
-        # self.linear2.output = x
-        # x = self.relu2(x)
+        self.linear2.input = x
+        x = self.linear2(x)
+        self.linear2.output = x
+        x = self.relu2(x)
         self.linear3.input = x
         x = self.linear3(x)
         self.linear3.output = x
