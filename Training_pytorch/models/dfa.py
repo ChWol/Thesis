@@ -79,6 +79,6 @@ class DFANet(torch.nn.Module):
                 print("Gradients")
                 print(layer.weight.grad)
             else:
-                layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
+                layer.weight.grad = torch.zeros_like(torch.matmul(torch.matmul(B, e) * a, y))
                 print("Gradients")
                 print(layer.weight.grad)
