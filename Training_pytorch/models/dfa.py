@@ -43,6 +43,7 @@ class DFANet(torch.nn.Module):
     def forward(self, x):
         x = x.view(x.size(0), -1)
         print("This is the input: {}".format(x))
+        print("Sum: {}".format(sum(x)))
         self.linear1.input = x
         x = self.linear1(x)
         self.linear1.output = x
