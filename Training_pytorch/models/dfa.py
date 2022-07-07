@@ -12,14 +12,13 @@ class DFANet(torch.nn.Module):
         activation = 'tanh'
         activation_function = nn.Tanh()
 
-        self.linear1 = QLinear(784, 512, logger=logger,
+        self.linear1 = QLinear(784, 10, logger=logger,
                                wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
                                wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
                                cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
                                vari=args.vari,
                                t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '1' + '_',
                                rule='dfa', activation=activation)
-        self.relu1 = activation_function
         '''
         self.linear2 = QLinear(512, 1024, logger=logger,
                                wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
@@ -30,6 +29,7 @@ class DFANet(torch.nn.Module):
                                rule='dfa', activation=activation)
         self.relu2 = activation_function
         '''
+        '''
         self.linear3 = QLinear(512, 10, logger=logger,
                                wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
                                wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
@@ -37,22 +37,18 @@ class DFANet(torch.nn.Module):
                                vari=args.vari,
                                t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '3' + '_',
                                rule='dfa', activation='none')
-        # self.layers = [self.linear1, self.linear2, self.linear3]
-        self.layers = [self.linear1, self.linear3]
+        # self.layers = [self.linear1, self.linear2, self.linear3]'''
+        self.layers = [self.linear1]
 
     def forward(self, x):
         x = x.view(x.size(0), -1)
         self.linear1.input = x
         x = self.linear1(x)
         self.linear1.output = x
-        x = self.relu1(x)
         # self.linear2.input = x
         # x = self.linear2(x)
         # self.linear2.output = x
         # x = self.relu2(x)
-        self.linear3.input = x
-        x = self.linear3(x)
-        self.linear3.output = x
         return x
 
     def dfa(self, error):
@@ -72,12 +68,7 @@ class DFANet(torch.nn.Module):
             else:
                 a = torch.ones_like(a)
 
-            # Todo: Negative or positive?
             if i == len(self.layers)-1:
-                print("Special condition")
-                print("Layer: {}".format(layer.name))
                 layer.weight.grad = -torch.matmul(e, y)
             else:
-                print("Normal update")
-                print("Layer: {}".format(layer.name))
                 layer.weight.grad = -torch.matmul(torch.matmul(B, e) * a, y)
