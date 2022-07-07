@@ -63,13 +63,13 @@ class DFANet(torch.nn.Module):
             y = layer.input.cuda()
             if layer.activation == 'relu':
                 a = torch.where(a > 0, 1, 0)
-            if layer.activation == 'tanh':
+            elif layer.activation == 'tanh':
                 tanh = nn.Tanh()
                 print("a before tanh: {}".format(a))
                 print(tanh(a))
                 a = torch.ones_like(a) - torch.square(tanh(a))
                 print("a after tanh: {}".format(a))
-            if layer.activation == 'sigmoid':
+            elif layer.activation == 'sigmoid':
                 sigmoid = nn.Sigmoid()
                 a = torch.matmul(sigmoid(a), torch.ones_like(a) - sigmoid(a))
             else:
