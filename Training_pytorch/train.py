@@ -199,7 +199,7 @@ try:
             loss = loss.sum()
 
             if args.rule == 'dfa':
-                model.dfa(error)
+                model.dfa(error, epoch)
             else:
                 loss.backward()
 

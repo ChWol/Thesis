@@ -53,7 +53,7 @@ class DFANet(torch.nn.Module):
         self.linear3.output = x
         return x
 
-    def dfa(self, error):
+    def dfa(self, error, epoch):
         for i, layer in enumerate(self.layers):
             B = layer.dfa_matrix.cuda()
             a = torch.transpose(layer.output, 0, 1).cuda()
@@ -73,10 +73,16 @@ class DFANet(torch.nn.Module):
             print(layer.name)
 
             if i == len(self.layers)-1:
-                layer.weight.grad = torch.matmul(e, y)
+                if epoch < 20:
+                    layer.weight.grad = torch.zeros_like(torch.matmul(e, y))
+                else:
+                    layer.weight.grad = torch.matmul(e, y)
                 print("Gradients")
                 print(layer.weight.grad)
             else:
-                layer.weight.grad = torch.zeros_like(torch.matmul(torch.matmul(B, e) * a, y))
+                if epoch < 20:
+                    layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
+                else:
+                    layer.weight.grad = torch.zeros_like(torch.matmul(torch.matmul(B, e) * a, y))
                 print("Gradients")
                 print(layer.weight.grad)
