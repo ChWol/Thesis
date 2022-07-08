@@ -89,7 +89,7 @@ torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
-assert args.type in ['cifar10', 'cifar100', 'mnist', 'fashion'], args.dataset
+assert args.dataset in ['cifar10', 'cifar100', 'mnist', 'fashion'], args.dataset
 if args.dataset == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
     model = models.cifar(args=args, logger=logger, num_classes=10)
