@@ -255,19 +255,6 @@ try:
                         relu = 0
                     else:
                         relu = 1
-                    print("All passed parameters")
-                    print(model)
-                    print(args.wl_weight)
-                    print(args.wl_activate)
-                    print(epoch)
-                    print(args.batch_size)
-                    print(args.cellBit)
-                    print(args.technode)
-                    print(args.wireWidth)
-                    print(relu)
-                    print(args.memcelltype)
-                    print(2 ** args.ADCprecision)
-                    print(args.onoffratio)
                     hook_handle_list = hook.hardware_evaluation(model, args.wl_weight, args.wl_activate,
                                                                 epoch, args.batch_size, args.cellBit, args.technode,
                                                                 args.wireWidth, relu, args.memcelltype,

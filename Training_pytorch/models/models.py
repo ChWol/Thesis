@@ -87,6 +87,14 @@ def build_csv(features, classifiers, linear_dimension, input_depth=3):
 def make_features(features, args, logger, in_dimension):
     layers = []
     in_channels = in_dimension
+
+    if args.activation == 'relu':
+        activation = nn.ReLU()
+    elif args.activation == 'tanh':
+        activation = nn.Tanh()
+    elif args.activation == 'sigmoid':
+        activation = nn.Sigmoid()
+
     for i, v in enumerate(features):
         if v[0] == 'M':
             layers += [nn.MaxPool2d(kernel_size=v[1], stride=v[2])]
@@ -103,11 +111,7 @@ def make_features(features, args, logger, in_dimension):
                              subArray=args.subArray, ADCprecision=args.ADCprecision, vari=args.vari, t=args.t, v=args.v,
                              detect=args.detect, target=args.target,
                              name='Conv' + str(i) + '_')
-            if args.relu:
-                non_linearity_activation = nn.ReLU()
-            else:
-                non_linearity_activation = nn.Sigmoid()
-            layers += [conv2d, non_linearity_activation]
+            layers += [conv2d, activation]
             in_channels = out_channels
     return nn.Sequential(*layers)
 
