@@ -128,7 +128,6 @@ def make_classifiers(classifiers, args, logger, in_dimension, num_classes):
 
     if args.rule == 'dfa':
 
-
     for i, classifier in enumerate(classifiers):
         if i == len(classifiers) - 1:
             wl_activate = -1
