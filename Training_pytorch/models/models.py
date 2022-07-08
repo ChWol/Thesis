@@ -115,7 +115,7 @@ def make_features(features, args, logger, in_dimension):
     return nn.Sequential(*layers)
 
 
-def make_classifiers(classifiers, args, logger, in_dimension):
+def make_classifiers(classifiers, args, logger, in_dimension, num_classes, largest_output):
     if args.activation == 'relu':
         activation = nn.ReLU()
     elif args.activation == 'tanh':
@@ -127,7 +127,7 @@ def make_classifiers(classifiers, args, logger, in_dimension):
     in_size = in_dimension
 
     if args.rule == 'dfa':
-        B = torch.empty(200, 10, requires_grad=False)
+        B = torch.empty(largest_output, num_classes, requires_grad=False)
         nn.init.xavier_uniform_(B)
 
     for i, classifier in enumerate(classifiers):
@@ -137,7 +137,8 @@ def make_classifiers(classifiers, args, logger, in_dimension):
             wl_activate = args.wl_activate
 
         if args.rule == 'dfa':
-            B = torch.narrow(B, 0, 200 - 100, 100)
+            B = torch.narrow(B, 0, largest_output - classifier[1], classifier[1])
+            print(B.size())
         else:
             B = torch.empty(0, 0)
 
@@ -160,21 +161,25 @@ def make_classifiers(classifiers, args, logger, in_dimension):
 def get_model(num_classes, network):
     networks = {
         'single': {
+            'largest_output': 10,
             'features': [],
             'classifier': [('L', num_classes, 1, 'same', 1)]
         },
         'double': {
+            'largest_output': 512,
             'features': [],
             'classifier': [('L', 512, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         },
         'triple': {
+            'largest_output': 1024,
             'features': [],
             'classifier': [('L', 512, 1, 'same', 1),
                            ('L', 1024, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         },
         'depth': {
+            'largest_output': 512,
             'features': [],
             'classifier': [('L', 512, 1, 'same', 1),
                            ('L', 256, 1, 'same', 1),
@@ -185,6 +190,7 @@ def get_model(num_classes, network):
                            ('L', num_classes, 1, 'same', 1)]
         },
         'vgg8': {
+            'largest_output': 1024,
             'features': [('C', 128, 3, 'same', 32),
                          ('C', 128, 3, 'same', 32),
                          ('M', 2, 2),
@@ -205,6 +211,7 @@ def cifar(args, logger, num_classes, pretrained=None):
     model = get_model(num_classes, args.network)
     features = model["features"]
     classifiers = model["classifier"]
+    largest_output = model["largest_output"]
 
     if len(classifiers) == 0:
         input = 1024
@@ -214,7 +221,7 @@ def cifar(args, logger, num_classes, pretrained=None):
     build_csv(features, classifiers, input, 3)
 
     features = make_features(features, args, logger, 3)
-    classifiers = make_classifiers(classifiers, args, logger, input)
+    classifiers = make_classifiers(classifiers, args, logger, input, num_classes, largest_output)
 
     model = MODEL(features, classifiers)
     if pretrained is not None:
@@ -226,6 +233,7 @@ def mnist(args, logger, num_classes, pretrained=None):
     model = get_model(num_classes, args.network)
     features = model["features"]
     classifiers = model["classifier"]
+    largest_output = model["largest_output"]
 
     if len(classifiers) == 0:
         input = 784
@@ -235,7 +243,7 @@ def mnist(args, logger, num_classes, pretrained=None):
     build_csv(features, classifiers, input, 1)
 
     features = make_features(features, args, logger, 1)
-    classifiers = make_classifiers(classifiers, args, logger, input)
+    classifiers = make_classifiers(classifiers, args, logger, input, num_classes, largest_output)
 
     model = MODEL(features, classifiers)
     if pretrained is not None:
