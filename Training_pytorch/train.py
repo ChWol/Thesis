@@ -143,7 +143,7 @@ try:
             i = i + 1
 
         logger("training phase")
-        wandb.watch(model, log="all", log_freq=10)
+        wandb.watch(model, log="all")
         for batch_idx, (data, target) in enumerate(train_loader):
             indx_target = target.clone()
             if args.cuda:
