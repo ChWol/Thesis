@@ -16,6 +16,7 @@ class MODEL(nn.Module):
 
         self.features = features
         self.classifier = classifier
+        print(nn.Sequential(*self.features))
 
     def forward(self, x):
         x = self.features(x)
