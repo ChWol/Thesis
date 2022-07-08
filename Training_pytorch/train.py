@@ -21,7 +21,7 @@ from decimal import Decimal
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
 parser.add_argument('--dataset', default='mnist', help='dataset for training')
-parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training')
+parser.add_argument('--batch_size', type=int, default=100, help='input batch size for training')
 parser.add_argument('--epochs', type=int, default=25, help='number of epochs to train')
 parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
 parser.add_argument('--seed', type=int, default=117, help='random seed')
@@ -51,6 +51,8 @@ parser.add_argument('--activation', default='relu')
 parser.add_argument('--rule', default='bp')
 parser.add_argument('--learning_rate', type=float, default=1e-3)
 parser.add_argument('--neurosim', type=int, default=1)
+parser.add_argument('--optimizer', default='adam')
+parser.add_argument('--scheduler', type=int, default=0)
 args = parser.parse_args()
 args.wl_weight = args.wl_grad = args.cellBit
 args.max_level = 2 ** args.cellBit
@@ -108,9 +110,12 @@ else:
 if args.cuda:
     model.cuda()
 
-print(model)
-optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
-# scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10, 20], gamma=0.1)
+if args.optimizer == 'adam':
+    optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
+else:
+    optimizer = optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9)
+if args.scheduler == 1:
+    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[25, 40], gamma=0.1)
 
 best_acc, old_file = 0, None
 accumulated_time = 0

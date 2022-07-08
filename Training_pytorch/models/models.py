@@ -199,7 +199,7 @@ def cifar(args, logger, num_classes, pretrained=None):
     classifiers = model["classifier"]
 
     if len(features) == 0:
-        input = 1024
+        input = 3072
     else:
         input = 8192
 
