@@ -203,10 +203,10 @@ try:
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
                 print(name)
-                print("Before: {}".format(param.grad.data))
+                print("Before: {}".format(param.grad.data.sum()))
                 velocity[j] = gamma * velocity[j] + alpha * param.grad.data
                 param.grad.data = velocity[j]
-                print("After: {}".format(param.grad.data))
+                print("After: {}".format(param.grad.data.sum()))
                 param.grad.data = wage_quantizer.QG(param.data, args.wl_weight, param.grad.data, args.wl_grad,
                                                     grad_scale,
                                                     torch.from_numpy(paramALTP[j]).cuda(),
