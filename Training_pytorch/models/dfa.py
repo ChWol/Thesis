@@ -12,6 +12,13 @@ class DFANet(torch.nn.Module):
         activation = 'tanh'
         activation_function = nn.Tanh()
 
+        # Use highest dimension value for out features
+        B = torch.empty(200, 10, requires_grad=False)
+        print(B.size())
+        A = torch.narrow(B, 0, 200-64, 64)
+        print(A.size())
+        nn.init.xavier_uniform_(B)
+
         self.linear1 = QLinear(784, 200, logger=logger,
                                wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
                                wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
