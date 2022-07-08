@@ -17,9 +17,6 @@ class MODEL(nn.Module):
         self.features = features
         self.classifier = classifier
 
-        print(self.features)
-        print(self.classifier)
-
     def forward(self, x):
         x = self.features(x)
         x = x.view(x.size(0), -1)
@@ -218,6 +215,8 @@ def mnist(args, logger, num_classes, pretrained=None):
     features = model["features"]
     classifiers = model["classifier"]
 
+    print("Classifier sollten leer sein")
+    print(classifiers)
     if len(classifiers) == 0:
         input = 784
     else:

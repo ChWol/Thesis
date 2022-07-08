@@ -108,6 +108,7 @@ else:
 if args.cuda:
     model.cuda()
 
+print(model)
 optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 # scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10, 20], gamma=0.1)
 
