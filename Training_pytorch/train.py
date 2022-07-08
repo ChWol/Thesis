@@ -20,7 +20,7 @@ import wandb
 from decimal import Decimal
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
-parser.add_argument('--dataset', default='simple', help='dataset for training')
+parser.add_argument('--dataset', default='mnist', help='dataset for training')
 parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training')
 parser.add_argument('--epochs', type=int, default=25, help='number of epochs to train')
 parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
