@@ -102,7 +102,7 @@ if args.type == 'cifar100':
     model = models.cifar(args=args, logger=logger, num_classes=100)
 if args.type == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
-    model = models.mnist(args=args, logger=logger, input=4608)
+    model = models.mnist(args=args, logger=logger, input=784)
 if args.type == 'simple':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     model = dfa.DFANet(args, logger)
