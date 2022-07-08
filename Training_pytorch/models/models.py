@@ -16,7 +16,9 @@ class MODEL(nn.Module):
 
         self.features = features
         self.classifier = classifier
-        print(nn.Sequential(*self.classifier))
+
+        for layer in nn.Sequential(*self.classifier):
+            print(layer)
 
     def forward(self, x):
         x = self.features(x)
