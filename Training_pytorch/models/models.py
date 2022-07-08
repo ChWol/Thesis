@@ -16,12 +16,12 @@ class MODEL(nn.Module):
 
         self.features = features
         self.classifier = classifier
-        print(nn.Sequential(*self.features))
+        print(nn.Sequential(*self.classifier))
 
     def forward(self, x):
         x = self.features(x)
         x = x.view(x.size(0), -1)
-        for layer in self.classifiers:
+        for layer in self.classifier:
             if isinstance(layer, QLinear):
                 layer.input = x
                 x = layer(x)
