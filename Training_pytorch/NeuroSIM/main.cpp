@@ -330,11 +330,9 @@ int main(int argc, char * argv[]) {
             "DRAM data transfer Energy (pJ)" << endl;
 		for (int i=0; i<netStructure.size(); i++) {
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
-			cout << "After the line" << endl;
 			param->activityRowReadWG = atof(argv[4*i+16]);
             param->activityRowWriteWG = atof(argv[4*i+16]);
             param->activityColWriteWG = atof(argv[4*i+16]);
-            cout << "After values" << endl;
 
 			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[4*i+13], argv[4*i+14], argv[4*i+15], netStructure[i][6],
 						netStructure, markNM, numTileEachLayer, utilizationEachLayer, speedUpEachLayer, tileLocaEachLayer,
@@ -345,7 +343,7 @@ int main(int argc, char * argv[]) {
 						&layerReadLatencyPeakFW, &layerReadDynamicEnergyPeakFW, &layerReadLatencyPeakAG, &layerReadDynamicEnergyPeakAG,
 						&layerReadLatencyPeakWG, &layerReadDynamicEnergyPeakWG, &layerWriteLatencyPeakWU, &layerWriteDynamicEnergyPeakWU);
 
-            cout << "After Chip";
+            cout << "After Chip" << endl;
 
 			double numTileOtherLayer = 0;
 			double layerLeakageEnergy = 0;
@@ -356,9 +354,12 @@ int main(int argc, char * argv[]) {
 			}
 			layerLeakageEnergy = numTileOtherLayer*tileLeakage*(layerReadLatency+layerReadLatencyAG);
 
+			cout << "After for loop" << endl;
+
             layerfile << numTileEachLayer[0][i] * numTileEachLayer[1][i] << ", ";
             layerfile << speedUpEachLayer[0][i] * speedUpEachLayer[1][i] << ", ";
             layerfile << utilizationEachLayer[i][0] << ", ";
+            cout << "After layerfile" << endl;
 			cout << "layer" << i+1 << "'s readLatency of Forward is: " << layerReadLatency*1e9 << "ns" << endl;
 			layerfile << layerReadLatency*1e9 << ",";
 			cout << "layer" << i+1 << "'s readDynamicEnergy of Forward is: " << layerReadDynamicEnergy*1e12 << "pJ" << endl;
