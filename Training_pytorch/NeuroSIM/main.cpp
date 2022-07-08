@@ -330,6 +330,7 @@ int main(int argc, char * argv[]) {
             "DRAM data transfer Energy (pJ)" << endl;
 		for (int i=0; i<netStructure.size(); i++) {
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
+			cout << "Even before that";
 			param->activityRowReadWG = atof(argv[4*i+16]);
             param->activityRowWriteWG = atof(argv[4*i+16]);
             param->activityColWriteWG = atof(argv[4*i+16]);
