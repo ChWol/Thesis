@@ -329,6 +329,7 @@ int main(int argc, char * argv[]) {
             "Buffer Read Dynamic Energy (pJ), Interconnect Read Dynamic Energy (pJ), Weight Gradient Calculation Read Dynamic Energy (pJ), Weight Update Write Dynamic Energy (pJ), " <<
             "DRAM data transfer Energy (pJ)" << endl;
 		for (int i=0; i<netStructure.size(); i++) {
+		    cout << "Even before that";
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
 			cout << "Even before that";
 			param->activityRowReadWG = atof(argv[4*i+16]);
