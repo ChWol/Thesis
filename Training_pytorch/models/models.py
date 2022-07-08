@@ -251,8 +251,8 @@ def cifar(args, logger, num_classes, pretrained=None):
     return model
 
 
-def mnist(args, logger, input, pretrained=None):
-    model = get_model(10, args.network)
+def mnist(args, logger, input, num_classes, pretrained=None):
+    model = get_model(num_classes, args.network)
     features = model["features"]
     classifiers = model["classifier"]
 
