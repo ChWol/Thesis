@@ -52,7 +52,7 @@ parser.add_argument('--rule', default='dfa')
 parser.add_argument('--learning_rate', type=float, default=1e-5)
 parser.add_argument('--neurosim', type=int, default=1)
 args = parser.parse_args()
-args.wl_weight, args.wl_grad = args.cellBit
+args.wl_weight = args.wl_grad = args.cellBit
 args.max_level = 2 ** args.cellBit
 if args.memcelltype == 1:
     args.cellBit = 1
