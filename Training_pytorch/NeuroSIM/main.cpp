@@ -343,8 +343,6 @@ int main(int argc, char * argv[]) {
 						&layerReadLatencyPeakFW, &layerReadDynamicEnergyPeakFW, &layerReadLatencyPeakAG, &layerReadDynamicEnergyPeakAG,
 						&layerReadLatencyPeakWG, &layerReadDynamicEnergyPeakWG, &layerWriteLatencyPeakWU, &layerWriteDynamicEnergyPeakWU);
 
-            cout << "After Chip" << endl;
-
 			double numTileOtherLayer = 0;
 			double layerLeakageEnergy = 0;
 			for (int j=0; j<netStructure.size(); j++) {
@@ -353,8 +351,6 @@ int main(int argc, char * argv[]) {
 				}
 			}
 			layerLeakageEnergy = numTileOtherLayer*tileLeakage*(layerReadLatency+layerReadLatencyAG);
-
-			cout << "After for loop" << endl;
 
             layerfile << numTileEachLayer[0][i] * numTileEachLayer[1][i] << ", ";
             layerfile << speedUpEachLayer[0][i] * speedUpEachLayer[1][i] << ", ";

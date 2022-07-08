@@ -1647,4 +1647,4 @@ vector<vector<double> > ReshapeInput(const vector<vector<double> > &orginal, int
 	
 	return copy;
 	copy.clear();
-} 
+}
