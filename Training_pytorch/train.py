@@ -48,7 +48,7 @@ parser.add_argument('--network', default='triple')
 parser.add_argument('--technode', type=int, default='32')
 parser.add_argument('--memcelltype', type=int, default=3)
 parser.add_argument('--activation', default='relu')
-parser.add_argument('--rule', default='dfa')
+parser.add_argument('--rule', default='bp')
 parser.add_argument('--learning_rate', type=float, default=1e-3)
 parser.add_argument('--neurosim', type=int, default=1)
 args = parser.parse_args()
@@ -156,10 +156,8 @@ try:
             loss = (0.5 * (error ** 2)).sum()
 
             if args.rule == 'dfa':
-                print("Doing DFA")
                 model.direct_feedback_alignment(error)
             else:
-                print("Doing BP")
                 loss.backward()
 
             # introduce non-ideal property
