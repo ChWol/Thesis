@@ -65,8 +65,8 @@ args.wl_weight = args.cellBit
 args.wl_grad = args.cellBit
 technode_to_width = {7: 14, 10: 14, 14: 22, 22: 32, 32: 40, 45: 50, 65: 100, 90: 200, 130: 200}
 args.wireWidth = technode_to_width[args.technode]
-gamma = args.momentum
-alpha = 1 - args.momentum
+gamma = 0.9
+alpha = 0.1
 
 wandb.init(project=args.type.upper(), config=args, entity='duke-tum')
 wandb.run.name = args.network + ": " + wandb.run.id
@@ -202,10 +202,11 @@ try:
             # introduce non-ideal property
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
+                print(name)
+                print("Before: {}".format(param.grad.data))
                 velocity[j] = gamma * velocity[j] + alpha * param.grad.data
                 param.grad.data = velocity[j]
-                print(name)
-                print(param.grad.data)
+                print("After: {}".format(param.grad.data))
                 param.grad.data = wage_quantizer.QG(param.data, args.wl_weight, param.grad.data, args.wl_grad,
                                                     grad_scale,
                                                     torch.from_numpy(paramALTP[j]).cuda(),
