@@ -156,8 +156,10 @@ try:
             loss = (0.5 * (error ** 2)).sum()
 
             if args.rule == 'dfa':
+                print("Doing DFA")
                 model.direct_feedback_alignment(error)
             else:
+                print("Doing BP")
                 loss.backward()
 
             # introduce non-ideal property
