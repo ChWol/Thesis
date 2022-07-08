@@ -74,3 +74,6 @@ class DFANet(torch.nn.Module):
                 layer.weight.grad = torch.matmul(e, y)
             else:
                 layer.weight.grad = torch.zeros_like(torch.matmul(torch.matmul(B, e) * a, y))
+
+            if layer.name == 'FC2_':
+                print(layer.weight.grad)

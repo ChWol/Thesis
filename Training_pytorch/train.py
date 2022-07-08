@@ -200,6 +200,7 @@ try:
                 loss.backward()
 
             # introduce non-ideal property
+            '''
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
                 print(name)
@@ -215,6 +216,7 @@ try:
                 j = j + 1
 
             # Update function
+            '''
             optimizer.step()
             # scheduler.step()
             for name, param in list(model.named_parameters())[::-1]:
