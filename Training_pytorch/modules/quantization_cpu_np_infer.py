@@ -37,7 +37,6 @@ class QConv2d(nn.Conv2d):
         self.name = name
         self.scale = wage_initializer.wage_init_(self.weight, self.wl_weight, factor=1.0)
 
-
     def forward(self, input):
         weight1 = self.weight * self.scale + (self.weight - self.weight * self.scale).detach()
         weight = weight1 + (wage_quantizer.Q(weight1, self.wl_weight) - weight1).detach()
@@ -82,7 +81,7 @@ class QConv2d(nn.Conv2d):
                                 # Here remainder is the weight mapped to Hardware, so we introduce on/off ratio in this value
                                 # the range of remainder is [0, cellRange-1], we truncate it to [lower, upper]
                                 remainderQ = (upper - lower) * (remainder - 0) + (
-                                            cellRange - 1) * lower  # weight cannot map to 0, but to Gmin
+                                        cellRange - 1) * lower  # weight cannot map to 0, but to Gmin
                                 remainderQ = remainderQ + torch.normal(0., torch.full(remainderQ.size(), self.vari,
                                                                                       device='cuda').float())
                                 outputPartial = F.conv2d(input, remainderQ * mask, self.bias, self.stride, self.padding,
@@ -112,7 +111,7 @@ class QConv2d(nn.Conv2d):
                                     # Here remainder is the weight mapped to Hardware, so we introduce on/off ratio in this value
                                     # the range of remainder is [0, cellRange-1], we truncate it to [lower, upper]
                                     remainderQ = (upper - lower) * (remainder - 0) + (
-                                                cellRange - 1) * lower  # weight cannot map to 0, but to Gmin
+                                            cellRange - 1) * lower  # weight cannot map to 0, but to Gmin
                                     remainderQ = remainderQ + remainderQ * torch.normal(0.,
                                                                                         torch.full(remainderQ.size(),
                                                                                                    self.vari,
@@ -153,7 +152,7 @@ class QConv2d(nn.Conv2d):
                                     # Here remainder is the weight mapped to Hardware, so we introduce on/off ratio in this value
                                     # the range of remainder is [0, cellRange-1], we truncate it to [lower, upper]*(cellRange-1)
                                     remainderQ = (upper - lower) * (remainder - 0) + (
-                                                cellRange - 1) * lower  # weight cannot map to 0, but to Gmin
+                                            cellRange - 1) * lower  # weight cannot map to 0, but to Gmin
                                     remainderQ = remainderQ + remainderQ * torch.normal(0.,
                                                                                         torch.full(remainderQ.size(),
                                                                                                    self.vari,
@@ -199,7 +198,7 @@ class QLinear(nn.Linear):
                  quantize_weight=False, clip_output=False, quantize_output=False,
                  wl_input=8, wl_activate=8, wl_error=8, wl_weight=8, inference=0, onoffratio=10, cellBit=1,
                  subArray=128, ADCprecision=5, vari=0, t=0, v=0, detect=0, target=0, debug=0, name='Qlinear',
-                 activation='relu', B=torch.empty(0, 0)):
+                 activation='relu', num_classes=10, rule='bp'):
         super(QLinear, self).__init__(in_features, out_features, bias)
         self.logger = logger
         self.clip_weight = clip_weight
@@ -225,7 +224,10 @@ class QLinear(nn.Linear):
         self.name = name
         self.scale = wage_initializer.wage_init_(self.weight, self.wl_weight, factor=1.0)
         self.activation = activation
-        self.dfa_matrix = B
+        if rule == 'dfa':
+            B = torch.empty(out_features, num_classes, requires_grad=False)
+            nn.init.xavier_uniform_(B)
+            self.dfa_matrix = B
 
     def forward(self, input):
 
@@ -272,7 +274,7 @@ class QLinear(nn.Linear):
                         # Here remainder is the weight mapped to Hardware, so we introduce on/off ratio in this value
                         # the range of remainder is [0, cellRange-1], we truncate it to [lower, upper]
                         remainderQ = (upper - lower) * (remainder - 0) + (
-                                    cellRange - 1) * lower  # weight cannot map to 0, but to Gmin
+                                cellRange - 1) * lower  # weight cannot map to 0, but to Gmin
                         remainderQ = remainderQ + remainderQ * torch.normal(0., torch.full(remainderQ.size(), self.vari,
                                                                                            device='cuda').float())
                         outputPartial = F.linear(inputB, remainderQ * mask, self.bias)
@@ -307,7 +309,7 @@ class QLinear(nn.Linear):
                             # Here remainder is the weight mapped to Hardware, so we introduce on/off ratio in this value
                             # the range of remainder is [0, cellRange-1], we truncate it to [lower, upper]*(cellRange-1)
                             remainderQ = (upper - lower) * (remainder - 0) + (
-                                        cellRange - 1) * lower  # weight cannot map to 0, but to Gmin
+                                    cellRange - 1) * lower  # weight cannot map to 0, but to Gmin
                             remainderQ = remainderQ + remainderQ * torch.normal(0.,
                                                                                 torch.full(remainderQ.size(), self.vari,
                                                                                            device='cuda').float())
@@ -336,4 +338,3 @@ class QLinear(nn.Linear):
         output = wage_quantizer.WAGEQuantizer_f(output, self.wl_activate, self.wl_error)
 
         return output
-
