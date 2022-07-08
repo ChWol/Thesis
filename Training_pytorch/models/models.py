@@ -194,7 +194,7 @@ def cifar(args, logger, num_classes, pretrained=None):
     features = model["features"]
     classifiers = model["classifier"]
 
-    if len(classifiers) == 0:
+    if len(features) == 0:
         input = 1024
     else:
         input = 8192
@@ -215,9 +215,9 @@ def mnist(args, logger, num_classes, pretrained=None):
     features = model["features"]
     classifiers = model["classifier"]
 
-    print("Classifier sollten leer sein")
-    print(classifiers)
-    if len(classifiers) == 0:
+    print("features sollten leer sein")
+    print(features)
+    if len(features) == 0:
         input = 784
     else:
         input = 4096
