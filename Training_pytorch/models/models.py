@@ -17,10 +17,6 @@ class MODEL(nn.Module):
         self.features = features
         self.classifier = classifier
 
-        for layer in nn.Sequential(*self.classifier):
-            print(layer.name)
-            print(layer.weight)
-
     def forward(self, x):
         x = self.features(x)
         x = x.view(x.size(0), -1)
@@ -34,7 +30,7 @@ class MODEL(nn.Module):
         return x
 
     def direct_feedback_alignment(self, error):
-        for i, layer in enumerate(self.layers):
+        for i, layer in enumerate(self.classifier):
             if not isinstance(layer, QLinear):
                 continue
 
@@ -54,7 +50,7 @@ class MODEL(nn.Module):
             else:
                 a = torch.ones_like(a)
 
-            if i == len(self.layers)-1:
+            if i == len(self.classifier)-1:
                 layer.weight.grad = torch.matmul(e, y)
             else:
                 layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
@@ -146,7 +142,7 @@ def make_classifiers(classifiers, args, logger, in_dimension, num_classes):
             layers += [linear, activation]
 
         in_size = classifier[1]
-    return layers
+    return nn.Sequential(*layers)
 
 
 def get_model(num_classes, network):
