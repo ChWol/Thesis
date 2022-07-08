@@ -228,14 +228,9 @@ class QLinear(nn.Linear):
 
         if rule == 'dfa':
             torch.manual_seed(117)
-            if torch.cuda.is_available():
-                torch.cuda.manual_seed(117)
             B = torch.empty(out_features, 10, requires_grad=False)
-            A = torch.empty(out_features, 10, requires_grad=False)
             nn.init.xavier_uniform_(B)
-            nn.init.xavier_uniform_(A)
             print("B: {}".format(B))
-            print("A: {}".format(A))
             self.dfa_matrix = B
 
     def forward(self, input):
