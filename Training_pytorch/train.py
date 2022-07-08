@@ -49,7 +49,7 @@ parser.add_argument('--technode', type=int, default='32')
 parser.add_argument('--memcelltype', type=int, default=3)
 parser.add_argument('--activation', default='relu')
 parser.add_argument('--rule', default='dfa')
-parser.add_argument('--learning_rate', type=float, default=1e-5)
+parser.add_argument('--learning_rate', type=float, default=1e-3)
 parser.add_argument('--neurosim', type=int, default=1)
 args = parser.parse_args()
 args.wl_weight = args.wl_grad = args.cellBit

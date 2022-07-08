@@ -215,8 +215,6 @@ def mnist(args, logger, num_classes, pretrained=None):
     features = model["features"]
     classifiers = model["classifier"]
 
-    print("features sollten leer sein")
-    print(features)
     if len(features) == 0:
         input = 784
     else:
