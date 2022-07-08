@@ -44,7 +44,7 @@ parser.add_argument('--nonlinearityLTP', type=float, default=1.75, help='nonline
 parser.add_argument('--nonlinearityLTD', type=float, default=1.46, help='nonlinearity in LTD (negative if LTP and LTD are asymmetric)')
 parser.add_argument('--d2dVari', type=float, default=0, help='device-to-device variation')
 parser.add_argument('--c2cVari', type=float, default=0.003, help='cycle-to-cycle variation')
-parser.add_argument('--network', default='simple')
+parser.add_argument('--network', default='triple')
 parser.add_argument('--technode', type=int, default='32')
 parser.add_argument('--memcelltype', type=int, default=3)
 parser.add_argument('--activation', default='relu')
