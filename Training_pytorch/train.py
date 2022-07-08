@@ -15,22 +15,19 @@ from models import dataset
 from models import models
 from datetime import datetime
 from subprocess import call
-from models import dfa
+from modules.quantization_cpu_np_infer import QConv2d, QLinear
 import wandb
 from decimal import Decimal
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
-parser.add_argument('--type', default='simple', help='dataset for training')
-parser.add_argument('--batch_size', type=int, default=64, help='input batch size for training')
-parser.add_argument('--epochs', type=int, default=75, help='number of epochs to train')
+parser.add_argument('--dataset', default='simple', help='dataset for training')
+parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training')
+parser.add_argument('--epochs', type=int, default=25, help='number of epochs to train')
 parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
 parser.add_argument('--seed', type=int, default=117, help='random seed')
 parser.add_argument('--log_interval', type=int, default=100, help='how many batches to wait before logging training status')
 parser.add_argument('--test_interval', type=int, default=1, help='how many epochs to wait before another test')
 parser.add_argument('--logdir', default='log/default', help='folder to save to the log')
-parser.add_argument('--decreasing_lr', default='200,250', help='decreasing strategy')
-parser.add_argument('--wl_weight', type=int, default=6, help='weight precision')
-parser.add_argument('--wl_grad', type=int, default=6, help='gradient precision')
 parser.add_argument('--wl_activate', type=int, default=8)
 parser.add_argument('--wl_error', type=int, default=8)
 parser.add_argument('--onoffratio', type=int, default=10)
@@ -45,31 +42,30 @@ parser.add_argument('--detect', default=0)
 parser.add_argument('--target', default=0)
 parser.add_argument('--nonlinearityLTP', type=float, default=1.75, help='nonlinearity in LTP')
 parser.add_argument('--nonlinearityLTD', type=float, default=1.46, help='nonlinearity in LTD (negative if LTP and LTD are asymmetric)')
-parser.add_argument('--max_level', type=int, default=32, help='Maximum number of conductance states during weight update (floor(log2(max_level))=cellBit)')
 parser.add_argument('--d2dVari', type=float, default=0, help='device-to-device variation')
 parser.add_argument('--c2cVari', type=float, default=0.003, help='cycle-to-cycle variation')
-parser.add_argument('--momentum', type=float, default=0.9)
 parser.add_argument('--network', default='simple')
 parser.add_argument('--technode', type=int, default='32')
 parser.add_argument('--memcelltype', type=int, default=3)
-parser.add_argument('--relu', type=int, default=1)
+parser.add_argument('--activation', default='relu')
 parser.add_argument('--rule', default='dfa')
 parser.add_argument('--learning_rate', type=float, default=1e-5)
-
-current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+parser.add_argument('--neurosim', type=int, default=1)
 args = parser.parse_args()
+args.wl_weight, args.wl_grad = args.cellBit
 args.max_level = 2 ** args.cellBit
 if args.memcelltype == 1:
     args.cellBit = 1
-args.wl_weight = args.cellBit
-args.wl_grad = args.cellBit
 technode_to_width = {7: 14, 10: 14, 14: 22, 22: 32, 32: 40, 45: 50, 65: 100, 90: 200, 130: 200}
 args.wireWidth = technode_to_width[args.technode]
+
 gamma = 0.9
 alpha = 0.1
 
-wandb.init(project=args.type.upper(), config=args, entity='duke-tum')
-wandb.run.name = args.network + ": " + wandb.run.id
+current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+
+wandb.init(project=args.dataset.upper(), config=args, entity='duke-tum')
+wandb.run.name = "{} ({}): {}".format(args.network, args.rule, wandb.run.id)
 
 delta_distribution = open("delta_dist.csv", 'ab')
 delta_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", "6_mean", "7_mean", "8_mean", "1_std", "2_std", "3_std", "4_std", "5_std", "6_std", "7_std", "8_std"]])
@@ -93,72 +89,40 @@ torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
-
-if args.type == 'cifar10':
+assert args.type in ['cifar10', 'cifar100', 'mnist', 'fashion'], args.dataset
+if args.dataset == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
     model = models.cifar(args=args, logger=logger, num_classes=10)
-if args.type == 'cifar100':
+elif args.dataset == 'cifar100':
     train_loader, test_loader = dataset.get100(batch_size=args.batch_size, num_workers=1)
     model = models.cifar(args=args, logger=logger, num_classes=100)
-if args.type == 'mnist':
+elif args.dataset == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
-    model = models.mnist(args=args, logger=logger, input=784, num_classes=10)
-if args.type == 'fashion':
+    model = models.mnist(args=args, logger=logger, num_classes=10)
+elif args.dataset == 'fashion':
     train_loader, test_loader = dataset.get_fashion(batch_size=args.batch_size, num_workers=1)
-    model = models.mnist(args=args, logger=logger, input=784, num_classes=100)
-if args.type == 'simple':
-    train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
-    model = dfa.DFANet(args, logger)
-
-
-'''
-assert args.type in ['cifar10', 'cifar100', 'imagenet'], args.dataset
-if args.type == 'cifar10':
-    train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
-elif args.type == 'cifar100':
-    train_loader, test_loader = dataset.get100(batch_size=args.batch_size, num_workers=1)
-elif args.type == 'imagenet':
-    train_loader, test_loader = dataset.get_imagenet(batch_size=args.batch_size, num_workers=1)
+    model = models.mnist(args=args, logger=logger, num_classes=100)
 else:
     raise ValueError("Unknown dataset type")
-
-assert args.network in ['VGG8', 'DenseNet40', 'ResNet18'], args.model
-if args.network == 'VGG8':
-    from models import VGG
-    model = VGG.vgg8(args = args, logger=logger)
-elif args.network == 'DenseNet40':
-    from models import DenseNet
-    model = DenseNet.densenet40(args = args, logger=logger)
-elif args.network == 'ResNet18':
-    from models import ResNet
-    model = ResNet.resnet18(args = args, logger=logger)
-else:
-    raise ValueError("Unknown model type")
-'''
 
 if args.cuda:
     model.cuda()
 
-#Todo: Add momentum and weight decay
-# torch.optim.SGD(model_fa.parameters(), lr=1e-4, momentum=0.9, weight_decay=0.001, nesterov=True)
 optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 # scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10, 20], gamma=0.1)
 
-decreasing_lr = list(map(int, args.decreasing_lr.split(',')))
-logger('decreasing_lr: ' + str(decreasing_lr))
 best_acc, old_file = 0, None
 accumulated_time = 0
 t_begin = time.time()
 grad_scale = args.grad_scale
 
 try:
-    # ready to go
     if args.cellBit != args.wl_weight:
         print("Warning: Weight precision should be the same as the cell precison !")
-    # add d2dVari
     paramALTP = {}
     paramALTD = {}
     k = 0
+
     for layer in list(model.parameters())[::-1]:
         d2dVariation = torch.normal(torch.zeros_like(layer), args.d2dVari * torch.ones_like(layer))
         NL_LTP = torch.ones_like(layer) * args.nonlinearityLTP + d2dVariation
@@ -177,9 +141,6 @@ try:
             velocity[i] = torch.zeros_like(layer)
             i = i + 1
 
-        if epoch in decreasing_lr:
-            grad_scale = grad_scale / 8.0
-
         logger("training phase")
         wandb.watch(model, log="all", log_freq=10)
         for batch_idx, (data, target) in enumerate(train_loader):
@@ -191,11 +152,10 @@ try:
 
             output = model(data)
             error = wage_util.SSE(output, target)
-            loss = 0.5 * (error ** 2)
-            loss = loss.sum()
+            loss = (0.5 * (error ** 2)).sum()
 
             if args.rule == 'dfa':
-                model.dfa(error)
+                model.direct_feedback_alignment(error)
             else:
                 loss.backward()
 
@@ -213,7 +173,6 @@ try:
                 j = j + 1
             '''
 
-            # Update function
             optimizer.step()
             # scheduler.step()
             '''
@@ -222,7 +181,7 @@ try:
             '''
 
             if batch_idx % args.log_interval == 0 and batch_idx > 0:
-                pred = output.data.max(1)[1]  # get the index of the max log-probability
+                pred = output.data.max(1)[1]
                 correct = pred.cpu().eq(indx_target).sum()
                 acc = float(correct) * 1.0 / len(data)
                 wandb.log({'Epoch': epoch + 1, 'Train Accuracy': acc, 'Train Loss': loss})
@@ -271,16 +230,16 @@ try:
 
         h = 0
 
-        #for i, layer in enumerate(model.features.modules()):
-         #   if isinstance(layer, QConv2d) or isinstance(layer, QLinear):
-          #      weight_file_name = './layer_record/weightOld' + str(layer.name) + '.csv'
-           #     hook.write_matrix_weight((oldWeight[h]).cpu().data.numpy(), weight_file_name)
-            #    h = h + 1
-        #for i, layer in enumerate(model.classifier.modules()):
-         #   if isinstance(layer, QLinear):
-          #      weight_file_name = './layer_record/weightOld' + str(layer.name) + '.csv'
-           #     hook.write_matrix_weight((oldWeight[h]).cpu().data.numpy(), weight_file_name)
-            #    h = h + 1
+        for i, layer in enumerate(model.features.modules()):
+            if isinstance(layer, QConv2d) or isinstance(layer, QLinear):
+                weight_file_name = './layer_record/weightOld' + str(layer.name) + '.csv'
+                hook.write_matrix_weight((oldWeight[h]).cpu().data.numpy(), weight_file_name)
+                h = h + 1
+        for i, layer in enumerate(model.classifier.modules()):
+            if isinstance(layer, QLinear):
+                weight_file_name = './layer_record/weightOld' + str(layer.name) + '.csv'
+                hook.write_matrix_weight((oldWeight[h]).cpu().data.numpy(), weight_file_name)
+                h = h + 1
 
         # Run tests including hardware simulation
         accumulated_time += time.time() - split_time
@@ -291,9 +250,13 @@ try:
             logger("testing phase")
             for i, (data, target) in enumerate(test_loader):
                 if i == 0:
+                    if args.activation == 'sigmoid':
+                        relu = 0
+                    else:
+                        relu = 1
                     hook_handle_list = hook.hardware_evaluation(model, args.wl_weight, args.wl_activate,
                                                                 epoch, args.batch_size, args.cellBit, args.technode,
-                                                                args.wireWidth, args.relu, args.memcelltype,
+                                                                args.wireWidth, relu, args.memcelltype,
                                                                 2 ** args.ADCprecision,
                                                                 args.onoffratio)
                 indx_target = target.clone()
@@ -321,20 +284,21 @@ try:
                 misc.model_save(model, new_file, old_file=old_file, verbose=True)
                 best_acc = acc
                 old_file = new_file
-            call(["/bin/bash", "./layer_record/trace_command.sh"])
 
-            log_input = {"Epoch": epoch + 1}
-            layer_out = pd.read_csv("Layer.csv").to_dict()
-            for key, value in layer_out.items():
-                for layer, result in value.items():
-                    log_input["Layer {}: {}".format(layer + 1, key)] = result
-            wandb.log(log_input)
-            summary_out = pd.read_csv("Summary.csv").to_dict()
-            log_input = {"Epoch": epoch + 1}
-            for key, value in summary_out.items():
-                exponential = '%.2E' % Decimal(value[0])
-                log_input[key] = exponential
-            wandb.log(log_input)
+            if args.neurosim == 1:
+                call(["/bin/bash", "./layer_record/trace_command.sh"])
+                log_input = {"Epoch": epoch + 1}
+                layer_out = pd.read_csv("Layer.csv").to_dict()
+                for key, value in layer_out.items():
+                    for layer, result in value.items():
+                        log_input["Layer {}: {}".format(layer + 1, key)] = result
+                wandb.log(log_input)
+                summary_out = pd.read_csv("Summary.csv").to_dict()
+                log_input = {"Epoch": epoch + 1}
+                for key, value in summary_out.items():
+                    exponential = '%.2E' % Decimal(value[0])
+                    log_input[key] = exponential
+                wandb.log(log_input)
 
 
 except Exception as e:
