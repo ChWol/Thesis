@@ -227,7 +227,6 @@ class QLinear(nn.Linear):
         self.activation = activation
 
         if rule == 'dfa':
-            torch.manual_seed(117)
             B = torch.empty(out_features, 10, requires_grad=False)
             nn.init.xavier_uniform_(B)
             print("B: {}".format(B))
