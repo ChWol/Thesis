@@ -14,9 +14,6 @@ class DFANet(torch.nn.Module):
 
         # Use highest dimension value for out features
         B = torch.empty(200, 10, requires_grad=False)
-        print(B.size())
-        A = torch.narrow(B, 0, 200-64, 64)
-        print(A.size())
         nn.init.xavier_uniform_(B)
 
         self.linear1 = QLinear(784, 200, logger=logger,
@@ -25,7 +22,7 @@ class DFANet(torch.nn.Module):
                                cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
                                vari=args.vari,
                                t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '1' + '_',
-                               rule='dfa', activation=activation)
+                               rule='dfa', activation=activation, B=B)
         self.relu1 = activation_function
         self.linear2 = QLinear(200, 100, logger=logger,
                                wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
@@ -33,7 +30,7 @@ class DFANet(torch.nn.Module):
                                cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
                                vari=args.vari,
                                t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '2' + '_',
-                               rule='dfa', activation=activation)
+                               rule='dfa', activation=activation, B=torch.narrow(B, 0, 200-100, 100))
         self.relu2 = activation_function
         self.linear3 = QLinear(100, 10, logger=logger,
                                wl_input=args.wl_activate, wl_activate=args.wl_activate, wl_error=args.wl_error,
@@ -41,7 +38,7 @@ class DFANet(torch.nn.Module):
                                cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision,
                                vari=args.vari,
                                t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + '3' + '_',
-                               rule='dfa', activation='none')
+                               rule='dfa', activation='none', B=torch.narrow(B, 0, 200-10, 10))
         self.layers = [self.linear1, self.linear2, self.linear3]
         # self.layers = [self.linear1, self.linear3]
 

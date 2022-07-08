@@ -226,6 +226,7 @@ class QLinear(nn.Linear):
         self.scale = wage_initializer.wage_init_(self.weight, self.wl_weight, factor=1.0)
         self.activation = activation
         if rule == 'dfa':
+            print(B.size())
             self.dfa_matrix = B
 
     def forward(self, input):
