@@ -217,7 +217,7 @@ try:
         for name, param in model.named_parameters():
             with torch.no_grad():
                 test = torch.clone(param)
-                test.cpu()
+                test = test.cpu()
                 print("TEST: {}".format(test))
                 uniform_data = np.random.rand(752, 512)
                 im = sns.heatmap(uniform_data)
