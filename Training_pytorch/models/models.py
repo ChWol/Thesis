@@ -10,12 +10,16 @@ print = misc.logger.info
 
 
 class MODEL(nn.Module):
-    def __init__(self, features, classifier):
+    def __init__(self, features, classifier, num_classes):
         super(MODEL, self).__init__()
         assert isinstance(features, nn.Sequential), type(features)
 
         self.features = features
         self.classifier = classifier
+
+        B = torch.empty(out_features, num_classes, requires_grad=False)
+        nn.init.xavier_uniform_(B)
+        self.dfa_matrix = B
 
     def forward(self, x):
         x = self.features(x)
@@ -34,7 +38,7 @@ class MODEL(nn.Module):
             if not isinstance(layer, QLinear):
                 continue
 
-            B = layer.dfa_matrix.cuda()
+            B = self.dfa_matrix.cuda()[layer.out_features, :][:, self.num_classes]
             a = torch.transpose(layer.output, 0, 1).cuda()
             e = torch.transpose(error, 0, 1).cuda()
             y = layer.input.cuda()
@@ -247,7 +251,7 @@ def cifar(args, logger, num_classes, pretrained=None):
     features = make_features(features, args, logger, 3)
     classifiers = make_classifiers(classifiers, args, logger, input, num_classes)
 
-    model = MODEL(features, classifiers)
+    model = MODEL(features, classifiers, num_classes)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
@@ -265,10 +269,13 @@ def mnist(args, logger, num_classes, pretrained=None):
 
     build_csv(features, classifiers, input, 1)
 
+    out_features = max([classifiers[i][1] for i in range(len(classifiers))])
+    print("Test for printing the max: {}".format(out_features))
+
     features = make_features(features, args, logger, 1)
     classifiers = make_classifiers(classifiers, args, logger, input, num_classes)
 
-    model = MODEL(features, classifiers)
+    model = MODEL(features, classifiers, num_classes)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
