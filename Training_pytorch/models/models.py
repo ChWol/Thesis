@@ -57,7 +57,7 @@ class MODEL(nn.Module):
             else:
                 layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y) / torch.norm(layer.weight)
 
-            wandb.log({"Alignment of {}".format(layer.name): self.compute_matrix_angle(layer.dfa_matrix, layer.weight)})
+            wandb.log({"Alignment of {}".format(layer.name): self.compute_matrix_angle(layer.dfa_matrix.cuda(), layer.weight.cuda())})
 
     def compute_matrix_angle(self, A, B):
         with torch.no_grad():
