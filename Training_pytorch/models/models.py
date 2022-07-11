@@ -35,7 +35,6 @@ class MODEL(nn.Module):
             if not isinstance(layer, QLinear):
                 continue
 
-            wandb.log({"Test": 1})
             B = layer.dfa_matrix.cuda()
             a = torch.transpose(layer.output, 0, 1).cuda()
             e = torch.transpose(error, 0, 1).cuda()
@@ -56,6 +55,11 @@ class MODEL(nn.Module):
                 layer.weight.grad = torch.matmul(e, y)
             else:
                 layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
+
+            wandb.log({"Weight avg of {}".format(layer.name): torch.mean(layer.weight),
+                       "Weight std of {}".format(layer.name): torch.std(layer.weight),
+                       "Gradient avg of {}".format(layer.name): torch.mean(layer.weight.grad),
+                       "Gradient std of {}".format(layer.name): torch.std(layer.weight.grad)})
 
 
 def build_csv(features, classifiers, linear_dimension, input_depth=3):
