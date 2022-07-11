@@ -215,7 +215,7 @@ try:
 
         for name, param in model.named_parameters():
             test = torch.clone(param.grad)
-            test.detach().cpu()
+            test.cpu().detach()
             im = plt.imshow(test, cmap='hot', interpolation='nearest')
             wandb.log({"img": [wandb.Image(im, caption="Gradient")]})
             wandb.log({"Weight avg of {}".format(name): torch.mean(param),
