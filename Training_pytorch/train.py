@@ -163,6 +163,7 @@ try:
 
             if args.rule == 'dfa':
                 model.direct_feedback_alignment(error)
+
             else:
                 loss.backward()
 

@@ -5,6 +5,7 @@ from modules.quantization_cpu_np_infer import QConv2d, QLinear
 import torch
 import csv
 from utee import misc
+import wandb
 
 print = misc.logger.info
 
@@ -34,6 +35,7 @@ class MODEL(nn.Module):
             if not isinstance(layer, QLinear):
                 continue
 
+            wandb.log({"Test": 1})
             B = layer.dfa_matrix.cuda()
             a = torch.transpose(layer.output, 0, 1).cuda()
             e = torch.transpose(error, 0, 1).cuda()
