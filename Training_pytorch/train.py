@@ -215,12 +215,12 @@ try:
             elapse_time, speed_epoch, speed_batch, eta))
 
         for name, param in model.named_parameters():
-            test = torch.clone(param.grad)
-            test.detach()
-            test.to('cpu')
-            print(test)
-            uniform_data = np.random.rand(752, 512)
-            im = sns.heatmap(uniform_data)
+            with torch.no_grad():
+                test = torch.clone(param)
+                test.cpu()
+                print("TEST: {}".format(test))
+                uniform_data = np.random.rand(752, 512)
+                im = sns.heatmap(uniform_data)
             wandb.log({"img": [wandb.Image(im, caption="Gradient")]})
             wandb.log({"Weight avg of {}".format(name): torch.mean(param),
                        "Weight std of {}".format(name): torch.std(param),
