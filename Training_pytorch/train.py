@@ -166,7 +166,7 @@ try:
                 loss.backward()
 
             # introduce non-ideal property
-            '''
+
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
                 velocity[j] = gamma * velocity[j] + alpha * param.grad.data
@@ -177,7 +177,7 @@ try:
                                                     torch.from_numpy(paramALTD[j]).cuda(), args.max_level,
                                                     args.max_level)
                 j = j + 1
-            '''
+
 
             optimizer.step()
             if args.scheduler == 1:
