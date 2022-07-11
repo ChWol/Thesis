@@ -57,7 +57,7 @@ class MODEL(nn.Module):
             else:
                 layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y) / torch.norm(layer.weight)
 
-            criterion, angle = self.average_angle(layer.weight.cpu(), layer.dfa_matrix.cpu(), error.cpu())
+            criterion, angle = self.average_angle(layer.weight.cpu().detach(), layer.dfa_matrix.cpu().detach(), error.cpu().detach())
             wandb.log({"Alignment angle of {}".format(layer.name): angle,
                        "Alignment criterion of {}".format(layer.name): criterion})
 
