@@ -5,7 +5,6 @@ from modules.quantization_cpu_np_infer import QConv2d, QLinear
 import torch
 import csv
 from utee import misc
-import wandb
 
 print = misc.logger.info
 
@@ -55,11 +54,6 @@ class MODEL(nn.Module):
                 layer.weight.grad = torch.matmul(e, y)
             else:
                 layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
-
-            wandb.log({"Weight avg of {}".format(layer.name): torch.mean(layer.weight),
-                       "Weight std of {}".format(layer.name): torch.std(layer.weight),
-                       "Gradient avg of {}".format(layer.name): torch.mean(layer.weight.grad),
-                       "Gradient std of {}".format(layer.name): torch.std(layer.weight.grad)})
 
 
 def build_csv(features, classifiers, linear_dimension, input_depth=3):

@@ -205,6 +205,17 @@ try:
         logger("Elapsed {:.2f}s, {:.2f} s/epoch, {:.2f} s/batch, ets {:.2f}s".format(
             elapse_time, speed_epoch, speed_batch, eta))
 
+        print("Model: {}".format(model))
+        print("Parameter: {}".format(model.parameters()))
+
+        for name, param in model.named_parameters():
+            print("Parameter: {}".format(param.size()))
+            print("Grad: {}".format(param.grad.size()))
+            wandb.log({"Weight avg of {}".format(name): torch.mean(param),
+                       "Weight std of {}".format(name): torch.std(param),
+                       "Gradient avg of {}".format(name): torch.mean(param.grad),
+                       "Gradient std of {}".format(name): torch.std(param.grad)})
+
         misc.model_save(model, os.path.join(args.logdir, 'latest.pth'))
 
         if not os.path.exists('./layer_record'):
