@@ -151,19 +151,58 @@ def make_classifiers(classifiers, args, logger, in_dimension, num_classes):
 
 def get_model(num_classes, network):
     networks = {
-        'single': {
+        'one': {
             'features': [],
             'classifier': [('L', num_classes, 1, 'same', 1)]
         },
-        'double': {
+        'two': {
             'features': [],
-            'classifier': [('L', 512, 1, 'same', 1),
+            'classifier': [('L', 800, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         },
-        'triple': {
+        'three': {
             'features': [],
             'classifier': [('L', 512, 1, 'same', 1),
                            ('L', 1024, 1, 'same', 1),
+                           ('L', num_classes, 1, 'same', 1)]
+        },
+        'five': {
+            'features': [],
+            'classifier': [('L', 500, 1, 'same', 1),
+                           ('L', 500, 1, 'same', 1),
+                           ('L', 2000, 1, 'same', 1),
+                           ('L', 30, 1, 'same', 1),
+                           ('L', num_classes, 1, 'same', 1)]
+        },
+        'six': {
+            'features': [],
+            'classifier': [('L', 2500, 1, 'same', 1),
+                           ('L', 2000, 1, 'same', 1),
+                           ('L', 1500, 1, 'same', 1),
+                           ('L', 1000, 1, 'same', 1),
+                           ('L', 500, 1, 'same', 1),
+                           ('L', num_classes, 1, 'same', 1)]
+        },
+        'nineteen': {
+            'features': [],
+            'classifier': [('L', 512, 1, 'same', 1),
+                           ('L', 512, 1, 'same', 1),
+                           ('L', 512, 1, 'same', 1),
+                           ('L', 256, 1, 'same', 1),
+                           ('L', 256, 1, 'same', 1),
+                           ('L', 256, 1, 'same', 1),
+                           ('L', 128, 1, 'same', 1),
+                           ('L', 128, 1, 'same', 1),
+                           ('L', 128, 1, 'same', 1),
+                           ('L', 64, 1, 'same', 1),
+                           ('L', 64, 1, 'same', 1),
+                           ('L', 64, 1, 'same', 1),
+                           ('L', 32, 1, 'same', 1),
+                           ('L', 32, 1, 'same', 1),
+                           ('L', 32, 1, 'same', 1),
+                           ('L', 16, 1, 'same', 1),
+                           ('L', 16, 1, 'same', 1),
+                           ('L', 16, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         },
         'depth': {

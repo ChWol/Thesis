@@ -103,7 +103,7 @@ elif args.dataset == 'mnist':
     model = models.mnist(args=args, logger=logger, num_classes=10)
 elif args.dataset == 'fashion':
     train_loader, test_loader = dataset.get_fashion(batch_size=args.batch_size, num_workers=1)
-    model = models.mnist(args=args, logger=logger, num_classes=100)
+    model = models.mnist(args=args, logger=logger, num_classes=10)
 else:
     raise ValueError("Unknown dataset type")
 
@@ -158,7 +158,7 @@ try:
 
             output = model(data)
             error = wage_util.SSE(output, target)
-            loss = (0.5 * (error ** 2)).sum()
+            loss = (0.5 * (error ** 2)).sum()n
 
             if args.rule == 'dfa':
                 model.direct_feedback_alignment(error)
