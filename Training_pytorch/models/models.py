@@ -10,14 +10,14 @@ print = misc.logger.info
 
 
 class MODEL(nn.Module):
-    def __init__(self, features, classifier, num_classes):
+    def __init__(self, features, classifier, num_classes, max_out):
         super(MODEL, self).__init__()
         assert isinstance(features, nn.Sequential), type(features)
 
         self.features = features
         self.classifier = classifier
 
-        B = torch.empty(out_features, num_classes, requires_grad=False)
+        B = torch.empty(max_out, num_classes, requires_grad=False)
         nn.init.xavier_uniform_(B)
         self.dfa_matrix = B
 
@@ -38,7 +38,8 @@ class MODEL(nn.Module):
             if not isinstance(layer, QLinear):
                 continue
 
-            B = self.dfa_matrix.cuda()[layer.out_features, :][:, self.num_classes]
+            B = self.dfa_matrix.cuda()[layer.out_features, :]
+            print("Size of matrix: {}".format(B.size()))
             a = torch.transpose(layer.output, 0, 1).cuda()
             e = torch.transpose(error, 0, 1).cuda()
             y = layer.input.cuda()
@@ -269,13 +270,12 @@ def mnist(args, logger, num_classes, pretrained=None):
 
     build_csv(features, classifiers, input, 1)
 
-    out_features = max([classifiers[i][1] for i in range(len(classifiers))])
-    print("Test for printing the max: {}".format(out_features))
+    max_out = max([classifiers[i][1] for i in range(len(classifiers))])
 
     features = make_features(features, args, logger, 1)
     classifiers = make_classifiers(classifiers, args, logger, input, num_classes)
 
-    model = MODEL(features, classifiers, num_classes)
+    model = MODEL(features, classifiers, num_classes, max_out)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
