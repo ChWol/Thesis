@@ -214,7 +214,7 @@ try:
             elapse_time, speed_epoch, speed_batch, eta))
 
         for name, param in model.named_parameters():
-            im = plt.imshow(param.grad, cmap='hot', interpolation='nearest')
+            im = plt.imshow(param.grad.cpu(), cmap='hot', interpolation='nearest')
             wandb.log({"img": [wandb.Image(im, caption="Gradient")]})
             wandb.log({"Weight avg of {}".format(name): torch.mean(param),
                        "Weight std of {}".format(name): torch.std(param),
