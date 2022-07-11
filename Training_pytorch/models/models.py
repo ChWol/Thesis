@@ -5,6 +5,8 @@ from modules.quantization_cpu_np_infer import QConv2d, QLinear
 import torch
 import csv
 from utee import misc
+import math
+import wandb
 
 print = misc.logger.info
 
@@ -54,6 +56,18 @@ class MODEL(nn.Module):
                 layer.weight.grad = torch.matmul(e, y) / torch.norm(layer.weight)
             else:
                 layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y) / torch.norm(layer.weight)
+
+            wandb.log({"Alignment of {}".format(layer.name): self.compute_matrix_angle(layer.dfa_matrix, layer.weight)})
+
+    def compute_matrix_angle(self, A, B):
+        with torch.no_grad():
+            flat_A = torch.reshape(A, (-1,))
+            normalized_flat_A = flat_A / torch.norm(flat_A)
+            flat_B = torch.reshape(B, (-1,))
+            normalized_flat_B = flat_B / torch.norm(flat_B)
+            angle = (180.0 / math.pi) * torch.arccos(
+                torch.clip(torch.dot(normalized_flat_A, normalized_flat_B), -1.0, 1.0))
+        return angle
 
 
 def build_csv(features, classifiers, linear_dimension, input_depth=3):
