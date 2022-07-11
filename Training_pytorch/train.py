@@ -219,7 +219,7 @@ try:
                 test = torch.clone(param.grad)
                 test = test.cpu()
                 im = sns.heatmap(test)
-            wandb.log({"img": [wandb.Image(im, caption="Gradient")]})
+            wandb.log({name: [wandb.Image(im, caption="Gradient")], 'Epoch': epoch + 1})
             wandb.log({"Weight avg of {}".format(name): torch.mean(param),
                        "Weight std of {}".format(name): torch.std(param),
                        "Gradient avg of {}".format(name): torch.mean(param.grad),
