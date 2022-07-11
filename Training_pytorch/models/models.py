@@ -51,9 +51,9 @@ class MODEL(nn.Module):
                 a = torch.ones_like(a)
 
             if i == len(self.classifier)-1:
-                layer.weight.grad = torch.matmul(e, y) / 10
+                layer.weight.grad = torch.matmul(e, y) / torch.norm(layer.weight)
             else:
-                layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y) / 10
+                layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y) / torch.norm(layer.weight)
 
 
 def build_csv(features, classifiers, linear_dimension, input_depth=3):
