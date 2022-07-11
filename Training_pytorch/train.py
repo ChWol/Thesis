@@ -117,6 +117,8 @@ else:
 if args.scheduler == 1:
     scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[25, 40], gamma=0.1)
 
+wandb.watch(model, log="all")
+
 best_acc, old_file = 0, None
 accumulated_time = 0
 t_begin = time.time()
@@ -148,7 +150,6 @@ try:
             i = i + 1
 
         logger("training phase")
-        wandb.watch(model, log="all")
         for batch_idx, (data, target) in enumerate(train_loader):
             indx_target = target.clone()
             if args.cuda:
@@ -180,7 +181,8 @@ try:
             '''
 
             optimizer.step()
-            # scheduler.step()
+            if args.scheduler == 1:
+                scheduler.step()
             '''
             for name, param in list(model.named_parameters())[::-1]:
                 param.data = wage_quantizer.W(param.data, param.grad.data, args.wl_weight, args.c2cVari)
