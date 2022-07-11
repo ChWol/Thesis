@@ -53,10 +53,12 @@ class MODEL(nn.Module):
                 a = torch.ones_like(a)
 
             if i == len(self.classifier)-1:
-                layer.weight.grad = torch.matmul(e, y) / torch.norm(layer.weight)
+                layer.weight.grad = torch.matmul(e, y)
             else:
-                layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y) / torch.norm(layer.weight)
+                layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
 
+            # Todo: Weight ratio NormB/NormW
+            '''
             criterion, angle = self.average_angle(layer.weight.cpu().detach(), layer.dfa_matrix.cpu().detach(), torch.transpose(error).cpu().detach())
             wandb.log({"Alignment angle of {}".format(layer.name): angle,
                        "Alignment criterion of {}".format(layer.name): criterion})
@@ -71,6 +73,7 @@ class MODEL(nn.Module):
         Lk = np.matmul(np.transpose(dh1), c1) * inverse_dh1_norm * inverse_c1_norm
         beta = np.arccos(np.clip(Lk, -1., 1.)) * 180 / np.pi
         return Lk, beta
+    '''
 
 
 def build_csv(features, classifiers, linear_dimension, input_depth=3):

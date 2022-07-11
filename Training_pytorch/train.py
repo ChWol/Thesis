@@ -18,6 +18,7 @@ from subprocess import call
 from modules.quantization_cpu_np_infer import QConv2d, QLinear
 import wandb
 from decimal import Decimal
+import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
 parser.add_argument('--dataset', default='mnist', help='dataset for training')
@@ -213,6 +214,8 @@ try:
             elapse_time, speed_epoch, speed_batch, eta))
 
         for name, param in model.named_parameters():
+            im = plt.imshow(param.grad, cmap='hot', interpolation='nearest')
+            wandb.log({"img": [wandb.Image(im, caption="Gradient")]})
             wandb.log({"Weight avg of {}".format(name): torch.mean(param),
                        "Weight std of {}".format(name): torch.std(param),
                        "Gradient avg of {}".format(name): torch.mean(param.grad),
