@@ -5,7 +5,7 @@ from modules.quantization_cpu_np_infer import QConv2d, QLinear
 import torch
 import csv
 from utee import misc
-import math
+import numpy as np
 import wandb
 
 print = misc.logger.info
@@ -57,17 +57,20 @@ class MODEL(nn.Module):
             else:
                 layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y) / torch.norm(layer.weight)
 
-            wandb.log({"Alignment of {}".format(layer.name): self.compute_matrix_angle(layer.dfa_matrix.cuda(), layer.weight.cuda())})
+            criterion, angle = self.average_angle(layer.weight.cuda(), layer.dfa_matrix.cuda(), error.cuda())
+            wandb.log({"Alignment angle of {}".format(layer.name): angle,
+                       "Alignment criterion of {}".format(layer.name): criterion})
 
-    def compute_matrix_angle(self, A, B):
-        with torch.no_grad():
-            flat_A = torch.reshape(A, (-1,))
-            normalized_flat_A = flat_A / torch.norm(flat_A)
-            flat_B = torch.reshape(B, (-1,))
-            normalized_flat_B = flat_B / torch.norm(flat_B)
-            angle = (180.0 / math.pi) * torch.arccos(
-                torch.clip(torch.dot(normalized_flat_A, normalized_flat_B), -1.0, 1.0))
-        return angle
+    def average_angle(self, W2, B1, error):
+        dh1 = np.mean(np.dot(B1, error), axis=1)
+        c1 = np.mean(np.dot(np.transpose(W2), error), axis=1)
+        dh1_norm = np.linalg.norm(dh1)
+        c1_norm = np.linalg.norm(c1)
+        inverse_dh1_norm = np.power(dh1_norm, -1)
+        inverse_c1_norm = np.power(c1_norm, -1)
+        Lk = np.matmul(np.transpose(dh1), c1) * inverse_dh1_norm * inverse_c1_norm
+        beta = np.arccos(np.clip(Lk, -1., 1.)) * 180 / np.pi
+        return Lk, beta
 
 
 def build_csv(features, classifiers, linear_dimension, input_depth=3):
