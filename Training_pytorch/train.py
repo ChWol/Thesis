@@ -158,7 +158,7 @@ try:
 
             output = model(data)
             error = wage_util.SSE(output, target)
-            loss = (0.5 * (error ** 2)).sum()n
+            loss = (0.5 * (error ** 2)).sum()
 
             if args.rule == 'dfa':
                 model.direct_feedback_alignment(error)
