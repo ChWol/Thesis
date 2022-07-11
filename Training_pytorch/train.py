@@ -117,8 +117,6 @@ else:
 if args.scheduler == 1:
     scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[25, 40], gamma=0.1)
 
-wandb.watch(model, log="all")
-
 best_acc, old_file = 0, None
 accumulated_time = 0
 t_begin = time.time()
