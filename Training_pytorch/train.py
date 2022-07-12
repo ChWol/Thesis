@@ -217,6 +217,8 @@ try:
             elapse_time, speed_epoch, speed_batch, eta))
 
         for name, param in model.named_parameters():
+            print(param.requires_grad)
+            print(param.grad.requires_grad)
             with torch.no_grad():
                 test = torch.clone(param)
                 test = test.cpu()

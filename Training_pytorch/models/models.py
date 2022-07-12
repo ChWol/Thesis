@@ -18,7 +18,6 @@ class MODEL(nn.Module):
         self.classifier = classifier
 
     def forward(self, x):
-        print("Test für grad: {}".format(x.requires_grad))
         x = self.features(x)
         x = x.view(x.size(0), -1)
         for layer in self.classifier:
