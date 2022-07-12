@@ -5,8 +5,6 @@ from modules.quantization_cpu_np_infer import QConv2d, QLinear
 import torch
 import csv
 from utee import misc
-import numpy as np
-import wandb
 
 print = misc.logger.info
 
@@ -56,25 +54,6 @@ class MODEL(nn.Module):
                 layer.weight.grad = torch.matmul(e, y)
             else:
                 layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
-
-            # Todo: Weight ratio NormB/NormW
-            wandb.log({"Weight ratio of {}".format(layer.name): torch.linalg.norm(layer.dfa_matrix)/torch.linalg.norm(layer.weight)})
-            '''
-            criterion, angle = self.average_angle(layer.weight.cpu().detach(), layer.dfa_matrix.cpu().detach(), torch.transpose(error).cpu().detach())
-            wandb.log({"Alignment angle of {}".format(layer.name): angle,
-                       "Alignment criterion of {}".format(layer.name): criterion})
-
-    def average_angle(self, W2, B1, error):
-        dh1 = np.mean(np.dot(B1, error), axis=1)
-        c1 = np.mean(np.dot(np.transpose(W2), error), axis=1)
-        dh1_norm = np.linalg.norm(dh1)
-        c1_norm = np.linalg.norm(c1)
-        inverse_dh1_norm = np.power(dh1_norm, -1)
-        inverse_c1_norm = np.power(c1_norm, -1)
-        Lk = np.matmul(np.transpose(dh1), c1) * inverse_dh1_norm * inverse_c1_norm
-        beta = np.arccos(np.clip(Lk, -1., 1.)) * 180 / np.pi
-        return Lk, beta
-    '''
 
 
 def build_csv(features, classifiers, linear_dimension, input_depth=3):
