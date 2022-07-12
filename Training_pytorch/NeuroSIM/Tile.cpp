@@ -677,6 +677,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 		} 
 		*leakage = PEleakage*numPE*numPE + accumulationCM->leakage + inputBufferCM->leakage + outputBufferCM->leakage;
 	} else {  // novel Mapping
+	    cout << "We should be somewhere down here" << endl;
 		for (int i=0; i<numPE; i++) {
 			int location = i*MIN(peSize, (int) weightMatrixRow/numPE);
 			vector<vector<double> > pEMemoryOld;
