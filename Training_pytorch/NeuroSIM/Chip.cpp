@@ -644,13 +644,10 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 	
 	// only get performance of single layer
 	int l = layerNumber;
-	cout << "Layer number: " << layerNumber << endl;
 	// get weight matrix file Size
 	int weightMatrixRow = netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*numRowPerSynapse;
 	int weightMatrixCol = netStructure[l][5]*numColPerSynapse;
 
-	cout << "See if this works" << weightMatrixRow << ", " << weightMatrixCol << endl;
-	
 	// load in whole file 
 	vector<vector<double> > inputVector;
 	inputVector = LoadInInputData(inputfile); 
@@ -830,6 +827,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		globalBuffer->writeLatency *= ceil(totalNumTile/(numTileEachLayer[0][l]*numTileEachLayer[1][l]));
 	
 	} else {   // novel Mapping
+	    cout << "We should get this way" << endl;
 		for (int i=0; i<ceil((double) netStructure[l][2]*(double) numRowPerSynapse/(double) desiredPESizeNM); i++) {       // # of tiles in row
 			for (int j=0; j<ceil((double) netStructure[l][5]*(double) numColPerSynapse/(double) desiredPESizeNM); j++) {   // # of tiles in Column
 				// novel mapping
@@ -838,7 +836,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 				
 				int numRowMatrix = min(desiredPESizeNM*numPENM, weightMatrixRow-i*desiredPESizeNM*numPENM);
 				int numColMatrix = min(desiredPESizeNM, weightMatrixCol-j*desiredPESizeNM);
-				
+				cout << "No problem here" << endl;
 				// assign weight and input to specific tile
 				vector<vector<double> > tileMemoryOld;
 				tileMemoryOld = ReshapeArray(oldMemory, i*desiredPESizeNM, j*desiredPESizeNM, (int) netStructure[l][2]*numRowPerSynapse/numtileEachLayerRow, 
