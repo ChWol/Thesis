@@ -856,9 +856,7 @@ vector<vector<double> > CopyPEArray(const vector<vector<double> > &orginal, int 
 		for (int j=0; j<numCol; j++) {
 			copyRow.push_back(orginal[positionRow+i][positionCol+j]);
 		}
-		cout << i << endl;
 		copy.push_back(copyRow);
-		cout << i << endl;
 		copyRow.clear();
 		cout << i << endl;
 	}
