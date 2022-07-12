@@ -335,7 +335,7 @@ try:
                     log_input[key] = exponential
                 wandb.log(log_input)
 
-    wandb.log({"video": wandb.Video(frames, fps=1)})
+    wandb.log({"video": wandb.Video(np.asarray(frames), fps=1, format='gif')})
 
 
 except Exception as e:
