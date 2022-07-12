@@ -221,11 +221,11 @@ try:
                 im = sns.heatmap(test, cmap="YlGnBu")
                 gradients = torch.reshape(test, (-1,))
             wandb.log({name: [wandb.Image(im, caption="Gradient")]})
-            wandb.log({"gradients": wandb.Histogram(gradients)})
             wandb.log({"Weight avg of {}".format(name): torch.mean(param),
                        "Weight std of {}".format(name): torch.std(param),
                        "Gradient avg of {}".format(name): torch.mean(param.grad),
-                       "Gradient std of {}".format(name): torch.std(param.grad), 'Epoch': epoch + 1})
+                       "Gradient std of {}".format(name): torch.std(param.grad),
+                       "gradients": wandb.Histogram(gradients), 'Epoch': epoch + 1})
 
         misc.model_save(model, os.path.join(args.logdir, 'latest.pth'))
 
