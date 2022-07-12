@@ -210,7 +210,7 @@ try:
 
         for name, param in model.named_parameters():
             with torch.no_grad():
-                test = torch.clone(param)
+                test = torch.clone(param.grad)
                 test = test.cpu()
                 #im = plt.imshow(test, cmap='viridis')
                 gradients = torch.reshape(test, (-1,))
@@ -218,8 +218,8 @@ try:
                        "Weight std of {}".format(name): torch.std(param),
                        "Gradient avg of {}".format(name): torch.mean(param.grad),
                        "Gradient std of {}".format(name): torch.std(param.grad),
-                       "gradients of {}".format(name): wandb.Histogram(param.grad),
-                       "weights of {}".format(name): wandb.Histogram(param),
+                       "gradients of {}".format(name): wandb.Histogram(gradients),
+                       "weights of {}".format(name): wandb.Histogram(gradients),
                        #"Gradient visualization of {}".format(name): [wandb.Image(im, caption="Gradient")],
                        'Epoch': epoch + 1})
 
