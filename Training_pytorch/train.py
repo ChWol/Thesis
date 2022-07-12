@@ -225,7 +225,7 @@ try:
                        "Weight std of {}".format(name): torch.std(param),
                        "Gradient avg of {}".format(name): torch.mean(param.grad),
                        "Gradient std of {}".format(name): torch.std(param.grad),
-                       "gradients": wandb.Histogram(gradients), 'Epoch': epoch + 1})
+                       "gradients of {}".format(name): wandb.Histogram(gradients), 'Epoch': epoch + 1})
 
         misc.model_save(model, os.path.join(args.logdir, 'latest.pth'))
 
