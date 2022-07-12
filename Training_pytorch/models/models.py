@@ -58,6 +58,7 @@ class MODEL(nn.Module):
                 layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
 
             # Todo: Weight ratio NormB/NormW
+            wandb.log({"Weight ratio of {}".format(layer.name): torch.linalg.norm(layer.dfa_matrix)/torch.linalg.norm(layer.weight)})
             '''
             criterion, angle = self.average_angle(layer.weight.cpu().detach(), layer.dfa_matrix.cpu().detach(), torch.transpose(error).cpu().detach())
             wandb.log({"Alignment angle of {}".format(layer.name): angle,
