@@ -850,16 +850,13 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 
 
 vector<vector<double> > CopyPEArray(const vector<vector<double> > &orginal, int positionRow, int positionCol, int numRow, int numCol) {
-	cout << positionRow << endl;
-	cout << positionCol << endl;
-	cout << numRow << endl;
-	cout << numCol << endl;
 	vector<vector<double> > copy;
 	for (int i=0; i<numRow; i++) {
 		vector<double> copyRow;
 		for (int j=0; j<numCol; j++) {
 			copyRow.push_back(orginal[positionRow+i][positionCol+j]);
 		}
+		cout << "Is the for loop the problem?" << endl;
 		copy.push_back(copyRow);
 		copyRow.clear();
 	}
