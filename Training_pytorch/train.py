@@ -143,6 +143,7 @@ try:
         paramALTD[k] = wage_quantizer.GetParamA(NL_LTD.cpu().numpy()) * args.max_level
         k = k + 1
 
+    frames = []
     for epoch in range(args.epochs):
         split_time = time.time()
         model.train()
@@ -220,7 +221,8 @@ try:
                 test = test.cpu()
                 im = plt.imshow(test, cmap='viridis')
                 gradients = torch.reshape(test, (-1,))
-            wandb.log({name: [wandb.Image(im, caption="Gradient")]})
+            # wandb.log({name: [wandb.Image(im, caption="Gradient")]})
+            frames.append(im)
             wandb.log({"Weight avg of {}".format(name): torch.mean(param),
                        "Weight std of {}".format(name): torch.std(param),
                        "Gradient avg of {}".format(name): torch.mean(param.grad),
@@ -332,6 +334,8 @@ try:
                     exponential = '%.2E' % Decimal(value[0])
                     log_input[key] = exponential
                 wandb.log(log_input)
+
+    wandb.log({"video": wandb.Video(frames, fps=1)})
 
 
 except Exception as e:
