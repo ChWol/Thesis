@@ -174,8 +174,6 @@ try:
                 loss.backward()
 
             # introduce non-ideal property
-
-
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
                 velocity[j] = gamma * velocity[j] + alpha * param.grad.data
@@ -187,15 +185,12 @@ try:
                                                     args.max_level)
                 j = j + 1
 
-
             optimizer.step()
             if args.scheduler == 1:
                 scheduler.step()
 
-
             for name, param in list(model.named_parameters())[::-1]:
                 param.data = wage_quantizer.W(param.data, param.grad.data, args.wl_weight, args.c2cVari)
-
 
             if batch_idx % args.log_interval == 0 and batch_idx > 0:
                 pred = output.data.max(1)[1]
@@ -223,7 +218,8 @@ try:
                        "Weight std of {}".format(name): torch.std(param),
                        "Gradient avg of {}".format(name): torch.mean(param.grad),
                        "Gradient std of {}".format(name): torch.std(param.grad),
-                       "gradients of {}".format(name): wandb.Histogram(gradients),
+                       "gradients of {}".format(name): wandb.Histogram(param.grad),
+                       "weights of {}".format(name): wandb.Histogram(param),
                        #"Gradient visualization of {}".format(name): [wandb.Image(im, caption="Gradient")],
                        'Epoch': epoch + 1})
 
