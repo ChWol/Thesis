@@ -175,7 +175,7 @@ try:
 
             # introduce non-ideal property
 
-            '''
+
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
                 print("Before: {}".format(param.grad.data))
@@ -189,16 +189,16 @@ try:
                                                     args.max_level)
                 print("After: {}".format(param.grad.data))
                 j = j + 1
-            '''
+
 
             optimizer.step()
             if args.scheduler == 1:
                 scheduler.step()
 
-            '''
+
             for name, param in list(model.named_parameters())[::-1]:
                 param.data = wage_quantizer.W(param.data, param.grad.data, args.wl_weight, args.c2cVari)
-            '''
+
 
             if batch_idx % args.log_interval == 0 and batch_idx > 0:
                 pred = output.data.max(1)[1]
