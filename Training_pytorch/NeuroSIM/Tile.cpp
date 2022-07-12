@@ -680,16 +680,12 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 		for (int i=0; i<numPE; i++) {
 			int location = i*MIN(peSize, (int) weightMatrixRow/numPE);
 			vector<vector<double> > pEMemoryOld;
-			cout << "Test 1" << endl;
 			pEMemoryOld = CopyPEArray(oldMemory, location, 0, (int)(weightMatrixRow/numPE), weightMatrixCol);
 			
 			vector<vector<double> > pEMemory;
-			cout << "Test 2" << endl;
 			pEMemory = CopyPEArray(newMemory, location, 0, (int)(weightMatrixRow/numPE), weightMatrixCol);
 			vector<vector<double> > pEInput;
-			cout << "Test 3" << endl;
 			pEInput = CopyPEInput(inputVector, location, numInVector, weightMatrixRow/numPE);
-            cout << "Test 4" << endl;
 
 			ProcessingUnitCalculatePerformance(subArrayInPE, tech, cell, layerNumber, true, pEMemory, pEMemoryOld, pEInput, 1, 1, numSubArrayRow, numSubArrayCol, weightMatrixRow/numPE,
 									weightMatrixCol, numInVector, &PEreadLatency, &PEreadDynamicEnergy, &PEleakage,
@@ -854,7 +850,10 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 
 
 vector<vector<double> > CopyPEArray(const vector<vector<double> > &orginal, int positionRow, int positionCol, int numRow, int numCol) {
-	
+	cout << positionRow << endl;
+	cout << positionCol << endl;
+	cout << numRow << endl;
+	cout << numCol << endl;
 	vector<vector<double> > copy;
 	for (int i=0; i<numRow; i++) {
 		vector<double> copyRow;
