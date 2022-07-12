@@ -220,14 +220,14 @@ try:
             with torch.no_grad():
                 test = torch.clone(param)
                 test = test.cpu()
-                im = plt.imshow(test, cmap='viridis')
+                #im = plt.imshow(test, cmap='viridis')
                 gradients = torch.reshape(test, (-1,))
             wandb.log({"Weight avg of {}".format(name): torch.mean(param),
                        "Weight std of {}".format(name): torch.std(param),
                        "Gradient avg of {}".format(name): torch.mean(param.grad),
                        "Gradient std of {}".format(name): torch.std(param.grad),
                        "gradients of {}".format(name): wandb.Histogram(gradients),
-                       "Gradient visualization of {}".format(name): [wandb.Image(im, caption="Gradient")],
+                       #"Gradient visualization of {}".format(name): [wandb.Image(im, caption="Gradient")],
                        'Epoch': epoch + 1})
 
         misc.model_save(model, os.path.join(args.logdir, 'latest.pth'))
