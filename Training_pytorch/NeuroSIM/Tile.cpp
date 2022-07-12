@@ -680,14 +680,17 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 		for (int i=0; i<numPE; i++) {
 			int location = i*MIN(peSize, (int) weightMatrixRow/numPE);
 			vector<vector<double> > pEMemoryOld;
+			cout << "Test 1" << endl;
 			pEMemoryOld = CopyPEArray(oldMemory, location, 0, (int)(weightMatrixRow/numPE), weightMatrixCol);
 			
 			vector<vector<double> > pEMemory;
+			cout << "Test 2" << endl;
 			pEMemory = CopyPEArray(newMemory, location, 0, (int)(weightMatrixRow/numPE), weightMatrixCol);
 			vector<vector<double> > pEInput;
+			cout << "Test 3" << endl;
 			pEInput = CopyPEInput(inputVector, location, numInVector, weightMatrixRow/numPE);
+            cout << "Test 4" << endl;
 
-			cout << "Survived til here" << endl;
 			ProcessingUnitCalculatePerformance(subArrayInPE, tech, cell, layerNumber, true, pEMemory, pEMemoryOld, pEInput, 1, 1, numSubArrayRow, numSubArrayCol, weightMatrixRow/numPE,
 									weightMatrixCol, numInVector, &PEreadLatency, &PEreadDynamicEnergy, &PEleakage,
 									&PEreadLatencyAG, &PEreadDynamicEnergyAG, &PEwriteLatencyWU, &PEwriteDynamicEnergyWU,
@@ -739,7 +742,6 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 		
 		*writeDynamicEnergyWU *= (speedUpRow*speedUpCol);
 
-		cout << "some crucial part" << endl;
 		accumulationNM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), numPE, 0);
 		accumulationNM->CalculatePower((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), numPE);
 		*readLatency += accumulationNM->readLatency;
@@ -760,7 +762,6 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 		inputBufferNM->CalculateLatency(inputBufferNM->interface_width, numBitToLoadOut/inputBufferNM->interface_width, inputBufferNM->interface_width, numBitToLoadOut/inputBufferNM->interface_width);
 		inputBufferNM->CalculatePower(inputBufferNM->interface_width, numBitToLoadOut/inputBufferNM->interface_width, inputBufferNM->interface_width, numBitToLoadOut/inputBufferNM->interface_width);
 
-		cout << "Can we go this far" << endl;
  		if (!param->chipActivation) {
 			if (param->reLu) {
 				reLuNM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse)/reLuNM->numUnit);
