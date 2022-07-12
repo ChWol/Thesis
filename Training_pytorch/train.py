@@ -169,10 +169,8 @@ try:
                     model.direct_feedback_alignment(error)
             else:
                 output = model(data)
-                print(output.requires_grad)
                 error = wage_util.SSE(output, target)
                 loss = (0.5 * (error ** 2)).sum()
-                print(loss.requires_grad)
                 loss.backward()
 
             # introduce non-ideal property
