@@ -261,7 +261,7 @@ def mnist(args, logger, num_classes, pretrained=None):
     if len(features) == 0:
         input = 784
     else:
-        input = 4608
+        input = 25088
 
     build_csv(features, classifiers, input, 1)
 
