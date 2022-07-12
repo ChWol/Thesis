@@ -22,6 +22,7 @@ class MODEL(nn.Module):
         x = x.view(x.size(0), -1)
         for layer in self.classifier:
             if isinstance(layer, QLinear):
+                print(layer.weight.requires_grad)
                 layer.input = x
                 x = layer(x)
                 layer.output = x
