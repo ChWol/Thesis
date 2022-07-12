@@ -161,14 +161,16 @@ try:
             data, target = Variable(data), Variable(target)
             optimizer.zero_grad()
 
-            output = model(data)
-            error = wage_util.SSE(output, target)
-            loss = (0.5 * (error ** 2)).sum()
-
             if args.rule == 'dfa':
-                model.direct_feedback_alignment(error)
-
+                with torch.no_grad():
+                    output = model(data)
+                    error = wage_util.SSE(output, target)
+                    loss = (0.5 * (error ** 2)).sum()
+                    model.direct_feedback_alignment(error)
             else:
+                output = model(data)
+                error = wage_util.SSE(output, target)
+                loss = (0.5 * (error ** 2)).sum()
                 loss.backward()
 
             # introduce non-ideal property
