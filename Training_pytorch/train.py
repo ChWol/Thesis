@@ -218,7 +218,7 @@ try:
             with torch.no_grad():
                 test = torch.clone(param.grad)
                 test = test.cpu()
-                im = sns.heatmap(test, cmap="YlGnBu")
+                im = plt.imshow(test, cmap='viridis')
                 gradients = torch.reshape(test, (-1,))
             wandb.log({name: [wandb.Image(im, caption="Gradient")]})
             wandb.log({"Weight avg of {}".format(name): torch.mean(param),
