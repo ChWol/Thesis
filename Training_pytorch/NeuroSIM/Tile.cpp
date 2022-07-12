@@ -856,10 +856,11 @@ vector<vector<double> > CopyPEArray(const vector<vector<double> > &orginal, int 
 		for (int j=0; j<numCol; j++) {
 			copyRow.push_back(orginal[positionRow+i][positionCol+j]);
 		}
-		cout << "Is the for loop the problem?" << endl;
+		cout << i << endl;
 		copy.push_back(copyRow);
 		copyRow.clear();
 	}
+	cout << "Problem is outside" << endl;
 	return copy;
 	copy.clear();
 } 
