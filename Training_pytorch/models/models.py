@@ -18,17 +18,18 @@ class MODEL(nn.Module):
         self.classifier = classifier
 
     def forward(self, x):
-        x = self.features(x)
-        x = x.view(x.size(0), -1)
-        for layer in self.classifier:
-            if isinstance(layer, QLinear):
-                print(layer.weight.requires_grad)
-                layer.input = x
-                x = layer(x)
-                layer.output = x
-            else:
-                x = layer(x)
-        return x
+        with torch.no_grad():
+            x = self.features(x)
+            x = x.view(x.size(0), -1)
+            for layer in self.classifier:
+                if isinstance(layer, QLinear):
+                    print(layer.weight.requires_grad)
+                    layer.input = x
+                    x = layer(x)
+                    layer.output = x
+                else:
+                    x = layer(x)
+            return x
 
     def direct_feedback_alignment(self, error):
         for i, layer in enumerate(self.classifier):
