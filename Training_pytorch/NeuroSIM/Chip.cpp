@@ -644,9 +644,12 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 	
 	// only get performance of single layer
 	int l = layerNumber;
+	cout << "Layer number: " << layerNumber << endl;
 	// get weight matrix file Size
 	int weightMatrixRow = netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*numRowPerSynapse;
 	int weightMatrixCol = netStructure[l][5]*numColPerSynapse;
+
+	cout << "See if this works" << weightMatrixRow << ", " << weightMatrixCol << endl;
 	
 	// load in whole file 
 	vector<vector<double> > inputVector;
