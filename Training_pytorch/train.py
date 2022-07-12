@@ -216,7 +216,7 @@ try:
 
         for name, param in model.named_parameters():
             with torch.no_grad():
-                test = torch.clone(param)
+                test = torch.clone(param.grad)
                 test = test.cpu()
                 im = plt.imshow(test, cmap='viridis')
                 gradients = torch.reshape(test, (-1,))
