@@ -21,9 +21,9 @@ class MODEL(nn.Module):
         for layer in self.features:
             if isinstance(layer, QConv2d):
                 print(layer.name)
-                print(x.size())
                 layer.input = x
                 x = layer(x)
+                print(x.size())
                 layer.output = x
             else:
                 x = layer(x)
