@@ -222,7 +222,7 @@ try:
                                "Gradients of {}".format(name): wandb.Histogram(gradients),
                                "Weights of {}".format(name): wandb.Histogram(weights),
                                "Gradient visualization of {}".format(name): [
-                                   wandb.Image(plt.imshow(weights_np, cmap='viridis'), caption="Gradient")],
+                                   wandb.Image(plt.imshow(gradients_np, cmap='viridis'), caption="Gradient")],
                                'Epoch': epoch + 1})
 
         elapse_time = time.time() - t_begin
