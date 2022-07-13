@@ -180,6 +180,7 @@ try:
             gradient_accumulated += time.time() - gradient_time
 
             # introduce non-ideal property
+            '''
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
                 velocity[j] = gamma * velocity[j] + alpha * param.grad.data
@@ -190,14 +191,14 @@ try:
                                                     torch.from_numpy(paramALTD[j]).cuda(), args.max_level,
                                                     args.max_level)
                 j = j + 1
-
+            '''
             optimizer.step()
             if args.scheduler == 1:
                 scheduler.step()
-
+            '''
             for name, param in list(model.named_parameters())[::-1]:
                 param.data = wage_quantizer.W(param.data, param.grad.data, args.wl_weight, args.c2cVari)
-
+'''
             if batch_idx % args.log_interval == 0 and batch_idx > 0:
                 pred = output.data.max(1)[1]
                 correct = pred.cpu().eq(indx_target).sum()
@@ -212,14 +213,19 @@ try:
                         gradients_np = torch.clone(param.grad).cpu()
                         weights = torch.reshape(weights_np, (-1,))
                         gradients = torch.reshape(gradients_np, (-1,))
+                    if args.gradient_analysis == 1:
+                        wandb.log({"Gradient visualization of {}".format(name): [
+                            wandb.Image(plt.imshow(gradients_np, cmap='viridis'), caption="Gradient")],
+                            "Weight visualization of {}".format(name): [
+                            wandb.Image(plt.imshow(weights_np, cmap='viridis'), caption="Gradient")],
+                            "Epoch": epoch + 1
+                            })
                     wandb.log({"Weight avg of {}".format(name): torch.mean(param),
                                "Weight std of {}".format(name): torch.std(param),
                                "Gradient avg of {}".format(name): torch.mean(param.grad),
                                "Gradient std of {}".format(name): torch.std(param.grad),
                                "Gradients of {}".format(name): wandb.Histogram(gradients),
                                "Weights of {}".format(name): wandb.Histogram(weights),
-                               "Gradient visualization of {}".format(name): [
-                                   wandb.Image(plt.imshow(gradients_np, cmap='viridis'), caption="Gradient")],
                                'Epoch': epoch + 1})
 
         elapse_time = time.time() - t_begin
@@ -228,8 +234,6 @@ try:
         eta = speed_epoch * args.epochs - elapse_time
         logger("Elapsed {:.2f}s, {:.2f} s/epoch, {:.2f} s/batch, ets {:.2f}s".format(
             elapse_time, speed_epoch, speed_batch, eta))
-
-
 
         misc.model_save(model, os.path.join(args.logdir, 'latest.pth'))
 
