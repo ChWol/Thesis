@@ -31,6 +31,11 @@ class MODEL(nn.Module):
 
     def direct_feedback_alignment(self, error):
         for i, layer in enumerate(self.classifier):
+
+            # Idea for Conv
+            # d = Be * f'(a
+            # layer.weight.grad = torch.nn.(d, e)
+
             if not isinstance(layer, QLinear):
                 continue
 
