@@ -215,9 +215,10 @@ try:
 
         for name, param in model.named_parameters():
             with torch.no_grad():
-                param_np = torch.clone(param).cpu()
-                weights = torch.reshape(param_np, (-1,))
-                gradients = torch.reshape(param_np.grad, (-1,))
+                weights_np = torch.clone(param).cpu()
+                gradients_np = torch.clone(param.grad).cpu()
+                weights = torch.reshape(weights_np, (-1,))
+                gradients = torch.reshape(gradients_np, (-1,))
             wandb.log({"Weight avg of {}".format(name): torch.mean(param),
                        "Weight std of {}".format(name): torch.std(param),
                        "Gradient avg of {}".format(name): torch.mean(param.grad),
