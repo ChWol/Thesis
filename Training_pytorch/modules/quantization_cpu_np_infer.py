@@ -198,7 +198,7 @@ class QLinear(nn.Linear):
                  quantize_weight=False, clip_output=False, quantize_output=False,
                  wl_input=8, wl_activate=8, wl_error=8, wl_weight=8, inference=0, onoffratio=10, cellBit=1,
                  subArray=128, ADCprecision=5, vari=0, t=0, v=0, detect=0, target=0, debug=0, name='Qlinear',
-                 activation='relu', num_classes=10, rule='bp'):
+                 activation='relu', num_classes=10, rule='bp', initial='xavier'):
         super(QLinear, self).__init__(in_features, out_features, bias)
         self.logger = logger
         self.clip_weight = clip_weight
@@ -226,8 +226,12 @@ class QLinear(nn.Linear):
         self.activation = activation
         if rule == 'dfa':
             B = torch.empty(out_features, num_classes, requires_grad=False)
-            stdv = 1. / math.sqrt(self.weight.size(1))
-            B.data.uniform_(-stdv, stdv)
+            if initial == 'xavier':
+                torch.nn.init.xavier_uniform_(B)
+                torch.nn.init.xavier_uniform_(self.weight)
+            else:
+                stdv = 1. / math.sqrt(self.weight.size(1))
+                B.data.uniform_(-stdv, stdv)
             self.dfa_matrix = B
 
     def forward(self, input):

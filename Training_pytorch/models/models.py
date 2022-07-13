@@ -123,7 +123,7 @@ def make_features(features, args, logger, in_dimension):
                              onoffratio=args.onoffratio, cellBit=args.cellBit,
                              subArray=args.subArray, ADCprecision=args.ADCprecision, vari=args.vari, t=args.t, v=args.v,
                              detect=args.detect, target=args.target,
-                             name='Conv' + str(i) + '_')
+                             name='Conv' + str(i) + '_', initial=args.initial)
             layers += [conv2d, activation]
             in_channels = out_channels
     return nn.Sequential(*layers)
@@ -151,7 +151,7 @@ def make_classifiers(classifiers, args, logger, in_dimension, num_classes):
                          wl_weight=args.wl_weight, inference=args.inference, onoffratio=args.onoffratio,
                          cellBit=args.cellBit, subArray=args.subArray, ADCprecision=args.ADCprecision, vari=args.vari,
                          t=args.t, v=args.v, detect=args.detect, target=args.target, name='FC' + str(i) + '_',
-                         activation=args.activation, num_classes=num_classes, rule=args.rule)
+                         activation=args.activation, num_classes=num_classes, rule=args.rule, initial=args.initial)
 
         if i == len(classifiers) - 1:
             layers += [linear]

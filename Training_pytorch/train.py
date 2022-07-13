@@ -57,6 +57,8 @@ parser.add_argument('--learning_rate', type=float, default=1e-3)
 parser.add_argument('--neurosim', type=int, default=1)
 parser.add_argument('--optimizer', default='adam')
 parser.add_argument('--scheduler', type=int, default=0)
+parser.add_argument('initial', defaul='xavier')
+
 args = parser.parse_args()
 args.wl_weight = args.wl_grad = args.cellBit
 args.max_level = 2 ** args.cellBit
@@ -221,8 +223,8 @@ try:
                        "Weight std of {}".format(name): torch.std(param),
                        "Gradient avg of {}".format(name): torch.mean(param.grad),
                        "Gradient std of {}".format(name): torch.std(param.grad),
-                       "gradients of {}".format(name): wandb.Histogram(gradients),
-                       "weights of {}".format(name): wandb.Histogram(gradients),
+                       "Gradients of {}".format(name): wandb.Histogram(param.grad),
+                       "Weights of {}".format(name): wandb.Histogram(param),
                        # "Gradient visualization of {}".format(name): [wandb.Image(im, caption="Gradient")],
                        'Epoch': epoch + 1})
 
