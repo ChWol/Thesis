@@ -23,7 +23,7 @@ class MODEL(nn.Module):
                 print(layer.name)
                 layer.input = x
                 x = layer(x)
-                print(x.size())
+                print(layer.weight.size())
                 layer.output = x
             else:
                 x = layer(x)
