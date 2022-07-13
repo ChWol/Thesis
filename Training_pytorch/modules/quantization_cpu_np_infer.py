@@ -227,6 +227,7 @@ class QLinear(nn.Linear):
         if rule == 'dfa':
             B = torch.empty(out_features, num_classes, requires_grad=False)
             nn.init.xavier_uniform_(B)
+            nn.init.xavier_uniform_(self.weight)
             self.dfa_matrix = B
 
     def forward(self, input):
