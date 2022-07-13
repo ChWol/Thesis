@@ -125,6 +125,7 @@ if args.scheduler == 1:
 
 best_acc, old_file = 0, None
 accumulated_time = 0
+gradient_accumulated = 0
 t_begin = time.time()
 grad_scale = args.grad_scale
 
@@ -161,6 +162,7 @@ try:
             data, target = Variable(data), Variable(target)
             optimizer.zero_grad()
 
+            gradient_time = time.time()
             if args.rule == 'dfa':
                 with torch.no_grad():
                     output = model(data)
@@ -172,6 +174,7 @@ try:
                 error = wage_util.SSE(output, target)
                 loss = (0.5 * (error ** 2)).sum()
                 loss.backward()
+            gradient_accumulated += time.time() - gradient_time
 
             # introduce non-ideal property
             j = 0
@@ -333,5 +336,5 @@ except Exception as e:
 
     traceback.print_exc()
 finally:
-    wandb.log({'Training time': accumulated_time})
+    wandb.log({'Training time': accumulated_time, 'Gradient time': gradient_accumulated})
     logger("Total Elapse: {:.2f}, Best Result: {:.3f}%".format(time.time() - t_begin, best_acc))
