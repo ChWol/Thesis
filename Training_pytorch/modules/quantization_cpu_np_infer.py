@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from utee import wage_initializer, wage_quantizer
 import numpy as np
-
+import math
 
 class QConv2d(nn.Conv2d):
     def __init__(self, in_channels, out_channels, kernel_size,
@@ -226,8 +226,8 @@ class QLinear(nn.Linear):
         self.activation = activation
         if rule == 'dfa':
             B = torch.empty(out_features, num_classes, requires_grad=False)
-            nn.init.xavier_uniform_(B)
-            nn.init.xavier_uniform_(self.weight)
+            stdv = 1. / math.sqrt(self.weight.size(1))
+            B.data.uniform_(-stdv, stdv)
             self.dfa_matrix = B
 
     def forward(self, input):
