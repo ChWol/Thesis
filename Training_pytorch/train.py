@@ -179,6 +179,7 @@ try:
             gradient_accumulated += time.time() - gradient_time
 
             # introduce non-ideal property
+            '''
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
                 velocity[j] = gamma * velocity[j] + alpha * param.grad.data
@@ -189,13 +190,16 @@ try:
                                                     torch.from_numpy(paramALTD[j]).cuda(), args.max_level,
                                                     args.max_level)
                 j = j + 1
+            '''
 
             optimizer.step()
             if args.scheduler == 1:
                 scheduler.step()
 
+            '''
             for name, param in list(model.named_parameters())[::-1]:
                 param.data = wage_quantizer.W(param.data, param.grad.data, args.wl_weight, args.c2cVari)
+            '''
 
             if batch_idx % args.log_interval == 0 and batch_idx > 0:
                 pred = output.data.max(1)[1]
