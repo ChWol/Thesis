@@ -212,13 +212,10 @@ try:
             elapse_time, speed_epoch, speed_batch, eta))
 
         for name, param in model.named_parameters():
-            print(name)
-            print(param.size())
-
             with torch.no_grad():
                 test = torch.clone(param.grad)
                 test = test.cpu()
-                #im = plt.imshow(test, cmap='viridis')
+                # im = plt.imshow(test, cmap='viridis')
                 gradients = torch.reshape(test, (-1,))
             wandb.log({"Weight avg of {}".format(name): torch.mean(param),
                        "Weight std of {}".format(name): torch.std(param),
@@ -226,7 +223,7 @@ try:
                        "Gradient std of {}".format(name): torch.std(param.grad),
                        "gradients of {}".format(name): wandb.Histogram(gradients),
                        "weights of {}".format(name): wandb.Histogram(gradients),
-                       #"Gradient visualization of {}".format(name): [wandb.Image(im, caption="Gradient")],
+                       # "Gradient visualization of {}".format(name): [wandb.Image(im, caption="Gradient")],
                        'Epoch': epoch + 1})
 
         misc.model_save(model, os.path.join(args.logdir, 'latest.pth'))

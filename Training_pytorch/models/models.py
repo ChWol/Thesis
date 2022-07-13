@@ -18,7 +18,15 @@ class MODEL(nn.Module):
         self.classifier = classifier
 
     def forward(self, x):
-        x = self.features(x)
+        for layer in self.classifier:
+            if isinstance(layer, QConv2d):
+                print(layer.name)
+                print(x.size())
+                layer.input = x
+                x = layer(x)
+                layer.output = x
+            else:
+                x = layer(x)
         x = x.view(x.size(0), -1)
         for layer in self.classifier:
             if isinstance(layer, QLinear):
