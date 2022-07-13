@@ -58,6 +58,7 @@ parser.add_argument('--neurosim', type=int, default=1)
 parser.add_argument('--optimizer', default='adam')
 parser.add_argument('--scheduler', type=int, default=0)
 parser.add_argument('--initial', default='xavier')
+parser.add_argument('--analysis', default=0)
 
 args = parser.parse_args()
 args.wl_weight = args.wl_grad = args.cellBit
@@ -218,7 +219,7 @@ try:
                            "Gradient std of {}".format(name): torch.std(param.grad),
                            "Gradients of {}".format(name): wandb.Histogram(gradients),
                            "Weights of {}".format(name): wandb.Histogram(weights),
-                           # "Gradient visualization of {}".format(name): [wandb.Image(plt.imshow(param_np, cmap='viridis'), caption="Gradient")],
+                           "Gradient visualization of {}".format(name): [wandb.Image(plt.imshow(weights_np, cmap='viridis'), caption="Gradient")],
                            'Epoch': epoch + 1})
 
         elapse_time = time.time() - t_begin
