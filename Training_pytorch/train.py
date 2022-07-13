@@ -57,7 +57,7 @@ parser.add_argument('--learning_rate', type=float, default=1e-3)
 parser.add_argument('--neurosim', type=int, default=1)
 parser.add_argument('--optimizer', default='adam')
 parser.add_argument('--scheduler', type=int, default=0)
-parser.add_argument('initial', defaul='xavier')
+parser.add_argument('initial', default='xavier')
 
 args = parser.parse_args()
 args.wl_weight = args.wl_grad = args.cellBit
