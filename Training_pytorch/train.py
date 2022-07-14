@@ -255,7 +255,10 @@ try:
                 with torch.no_grad():
                     weights_np = torch.clone(param).cpu()
                     # RdBu, binary, plasma
-                wandb.log({"Test": [wandb.Image(sns.heatmap(weights_np))]})
+                if epoch == 1:
+                    wandb.log({"Test": [wandb.Image(sns.heatmap(weights_np))]})
+                else:
+                    wandb.log({"Test": [wandb.Image(sns.heatmap(weights_np, colorbar=False))]})
             oldWeight[k] = param.data + param.grad.data
             k = k + 1
             delta_std = np.append(delta_std, (torch.std(param.grad.data)).cpu().data.numpy())
