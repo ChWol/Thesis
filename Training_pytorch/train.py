@@ -123,7 +123,7 @@ if args.optimizer == 'adam':
 else:
     optimizer = optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9)
 if args.scheduler == 1:
-    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[2, 4], gamma=0.5)
+    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[20, 40], gamma=0.5)
 
 best_acc, old_file = 0, None
 accumulated_time = 0
@@ -228,7 +228,6 @@ try:
 
         if args.scheduler == 1:
             scheduler.step()
-            print("Step")
         elapse_time = time.time() - t_begin
         speed_epoch = elapse_time / (epoch + 1)
         speed_batch = speed_epoch / len(train_loader)

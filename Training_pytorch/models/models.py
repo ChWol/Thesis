@@ -246,12 +246,10 @@ def get_model(num_classes, network):
                            ('L', num_classes, 1, 'same', 1)]
         },
         'cnn': {
-            'features': [('C', 128, 3, 'same', 32),
-                         ('M', 2, 2),
-                         ('C', 256, 3, 'same', 16),
-                         ('M', 2, 2),
-                         ('C', 512, 3, 'same', 8),
-                         ('M', 2, 2)],
+            'features': [('C', 1, 1, 'same', 28),
+                         ('M', 1, 1),
+                         ('C', 1, 1, 'same', 28),
+                         ('M', 1, 1)],
             'classifier': [('L', 1024, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         }
@@ -288,7 +286,8 @@ def mnist(args, logger, num_classes, pretrained=None):
     if len(features) == 0:
         input = 784
     else:
-        input = 4608
+        #input = 4608
+        input = 784
 
     build_csv(features, classifiers, input, 1)
 
