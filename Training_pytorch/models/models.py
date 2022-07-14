@@ -118,7 +118,7 @@ def make_features(features, args, logger, in_dimension):
                              onoffratio=args.onoffratio, cellBit=args.cellBit,
                              subArray=args.subArray, ADCprecision=args.ADCprecision, vari=args.vari, t=args.t, v=args.v,
                              detect=args.detect, target=args.target,
-                             name='Conv' + str(i) + '_', initial=args.initial)
+                             name='Conv' + str(i) + '_')
             layers += [conv2d, activation]
             in_channels = out_channels
     return nn.Sequential(*layers)
