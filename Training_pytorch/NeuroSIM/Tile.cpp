@@ -858,9 +858,7 @@ vector<vector<double> > CopyPEArray(const vector<vector<double> > &orginal, int 
 		}
 		copy.push_back(copyRow);
 		copyRow.clear();
-		cout << i << endl;
 	}
-	cout << "Problem is outside" << endl;
 	return copy;
 	copy.clear();
 } 
