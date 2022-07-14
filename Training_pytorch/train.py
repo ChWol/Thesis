@@ -208,7 +208,7 @@ try:
                     epoch, batch_idx * len(data), len(train_loader.dataset),
                     loss.data, acc, optimizer.param_groups[0]['lr']))
                 for name, param in model.named_parameters():
-                    with torch.no_grad():
+                    #with torch.no_grad():
                         #weights_np = torch.clone(param).cpu()
                         #gradients_np = torch.clone(param.grad).cpu()
                         #weights = torch.reshape(weights_np, (-1,))
