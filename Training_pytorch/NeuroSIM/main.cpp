@@ -231,9 +231,24 @@ int main(int argc, char * argv[]) {
 	double NMTilewidth = 0;
 	vector<double> chipAreaResults;
 
+    // Added by me :)
+    double dfaArea = 0;
+	double max_layer_output = 0;
+	double num_classes = netStructure[netStructure.size()-1][5];
+	for (int i=0; i<netStructure.size(); i++) {
+	    if (netStructure[i][5] > max_layer_output) {
+	        max_layer_output = netStructure[i][5]
+	    }
+	}
+	// End of my addition
+
 	chipAreaResults = ChipCalculateArea(inputParameter, tech, cell, desiredNumTileNM, numPENM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow,
 					&chipHeight, &chipWidth, &CMTileheight, &CMTilewidth, &NMTileheight, &NMTilewidth);
 	chipArea = chipAreaResults[0];
+	// Added by me :)
+	dfaArea = ceil((ceil(log2(max_layer_output*num_classes))/param->cellBit))*;
+	chipArea += dfaArea;
+	// End of my addition
 	chipAreaIC = chipAreaResults[1];
 	chipAreaADC = chipAreaResults[2];
 	chipAreaAccum = chipAreaResults[3];

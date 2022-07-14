@@ -19,7 +19,6 @@ from modules.quantization_cpu_np_infer import QConv2d, QLinear
 import wandb
 from decimal import Decimal
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
 parser.add_argument('--dataset', default='mnist', help='dataset for training')
@@ -251,14 +250,6 @@ try:
         k = 0
 
         for name, param in list(model.named_parameters()):
-            if k == 0:
-                with torch.no_grad():
-                    weights_np = torch.clone(param).cpu()
-                    # RdBu, binary, plasma
-                if epoch == 1:
-                    wandb.log({"Test": [wandb.Image(sns.heatmap(weights_np))]})
-                else:
-                    wandb.log({"Test": [wandb.Image(sns.heatmap(weights_np, colorbar=False))]})
             oldWeight[k] = param.data + param.grad.data
             k = k + 1
             delta_std = np.append(delta_std, (torch.std(param.grad.data)).cpu().data.numpy())
