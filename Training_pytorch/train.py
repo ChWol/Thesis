@@ -255,7 +255,7 @@ try:
                 with torch.no_grad():
                     weights_np = torch.clone(param).cpu()
                     # hot, seismic, RdBu, RdYlGn, Spectral, binary, plasma, inferno
-                wandb.log({"Test": [wandb.Image(plt.imshow(weights_np, cmap='binary', interpolation='spline36'))]})
+                wandb.log({"Test": [wandb.Image(plt.imshow(weights_np, cmap='Spectral', interpolation='spline36'))]})
             oldWeight[k] = param.data + param.grad.data
             k = k + 1
             delta_std = np.append(delta_std, (torch.std(param.grad.data)).cpu().data.numpy())
