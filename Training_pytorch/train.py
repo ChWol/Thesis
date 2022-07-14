@@ -207,12 +207,13 @@ try:
                 logger('Train Epoch: {} [{}/{}] Loss: {:.6f} Acc: {:.4f} lr: {:.2e}'.format(
                     epoch, batch_idx * len(data), len(train_loader.dataset),
                     loss.data, acc, optimizer.param_groups[0]['lr']))
+                '''
                 for name, param in model.named_parameters():
-                    #with torch.no_grad():
-                        #weights_np = torch.clone(param).cpu()
-                        #gradients_np = torch.clone(param.grad).cpu()
-                        #weights = torch.reshape(weights_np, (-1,))
-                        #gradients = torch.reshape(gradients_np, (-1,))
+                    with torch.no_grad():
+                        weights_np = torch.clone(param).cpu()
+                        gradients_np = torch.clone(param.grad).cpu()
+                        weights = torch.reshape(weights_np, (-1,))
+                        gradients = torch.reshape(gradients_np, (-1,))
                     if args.gradient_analysis == 1:
                         wandb.log({"Gradient visualization of {}".format(name): [
                             wandb.Image(plt.imshow(gradients_np, cmap='viridis'), caption="Gradient")],
@@ -227,6 +228,7 @@ try:
                                "Gradients of {}".format(name): wandb.Histogram(gradients),
                                "Weights of {}".format(name): wandb.Histogram(weights),
                                'Epoch': epoch + 1})
+                    '''
 
         elapse_time = time.time() - t_begin
         speed_epoch = elapse_time / (epoch + 1)
