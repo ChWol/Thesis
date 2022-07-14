@@ -188,8 +188,6 @@ class QConv2d(nn.Conv2d):
             weight = weight1 + (wage_quantizer.Q(weight1, self.wl_weight) - weight1).detach()
             output = F.conv2d(input, weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
         output = output / self.scale
-        print("Before quant")
-        print(output)
         output = wage_quantizer.WAGEQuantizer_f(output, self.wl_activate, self.wl_error)
 
         return output
@@ -342,6 +340,7 @@ class QLinear(nn.Linear):
             output = F.linear(input, weight, self.bias)
 
         output = output / self.scale
+        print(output)
         output = wage_quantizer.WAGEQuantizer_f(output, self.wl_activate, self.wl_error)
 
         return output
