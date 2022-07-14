@@ -168,6 +168,7 @@ try:
             if args.rule == 'dfa':
                 with torch.no_grad():
                     output = model(data)
+                    print(output)
                     error = wage_util.SSE(output, target)
                     loss = (0.5 * (error ** 2)).sum()
                     model.direct_feedback_alignment(error)
