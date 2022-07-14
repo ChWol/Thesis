@@ -39,11 +39,6 @@ class MODEL(nn.Module):
 
     def direct_feedback_alignment(self, error):
         for i, layer in enumerate(self.classifier):
-
-            # Idea for Conv
-            # d = Be * f'(a
-            # layer.weight.grad = torch.nn.(d, e)
-
             if not isinstance(layer, QLinear):
                 continue
 
@@ -66,7 +61,7 @@ class MODEL(nn.Module):
             if i == len(self.classifier)-1:
                 layer.weight.grad = torch.matmul(e, y)
             else:
-                layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
+                layer.weight.grad = torch.zeros_like(torch.matmul(torch.matmul(B, e) * a, y))
 
 
 def build_csv(features, classifiers, linear_dimension, input_depth=3):
