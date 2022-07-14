@@ -162,7 +162,8 @@ def get_model(num_classes, network):
             'classifier': [('L', num_classes, 1, 'same', 1)]
         },
         'two': {
-            'features': [],
+            'features': [('C', 1, 3, 'same', 28),
+                         ('M', 1, 1)],
             'classifier': [('L', 800, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         },
