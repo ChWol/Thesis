@@ -248,8 +248,6 @@ def get_model(num_classes, network):
         'cnn': {
             'features': [
                          ('C', 1, 3, 'same', 28),
-                         ('M', 1, 1),
-                         ('C', 1, 3, 'same', 28),
                          ('M', 1, 1)],
             'classifier': [('L', 1024, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
