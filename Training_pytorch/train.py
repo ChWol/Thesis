@@ -209,10 +209,10 @@ try:
                     loss.data, acc, optimizer.param_groups[0]['lr']))
                 for name, param in model.named_parameters():
                     with torch.no_grad():
-                        weights_np = torch.clone(param).cpu()
-                        gradients_np = torch.clone(param.grad).cpu()
-                        weights = torch.reshape(weights_np, (-1,))
-                        gradients = torch.reshape(gradients_np, (-1,))
+                        #weights_np = torch.clone(param).cpu()
+                        #gradients_np = torch.clone(param.grad).cpu()
+                        #weights = torch.reshape(weights_np, (-1,))
+                        #gradients = torch.reshape(gradients_np, (-1,))
                     if args.gradient_analysis == 1:
                         wandb.log({"Gradient visualization of {}".format(name): [
                             wandb.Image(plt.imshow(gradients_np, cmap='viridis'), caption="Gradient")],

@@ -20,10 +20,8 @@ class MODEL(nn.Module):
     def forward(self, x):
         for layer in self.features:
             if isinstance(layer, QConv2d):
-                print(layer.name)
                 layer.input = x
                 x = layer(x)
-                print(layer.weight.size())
                 layer.output = x
             else:
                 x = layer(x)
