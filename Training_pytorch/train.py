@@ -218,9 +218,9 @@ try:
                         wandb.log({"Gradient visualization of {}".format(name): [
                             wandb.Image(plt.imshow(gradients_np, cmap='viridis'), caption="Gradient")],
                             "Weight visualization of {}".format(name): [
-                            wandb.Image(plt.imshow(weights_np, cmap='viridis'), caption="Gradient")],
+                                wandb.Image(plt.imshow(weights_np, cmap='viridis'), caption="Gradient")],
                             "Epoch": epoch + 1
-                            })
+                        })
                     wandb.log({"Weight avg of {}".format(name): torch.mean(param),
                                "Weight std of {}".format(name): torch.std(param),
                                "Gradient avg of {}".format(name): torch.mean(param.grad),
@@ -251,6 +251,10 @@ try:
         k = 0
 
         for name, param in list(model.named_parameters()):
+            if k == 0:
+                with torch.no_grad():
+                    weights_np = torch.clone(param).cpu()
+                wandb.log({"Test": [wandb.Image(plt.imshow(weights_np, cmap='viridis'))]})
             oldWeight[k] = param.data + param.grad.data
             k = k + 1
             delta_std = np.append(delta_std, (torch.std(param.grad.data)).cpu().data.numpy())
