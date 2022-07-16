@@ -237,7 +237,7 @@ int main(int argc, char * argv[]) {
 	double num_classes = netStructure[netStructure.size()-1][5];
 	for (int i=0; i<netStructure.size(); i++) {
 	    if (netStructure[i][5] > max_layer_output) {
-	        max_layer_output = netStructure[i][5]
+	        max_layer_output = netStructure[i][5];
 	    }
 	}
 	// End of my addition
