@@ -246,8 +246,8 @@ int main(int argc, char * argv[]) {
 					&chipHeight, &chipWidth, &CMTileheight, &CMTilewidth, &NMTileheight, &NMTilewidth);
 	chipArea = chipAreaResults[0];
 	// Added by me :)
-	dfaArea = ceil((ceil(log2(max_layer_output*num_classes))/param->cellBit))*;
-	chipArea += dfaArea;
+	// dfaArea = ((max_layer_output*num_classes*param->synapseBit)/param->cellBit)*___
+	// chipArea += dfaArea;
 	// End of my addition
 	chipAreaIC = chipAreaResults[1];
 	chipAreaADC = chipAreaResults[2];

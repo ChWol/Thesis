@@ -179,7 +179,6 @@ try:
             gradient_accumulated += time.time() - gradient_time
 
             # introduce non-ideal property
-
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
                 velocity[j] = gamma * velocity[j] + alpha * param.grad.data

@@ -83,8 +83,8 @@ void WeightGradientUnit::Initialize(int _numMemRow, int _numMemCol) {
 	numCol = param->numColSubArrayWG;                  // user defined sub-array size
 	unitWireRes = param->unitLengthWireResistance;
 	
-	numArrayInRow = floor(numMemRow/numRow);           
-	numArrayInCol = floor(numMemCol/numCol);
+	numArrayInRow = MAX(floor(numMemRow/numRow), 1);
+	numArrayInCol = MAX(floor(numMemCol/numCol), 1);
 	
 	lengthRow = (double) numCol * param->widthInFeatureSizeSRAM * tech.featureSize;
 	lengthCol = (double) numRow * param->heightInFeatureSizeSRAM * tech.featureSize;
