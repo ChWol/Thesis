@@ -224,6 +224,7 @@ class QLinear(nn.Linear):
         self.name = name
         self.scale = wage_initializer.wage_init_(self.weight, self.wl_weight, factor=1.0)
         self.activation = activation
+        torch.nn.init.xavier_uniform_(self.weight)
         if rule == 'dfa':
             B = torch.empty(out_features, num_classes, requires_grad=False)
             if initial == 'xavier':
