@@ -29,6 +29,8 @@ class MODEL(nn.Module):
         for layer in self.classifier:
             if isinstance(layer, QLinear):
                 layer.input = x
+                print(layer.name)
+                print("y: {}".format(torch.sum(layer.input)))
                 x = layer(x)
                 layer.output = x
             else:
@@ -55,7 +57,6 @@ class MODEL(nn.Module):
                 a = torch.matmul(sigmoid(a), torch.ones_like(a) - sigmoid(a))
             else:
                 a = torch.ones_like(a)
-            print(layer.name)
             if i == len(self.classifier)-1:
                 layer.weight.grad = torch.matmul(e, y)
             else:
