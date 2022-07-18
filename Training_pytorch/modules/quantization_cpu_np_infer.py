@@ -343,7 +343,5 @@ class QLinear(nn.Linear):
 
         output = output / self.scale
         output = wage_quantizer.WAGEQuantizer_f(output, self.wl_activate, self.wl_error)
-        print(self.name)
-        print(self.bias)
 
         return output
