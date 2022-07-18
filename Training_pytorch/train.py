@@ -233,6 +233,8 @@ try:
         eta = speed_epoch * args.epochs - elapse_time
         logger("Elapsed {:.2f}s, {:.2f} s/epoch, {:.2f} s/batch, ets {:.2f}s".format(
             elapse_time, speed_epoch, speed_batch, eta))
+        if epoch == args.epochs - 1:
+            wandb.log({"Time/epoch": speed_epoch, "Time/Batch": speed_batch})
 
         misc.model_save(model, os.path.join(args.logdir, 'latest.pth'))
 

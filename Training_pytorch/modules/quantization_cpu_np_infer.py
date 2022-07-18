@@ -228,7 +228,8 @@ class QLinear(nn.Linear):
             B = torch.empty(out_features, num_classes, requires_grad=False)
             if initial == 'xavier':
                 torch.nn.init.xavier_uniform_(B)
-                torch.nn.init.xavier_uniform_(self.weight)
+                # Won't work for deep networks
+                # torch.nn.init.xavier_uniform_(self.weight)
             else:
                 stdv = 1. / math.sqrt(self.weight.size(1))
                 B.data.uniform_(-stdv, stdv)
