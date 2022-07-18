@@ -87,7 +87,7 @@ Param::Param() {
 	chipActivation = true;      // false: activation (reLu/sigmoid) inside Tile
 								// true: activation outside Tile
 								
-	novelMapping = false;        // false: conventional mapping
+	novelMapping = true;        // false: conventional mapping
 								// true: novel mapping
 	
 	SARADC = false;              // false: MLSA
