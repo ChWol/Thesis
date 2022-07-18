@@ -119,7 +119,8 @@ if args.cuda:
     model.cuda()
 
 if args.optimizer == 'adam':
-    optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
+    optimizer = optim.Adam([{"params": model.parameters(), "lr": 1e-3}, {"params": model.FC0_parameters(), "lr": 1e-1}],
+                           lr=args.learning_rate)
 else:
     optimizer = optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9)
 if args.scheduler == 1:
@@ -181,7 +182,6 @@ try:
             # introduce non-ideal property
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
-                print(name)
                 velocity[j] = gamma * velocity[j] + alpha * param.grad.data
                 param.grad.data = velocity[j]
                 param.grad.data = wage_quantizer.QG(param.data, args.wl_weight, param.grad.data, args.wl_grad,
