@@ -62,6 +62,8 @@ class MODEL(nn.Module):
                 layer.weight.grad = torch.matmul(e, y)
             else:
                 layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
+                print("e: {}".format(torch.sum(e)))
+                print("y: {}".format(torch.sum(y)))
             print(torch.sum(layer.weight.grad))
 
 
