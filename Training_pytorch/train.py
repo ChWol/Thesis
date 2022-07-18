@@ -119,7 +119,7 @@ if args.cuda:
     model.cuda()
 
 if args.optimizer == 'adam':
-    optimizer = optim.Adam([{"params": model.classifier[0].parameters(), "lr": 1e-1}, {"params": model.classifier[1].parameters(), "lr": 1e-3}, {"params": model.classifier[2].parameters(), "lr": 1e-3}],
+    optimizer = optim.Adam([{"params": model.classifier[0].parameters(), "lr": 1e-2}, {"params": model.classifier[1].parameters(), "lr": 1e-3}, {"params": model.classifier[2].parameters(), "lr": 1e-3}, {"params": model.classifier[3].parameters(), "lr": 1e-3}],
                            lr=args.learning_rate)
 else:
     optimizer = optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9)
@@ -131,8 +131,6 @@ accumulated_time = 0
 gradient_accumulated = 0
 t_begin = time.time()
 grad_scale = args.grad_scale
-
-print(model)
 
 try:
     if args.cellBit != args.wl_weight:
