@@ -132,6 +132,8 @@ gradient_accumulated = 0
 t_begin = time.time()
 grad_scale = args.grad_scale
 
+print(model)
+
 try:
     if args.cellBit != args.wl_weight:
         print("Warning: Weight precision should be the same as the cell precison !")
