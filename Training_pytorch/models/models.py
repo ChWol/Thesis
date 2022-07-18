@@ -57,6 +57,8 @@ class MODEL(nn.Module):
                 a = torch.ones_like(a)
             print(layer.name)
             if i == len(self.classifier)-1:
+                print("e: {}".format(torch.sum(e)))
+                print("y: {}".format(torch.sum(y)))
                 layer.weight.grad = torch.matmul(e, y)
             else:
                 layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
