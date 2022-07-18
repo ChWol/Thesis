@@ -232,7 +232,8 @@ class QLinear(nn.Linear):
             else:
                 stdv = 1. / math.sqrt(self.weight.size(1))
                 B.data.uniform_(-stdv, stdv)
-            self.dfa_matrix = B
+            dfa1 = B * self.scale + (B - B * self.scale).detach()
+            self.dfa_matrix = dfa1 + (wage_quantizer.Q(dfa1, self.wl_weight) - dfa1).detach()
 
     def forward(self, input):
 
@@ -337,8 +338,6 @@ class QLinear(nn.Linear):
             # original WAGE QCov2d
             weight1 = self.weight * self.scale + (self.weight - self.weight * self.scale).detach()
             weight = weight1 + (wage_quantizer.Q(weight1, self.wl_weight) - weight1).detach()
-            dfa1 = self.dfa_matrix * self.scale + (self.dfa_matrix - self.dfa_matrix * self.scale).detach()
-            self.dfa_matrix = dfa1 + (wage_quantizer.Q(dfa1, self.wl_weight) - dfa1).detach()
             output = F.linear(input, weight, self.bias)
 
         output = output / self.scale
