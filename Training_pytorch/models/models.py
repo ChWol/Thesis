@@ -55,11 +55,12 @@ class MODEL(nn.Module):
                 a = torch.matmul(sigmoid(a), torch.ones_like(a) - sigmoid(a))
             else:
                 a = torch.ones_like(a)
-
+            print(layer.name)
             if i == len(self.classifier)-1:
                 layer.weight.grad = torch.matmul(e, y)
             else:
                 layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
+                print(sum(layer.weight.grad))
 
 
 def build_csv(features, classifiers, linear_dimension, input_depth=3):
