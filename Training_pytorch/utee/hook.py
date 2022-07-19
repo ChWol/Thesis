@@ -6,10 +6,6 @@ from utee import wage_quantizer
 
 
 def Neural_Sim(self, input, output):
-    if self.name == "FC0_":
-        print(input)
-        print("Output")
-        print(output)
     input_file_name = './layer_record/input' + str(self.name) + '.csv'
     weight_file_name = './layer_record/weight' + str(self.name) + '.csv'
     weightOld_file_name = './layer_record/weightOld' + str(self.name) + '.csv'
