@@ -77,6 +77,8 @@ public:
 	int XNORparallelMode, XNORsequentialMode, BNNparallelMode, BNNsequentialMode, conventionalParallel, conventionalSequential; 
 	int numRowPerSynapse, numColPerSynapse;
 	double AR, Rho, wireLengthRow, wireLengthCol, unitLengthWireResistance, wireResistanceRow, wireResistanceCol;
+
+	string rule;
 };
 
 #endif

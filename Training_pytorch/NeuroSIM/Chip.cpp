@@ -814,7 +814,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		// if this layer is followed by Max Pool
 		// ToDo: Check with print statements that this is not called
 		if (followedByMaxPool) {
-	        cout << "THIS IS A TEST" << endl;
 			maxPool->CalculateLatency(1e20, 0, ceil((double) (numInVector/(double) maxPool->window)/(double) desiredTileSizeCM));
 			maxPool->CalculatePower(ceil((double) (numInVector/maxPool->window)/(double) desiredTileSizeCM));
 			*readLatency += maxPool->readLatency;
@@ -841,6 +840,8 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		// each time, only a part of the ic is used to transfer data to a part of the tiles
 		globalBuffer->readLatency *= ceil(totalNumTile/(numTileEachLayer[0][l]*numTileEachLayer[1][l]));
 		globalBuffer->writeLatency *= ceil(totalNumTile/(numTileEachLayer[0][l]*numTileEachLayer[1][l]));
+
+		cout << "THIS IS A TEST: " << param->rule << endl;
 	
 	} else {   // novel Mapping
 		for (int i=0; i<ceil((double) netStructure[l][2]*(double) numRowPerSynapse/(double) desiredPESizeNM); i++) {       // # of tiles in row
@@ -949,7 +950,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		// if this layer is followed by Max Pool
 		// ToDo: Check this
 		if (followedByMaxPool) {
-		    cout << "THIS IS A TEST" << endl;
 			maxPool->CalculateLatency(1e20, 0, ceil((double) (numInVector/(double) maxPool->window)/(double) desiredPESizeNM*sqrt((double) numPENM)));
 			maxPool->CalculatePower(ceil((double) (numInVector/maxPool->window)/(double) desiredPESizeNM*sqrt((double) numPENM)));
 			*readLatency += maxPool->readLatency;

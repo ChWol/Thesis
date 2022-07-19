@@ -79,7 +79,7 @@ int main(int argc, char * argv[]) {
 	param->memcelltype = atoi(argv[10]);
 	param->levelOutput = atoi(argv[11]);
 	param->resistanceOff = 240e3*atoi(argv[12]);
-	string rule = argv[13];
+	param->rule = argv[13];
 
 	param->recalculate_Params(param->wireWidth, param->memcelltype, param->resistanceOff);
 
@@ -263,7 +263,8 @@ int main(int argc, char * argv[]) {
 	// What is the cell area?
 
 	// My addition
-	if (rule == "dfa") {
+	if (param->rule == "dfa") {
+	    cout << "THIS IS A TEST" << endl;
 	    // The 1 in the end needs to be updated
 	    dfaArea = ((max_layer_output*num_classes*param->synapseBit)/param->cellBit)*1;
 	    // chipArea += dfaArea;
