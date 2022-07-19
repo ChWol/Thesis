@@ -52,7 +52,6 @@ class MODEL(nn.Module):
                 a = torch.ones_like(a) - torch.square(tanh(a))
             elif layer.activation == 'sigmoid':
                 sigmoid = nn.Sigmoid()
-                # ToDo: Matmul needed?
                 a = sigmoid(a) * (torch.ones_like(a) - sigmoid(a))
             else:
                 a = torch.ones_like(a)
