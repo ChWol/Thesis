@@ -75,14 +75,6 @@ current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 wandb.init(project=args.dataset.upper(), config=args, entity='duke-tum')
 wandb.run.name = "{} ({}): {}".format(args.network, args.rule, wandb.run.id)
 
-delta_distribution = open("delta_dist.csv", 'ab')
-delta_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", "6_mean", "7_mean", "8_mean", "1_std",
-                             "2_std", "3_std", "4_std", "5_std", "6_std", "7_std", "8_std"]])
-np.savetxt(delta_distribution, delta_firstline, delimiter=",", fmt='%s')
-weight_distribution = open("weight_dist.csv", 'ab')
-weight_firstline = np.array([["1_mean", "2_mean", "3_mean", "4_mean", "5_mean", "6_mean", "7_mean", "8_mean", "1_std",
-                              "2_std", "3_std", "4_std", "5_std", "6_std", "7_std", "8_std"]])
-np.savetxt(weight_distribution, weight_firstline, delimiter=",", fmt='%s')
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
 args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs'])
 misc.logger.init(args.logdir, 'train_log_' + current_time)
@@ -243,30 +235,12 @@ try:
         if os.path.exists('./layer_record/trace_command.sh'):
             os.remove('./layer_record/trace_command.sh')
 
-        delta_std = np.array([])
-        delta_mean = np.array([])
-        w_std = np.array([])
-        w_mean = np.array([])
         oldWeight = {}
         k = 0
 
         for name, param in list(model.named_parameters()):
             oldWeight[k] = param.data + param.grad.data
             k = k + 1
-            delta_std = np.append(delta_std, (torch.std(param.grad.data)).cpu().data.numpy())
-            delta_mean = np.append(delta_mean, (torch.mean(param.grad.data)).cpu().data.numpy())
-            w_std = np.append(w_std, (torch.std(param.data)).cpu().data.numpy())
-            w_mean = np.append(w_mean, (torch.mean(param.data)).cpu().data.numpy())
-
-        delta_mean = np.append(delta_mean, delta_std, axis=0)
-        np.savetxt(delta_distribution, [delta_mean], delimiter=",", fmt='%f')
-        w_mean = np.append(w_mean, w_std, axis=0)
-        np.savetxt(weight_distribution, [w_mean], delimiter=",", fmt='%f')
-
-        print("weight distribution")
-        print(w_mean)
-        print("delta distribution")
-        print(delta_mean)
 
         h = 0
 
