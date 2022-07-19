@@ -53,7 +53,7 @@ class MODEL(nn.Module):
             elif layer.activation == 'sigmoid':
                 sigmoid = nn.Sigmoid()
                 # ToDo: Matmul needed?
-                a = torch.matmul(sigmoid(a), torch.ones_like(a) - sigmoid(a))
+                a = sigmoid(a) * (torch.ones_like(a) - sigmoid(a))
             else:
                 a = torch.ones_like(a)
             if i == len(self.classifier)-1:
