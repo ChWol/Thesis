@@ -79,7 +79,7 @@ int main(int argc, char * argv[]) {
 	param->memcelltype = atoi(argv[10]);
 	param->levelOutput = atoi(argv[11]);
 	param->resistanceOff = 240e3*atoi(argv[12]);
-	string rule = argv[13]
+	string rule = argv[13];
 
 	cout << "Test: " << rule << endl;
 
