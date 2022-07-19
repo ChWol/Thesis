@@ -79,7 +79,7 @@ public:
 	int numRowPerSynapse, numColPerSynapse;
 	double AR, Rho, wireLengthRow, wireLengthCol, unitLengthWireResistance, wireResistanceRow, wireResistanceCol;
 
-	string rule;
+	std::string rule;
 };
 
 #endif
