@@ -288,7 +288,7 @@ try:
                     hook.remove_hook_list(hook_handle_list)
 
             test_loss = test_loss / len(test_loader)
-            acc = float(correct) / len(test_loader.dataset)
+            acc = 1. * correct / len(test_loader.dataset)
             wandb.log({'Epoch': epoch + 1, 'Test Accuracy': acc, 'Test Loss': test_loss})
             logger('\tEpoch {} Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
                 epoch, test_loss, correct, len(test_loader.dataset), acc))
