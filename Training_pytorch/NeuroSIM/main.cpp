@@ -81,8 +81,6 @@ int main(int argc, char * argv[]) {
 	param->resistanceOff = 240e3*atoi(argv[12]);
 	string rule = argv[13];
 
-	cout << "Test: " << rule << endl;
-
 	param->recalculate_Params(param->wireWidth, param->memcelltype, param->resistanceOff);
 
 	if (param->cellBit > param->synapseBit) {
@@ -144,7 +142,6 @@ int main(int argc, char * argv[]) {
 	double maxPESizeNM, maxTileSizeCM, numPENM;
 	vector<int> markNM;
 	vector<int> pipelineSpeedUp;
-	// ToDo: Check these two
 	markNM = ChipDesignInitialize(inputParameter, tech, cell, false, netStructure, &maxPESizeNM, &maxTileSizeCM, &numPENM);
 	pipelineSpeedUp = ChipDesignInitialize(inputParameter, tech, cell, true, netStructure, &maxPESizeNM, &maxTileSizeCM, &numPENM);
 
@@ -157,22 +154,18 @@ int main(int argc, char * argv[]) {
 	vector<vector<double> > speedUpEachLayer;
 	vector<vector<double> > tileLocaEachLayer;
 
-    // ToDo: Check this
 	numTileEachLayer = ChipFloorPlan(true, false, false, netStructure, markNM,
 					maxPESizeNM, maxTileSizeCM, numPENM, pipelineSpeedUp,
 					&desiredNumTileNM, &desiredPESizeNM, &desiredNumTileCM, &desiredTileSizeCM, &desiredPESizeCM, &numTileRow, &numTileCol);
 
-    // ToDo: Check this
 	utilizationEachLayer = ChipFloorPlan(false, true, false, netStructure, markNM,
 					maxPESizeNM, maxTileSizeCM, numPENM, pipelineSpeedUp,
 					&desiredNumTileNM, &desiredPESizeNM, &desiredNumTileCM, &desiredTileSizeCM, &desiredPESizeCM, &numTileRow, &numTileCol);
 
-    // ToDo: Check this
 	speedUpEachLayer = ChipFloorPlan(false, false, true, netStructure, markNM,
 					maxPESizeNM, maxTileSizeCM, numPENM, pipelineSpeedUp,
 					&desiredNumTileNM, &desiredPESizeNM, &desiredNumTileCM, &desiredTileSizeCM, &desiredPESizeCM, &numTileRow, &numTileCol);
 
-    // ToDo: Check this
 	tileLocaEachLayer = ChipFloorPlan(false, false, false, netStructure, markNM,
 					maxPESizeNM, maxTileSizeCM, numPENM, pipelineSpeedUp,
 					&desiredNumTileNM, &desiredPESizeNM, &desiredNumTileCM, &desiredTileSizeCM, &desiredPESizeCM, &numTileRow, &numTileCol);
@@ -193,7 +186,8 @@ int main(int argc, char * argv[]) {
 	cout << endl;
 	cout << "----------------- # of tile used for each layer -----------------" <<  endl;
 	double totalNumTile = 0;
-	// ToDo: Do the same for additional matrix, multiply by tile area
+	// ToDo: Do the same for additional matrix, add to totalNumTile
+	// Do we really need an additional tile for this or is a single subArray enough?
 	for (int i=0; i<netStructure.size(); i++) {
 		cout << "layer" << i+1 << ": " << numTileEachLayer[0][i] * numTileEachLayer[1][i] << endl;
 		totalNumTile += numTileEachLayer[0][i] * numTileEachLayer[1][i];
@@ -207,13 +201,13 @@ int main(int argc, char * argv[]) {
 	cout << endl;
 
 	cout << "----------------- Utilization of each layer ------------------" <<  endl;
-	// ToDo: Check this
+	// ToDo: Add the memory here as well? Would influence the Utilization though
 	double realMappedMemory = 0;
 	for (int i=0; i<netStructure.size(); i++) {
 		cout << "layer" << i+1 << ": " << utilizationEachLayer[i][0] << endl;
 		realMappedMemory += numTileEachLayer[0][i] * numTileEachLayer[1][i] * utilizationEachLayer[i][0];
 	}
-	// ToDo: Check this calculation with additional mappedMemory and summed numTile
+
 	cout << "Memory Utilization of Whole Chip: " << realMappedMemory/totalNumTile*100 << " % " << endl;
 	cout << endl;
 	cout << "---------------------------- FloorPlan Done ------------------------------" <<  endl;
@@ -221,19 +215,23 @@ int main(int argc, char * argv[]) {
 	cout << endl;
 	cout << endl;
 
-    // ToDo: Check this
+    // ToDo: 2* for Multiply and Accumulate? This is done for every single entry of the weight matrices?
+    // Can stay the same as this is the forward computation
 	double numComputation = 0;
 	for (int i=0; i<netStructure.size(); i++) {
 		numComputation += 2*(netStructure[i][0] * netStructure[i][1] * netStructure[i][2] * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	}
-    // ToDo: Check this
+    // ToDo: Here the new estimation of computation is needed, estimated to have same computations as forward
+    // Maybe do forward estimation for dfa_matrix * netStructure.size(), based on the same assumption as above, but
+    // smaller matrix, because of num_classes dimensionality -> new dimensions for forwards + weight gradient
+    // Also: activation gradient not needed here as we have the same as last layer that gets subtracted here
+    // In that case the second line is not needed, the last line would be the same
 	if (param->trainingEstimation) {
 		numComputation *= 3;  // forward, computation of activation gradient, weight gradient
 		numComputation -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);  //L-1 does not need AG
 		numComputation *= param->batchSize * param->numIteration;  // count for one epoch
 	}
 
-    // ToDo: Check this
 	ChipInitialize(inputParameter, tech, cell, netStructure, markNM, numTileEachLayer,
 					numPENM, desiredNumTileNM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow, numTileCol, &numArrayWriteParallel);
 
@@ -244,7 +242,8 @@ int main(int argc, char * argv[]) {
 	double NMTilewidth = 0;
 	vector<double> chipAreaResults;
 
-    // Added by me :)
+    // ToDo: Calculating the matrix size
+    // My addition
     double dfaArea = 0;
 	double max_layer_output = 0;
 	double num_classes = netStructure[netStructure.size()-1][5];
@@ -255,13 +254,21 @@ int main(int argc, char * argv[]) {
 	}
 	// End of my addition
 
-    // ToDo: Check this, find corresponding breakdown
 	chipAreaResults = ChipCalculateArea(inputParameter, tech, cell, desiredNumTileNM, numPENM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow,
 					&chipHeight, &chipWidth, &CMTileheight, &CMTilewidth, &NMTileheight, &NMTilewidth);
 	chipArea = chipAreaResults[0];
-	// Added by me :)
-	// dfaArea = ((max_layer_output*num_classes*param->synapseBit)/param->cellBit)*___
-	// chipArea += dfaArea;
+	// ToDo: Add the area of the dfa matrix to the total chip area
+	// Is there any specific area breakdown this belongs to?
+	// Shouldn#t we assign a whole subArray or even Tile for this?
+	// What is the cell area?
+
+	// My addition
+	if (rule == "dfa") {
+	    // The 1 in the end needs to be updated
+	    dfaArea = ((max_layer_output*num_classes*param->synapseBit)/param->cellBit)*1;
+	    cout << "DFA Area: " << dfaArea << endl;
+	    // chipArea += dfaArea;
+	}
 	// End of my addition
 	chipAreaIC = chipAreaResults[1];
 	chipAreaADC = chipAreaResults[2];
@@ -343,8 +350,6 @@ int main(int argc, char * argv[]) {
 	cout << "-------------------------------------- Hardware Performance --------------------------------------" <<  endl;
 
 	if (! param->pipeline) {
-		// layer-by-layer process
-		// show the detailed hardware performance for each layer
 		ofstream layerfile;
             layerfile.open("Layer.csv", ios::out);
             layerfile << "# of Tiles, Speed-up, Utilization, Read Latency of Forward (ns), Read Dynamic Energy of Forward (pJ), Read Latency of Activation Gradient (ns), " <<
@@ -363,7 +368,6 @@ int main(int argc, char * argv[]) {
             param->activityRowWriteWG = atof(argv[4*i+17]);
             param->activityColWriteWG = atof(argv[4*i+17]);
 
-            // ToDo: Check this, this is a layerwise estimation, so maybe the same can be done for additional matrix
 			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[4*i+14], argv[4*i+16], argv[4*i+16], netStructure[i][6],
 						netStructure, markNM, numTileEachLayer, utilizationEachLayer, speedUpEachLayer, tileLocaEachLayer,
 						numPENM, desiredPESizeNM, desiredTileSizeCM, desiredPESizeCM, CMTileheight, CMTilewidth, NMTileheight, NMTilewidth, numArrayWriteParallel,
@@ -375,7 +379,6 @@ int main(int argc, char * argv[]) {
 
 			double numTileOtherLayer = 0;
 			double layerLeakageEnergy = 0;
-			// ToDo: Check this
 			for (int j=0; j<netStructure.size(); j++) {
 				if (j != i) {
 					numTileOtherLayer += numTileEachLayer[0][j] * numTileEachLayer[1][j];
@@ -467,7 +470,6 @@ int main(int argc, char * argv[]) {
 			cout << "************************ Breakdown of Latency and Dynamic Energy *************************" << endl;
 			cout << endl;
 
-            // ToDo: Check this, add the same for DFA Matrix layer?
 			chipReadLatency += layerReadLatency;
 			chipReadDynamicEnergy += layerReadDynamicEnergy;
 			chipReadLatencyAG += layerReadLatencyAG;
