@@ -20,14 +20,15 @@ import wandb
 from decimal import Decimal
 import matplotlib.pyplot as plt
 
-parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
+parser = argparse.ArgumentParser(description='Evaluation of Biologically-Plausible Learning Rules on Neuromorphic '
+                                             'Hardware Architectures')
 parser.add_argument('--dataset', default='mnist', help='dataset for training')
 parser.add_argument('--batch_size', type=int, default=100, help='input batch size for training')
 parser.add_argument('--epochs', type=int, default=50, help='number of epochs to train')
 parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
 parser.add_argument('--seed', type=int, default=117, help='random seed')
-parser.add_argument('--log_interval', type=int, default=100,
-                    help='how many batches to wait before logging training status')
+parser.add_argument('--log_interval', type=int, default=100, help='how many batches to wait before logging training '
+                                                                  'status')
 parser.add_argument('--test_interval', type=int, default=1, help='how many epochs to wait before another test')
 parser.add_argument('--logdir', default='log/default', help='folder to save to the log')
 parser.add_argument('--wl_activate', type=int, default=8)
@@ -43,8 +44,8 @@ parser.add_argument('--v', default=0)
 parser.add_argument('--detect', default=0)
 parser.add_argument('--target', default=0)
 parser.add_argument('--nonlinearityLTP', type=float, default=1.75, help='nonlinearity in LTP')
-parser.add_argument('--nonlinearityLTD', type=float, default=1.46,
-                    help='nonlinearity in LTD (negative if LTP and LTD are asymmetric)')
+parser.add_argument('--nonlinearityLTD', type=float, default=1.46, help='nonlinearity in LTD (negative if LTP and LTD '
+                                                                        'are asymmetric)')
 parser.add_argument('--d2dVari', type=float, default=0, help='device-to-device variation')
 parser.add_argument('--c2cVari', type=float, default=0.003, help='cycle-to-cycle variation')
 parser.add_argument('--network', default='two')
@@ -158,6 +159,7 @@ try:
 
             gradient_time = time.time()
             if args.rule == 'dfa':
+                # ToDo: Optimize this calculation with torch no grad
                 with torch.no_grad():
                     output = model(data)
                     error = wage_util.SSE(output, target)
@@ -170,7 +172,6 @@ try:
                 loss.backward()
             gradient_accumulated += time.time() - gradient_time
 
-            # introduce non-ideal property
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
                 velocity[j] = gamma * velocity[j] + alpha * param.grad.data
@@ -206,7 +207,7 @@ try:
                         wandb.log({"Gradient visualization of {}".format(name): [
                             wandb.Image(plt.imshow(gradients_np, cmap='viridis'), caption="Gradient")],
                             "Weight visualization of {}".format(name): [
-                                wandb.Image(plt.imshow(weights_np, cmap='viridis'), caption="Gradient")],
+                                wandb.Image(plt.imshow(weights_np, cmap='viridis'), caption="Weight")],
                             "Epoch": epoch + 1
                         })
                     wandb.log({"Weight avg of {}".format(name): torch.mean(param),
@@ -219,6 +220,7 @@ try:
 
         if args.scheduler == 1:
             scheduler.step()
+
         elapse_time = time.time() - t_begin
         speed_epoch = elapse_time / (epoch + 1)
         speed_batch = speed_epoch / len(train_loader)
@@ -255,7 +257,6 @@ try:
                 hook.write_matrix_weight((oldWeight[h]).cpu().data.numpy(), weight_file_name)
                 h = h + 1
 
-        # Run tests including hardware simulation
         accumulated_time += time.time() - split_time
         if epoch % args.test_interval == 0:
             model.eval()
@@ -281,12 +282,12 @@ try:
                     output = model(data)
                     test_loss_i = (0.5 * (wage_util.SSE(output, target) ** 2)).sum()
                     test_loss += test_loss_i.data
-                    pred = output.data.max(1)[1]  # get the index of the max log-probability
+                    pred = output.data.max(1)[1]
                     correct += pred.cpu().eq(indx_target).sum()
                 if i == 0:
                     hook.remove_hook_list(hook_handle_list)
 
-            test_loss = test_loss / len(test_loader)  # average over number of mini-batch
+            test_loss = test_loss / len(test_loader)
             acc = 100. * correct / len(test_loader.dataset)
             wandb.log({'Epoch': epoch + 1, 'Test Accuracy': acc, 'Test Loss': test_loss})
             logger('\tEpoch {} Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
