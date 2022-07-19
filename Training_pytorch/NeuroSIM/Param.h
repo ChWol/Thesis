@@ -38,6 +38,7 @@
 
 #ifndef PARAM_H_
 #define PARAM_H_
+#include <string>
 
 class Param {
 public:
