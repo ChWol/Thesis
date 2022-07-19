@@ -201,7 +201,6 @@ int main(int argc, char * argv[]) {
 	cout << endl;
 
 	cout << "----------------- Utilization of each layer ------------------" <<  endl;
-	// ToDo: Add the memory here as well? Would influence the Utilization though
 	double realMappedMemory = 0;
 	for (int i=0; i<netStructure.size(); i++) {
 		cout << "layer" << i+1 << ": " << utilizationEachLayer[i][0] << endl;
@@ -226,6 +225,7 @@ int main(int argc, char * argv[]) {
     // smaller matrix, because of num_classes dimensionality -> new dimensions for forwards + weight gradient
     // Also: activation gradient not needed here as we have the same as last layer that gets subtracted here
     // In that case the second line is not needed, the last line would be the same
+    // The resulting value can be compared to BP and the scaling factor applied to energy etc. (% of whole numComputation)
 	if (param->trainingEstimation) {
 		numComputation *= 3;  // forward, computation of activation gradient, weight gradient
 		numComputation -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);  //L-1 does not need AG
@@ -266,7 +266,6 @@ int main(int argc, char * argv[]) {
 	if (rule == "dfa") {
 	    // The 1 in the end needs to be updated
 	    dfaArea = ((max_layer_output*num_classes*param->synapseBit)/param->cellBit)*1;
-	    cout << "DFA Area: " << dfaArea << endl;
 	    // chipArea += dfaArea;
 	}
 	// End of my addition
