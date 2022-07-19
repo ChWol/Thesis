@@ -52,6 +52,7 @@ class MODEL(nn.Module):
                 a = torch.ones_like(a) - torch.square(tanh(a))
             elif layer.activation == 'sigmoid':
                 sigmoid = nn.Sigmoid()
+                # ToDo: Matmul needed?
                 a = torch.matmul(sigmoid(a), torch.ones_like(a) - sigmoid(a))
             else:
                 a = torch.ones_like(a)
@@ -283,8 +284,7 @@ def mnist(args, logger, num_classes, pretrained=None):
     if len(features) == 0:
         input = 784
     else:
-        #input = 4608
-        input = 784
+        input = 4608
 
     build_csv(features, classifiers, input, 1)
 
