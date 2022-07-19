@@ -96,6 +96,7 @@ vector<int> ChipDesignInitialize(InputParameter& inputParameter, Technology& tec
 	double numLayer, minCube;
 	
 	// get information of network structure
+	// ToDo: Check this
 	numLayer = netStructure.size();
 	
 	*maxPESizeNM = 0;
@@ -139,6 +140,7 @@ vector<int> ChipDesignInitialize(InputParameter& inputParameter, Technology& tec
 		}
 	} else {
 		// all layers use conventional mapping
+		// ToDo: Check this
 		for (int i=0; i<numLayer; i++) {
 			markNM.push_back(0);
 			minCube = pow(2, ceil((double) log2((double) netStructure[i][5]*(double) numColPerSynapse) ) );
@@ -307,6 +309,7 @@ vector<vector<double> > ChipFloorPlan(bool findNumTile, bool findUtilization, bo
 			/*** SubArray Duplication ***/
 			subArrayDup = SubArrayDup((*desiredPESizeCM), 0, markNM, netStructure, numRowPerSynapse, numColPerSynapse);
 			/*** Design SubArray ***/
+			// ToDo: Check this
 			numTileEachLayer = OverallEachLayer(false, false, peDup, subArrayDup, pipelineSpeedUp, (*desiredTileSizeCM), 0, markNM, netStructure, numRowPerSynapse, numColPerSynapse, numPENM);
 			utilizationEachLayer = OverallEachLayer(true, false, peDup, subArrayDup, pipelineSpeedUp, (*desiredTileSizeCM), 0, markNM, netStructure, numRowPerSynapse, numColPerSynapse, numPENM);
 			speedUpEachLayer = OverallEachLayer(false, true, peDup, subArrayDup, pipelineSpeedUp, (*desiredTileSizeCM), 0, markNM, netStructure, numRowPerSynapse, numColPerSynapse, numPENM);
@@ -317,6 +320,7 @@ vector<vector<double> > ChipFloorPlan(bool findNumTile, bool findUtilization, bo
 		// update # of tile for pipeline system design
 		*desiredNumTileCM = 0;
 		*desiredNumTileNM = 0;
+		// ToDo: Check this
 		for (int i=0; i<netStructure.size(); i++) {
 			if (markNM[i] == 0) {
 				*desiredNumTileCM = (*desiredNumTileCM) + numTileEachLayer[0][i]*numTileEachLayer[1][i];
@@ -333,6 +337,7 @@ vector<vector<double> > ChipFloorPlan(bool findNumTile, bool findUtilization, bo
 	vector<double> tileLocaEachLayerRow;
 	vector<double> tileLocaEachLayerCol;
 	double thisTileTotal=0;
+	// ToDo: Check this
 	for (int i=0; i<netStructure.size(); i++) {
 		if (i==0) {
 			tileLocaEachLayerRow.push_back(0);
@@ -374,7 +379,7 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 	// find max # tiles needed to be added at the same time
 	double maxTileAdded = 0;
 	int maxIFMLayer = 0;
-	
+	// ToDo: Check this
 	for (int i=0; i<netStructure.size(); i++) {
 		double input = netStructure[i][0]*netStructure[i][1]*netStructure[i][2];  // IFM_Row * IFM_Column * IFM_depth
 		if (! param->pipeline) {
@@ -414,6 +419,7 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 	*numArrayWriteParallel = floor(bufferOverHead/((param->numRowSubArray*param->numColSubArray)*param->synapseBit));
 	
 	dRAM->Initialize(param->dramType);
+	// ToDo: Check this
 	if (param->trainingEstimation) {
 		int numMemInRow = (netStructure[maxIFMLayer][0]-netStructure[maxIFMLayer][3]+1)*(netStructure[maxIFMLayer][1]-netStructure[maxIFMLayer][4]+1);
 		int numMemInCol = netStructure[maxIFMLayer][2]*param->numBitInput;
@@ -441,7 +447,8 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 	numBufferCore = ceil(bufferSize/(param->globalBufferCoreSizeRow*param->globalBufferCoreSizeCol));
 	//numBufferCore = ceil(1.5*numBufferCore);
 	globalBuffer->Initialize((param->globalBufferCoreSizeRow*param->globalBufferCoreSizeCol), param->globalBufferCoreSizeCol, 1, param->unitLengthWireResistance, param->clkFreq, param->globalBufferType);
-	
+
+	// ToDo: Check this
 	maxPool->Initialize(param->numBitInput, 2*2, (desiredTileSizeCM));
 	GhTree->Initialize((numTileRow), (numTileCol), param->globalBusDelayTolerance, globalBusWidth);
 	
@@ -557,7 +564,8 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 		*NMTileheight = NMheight;
 		*NMTilewidth = NMwidth;
 	}
-	
+
+	// ToDo: Check this
 	areaCMTile = TileCalculateArea(pow(ceil((double) desiredTileSizeCM/(double) desiredPESizeCM), 2), desiredPESizeCM, false, &CMheight, &CMwidth);
 	
 	double CMTileArea = areaCMTile[0];
@@ -582,6 +590,7 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 	double globalBufferHeight = numTileRow*max(NMheight, CMheight);
 	double globalBufferWidth = globalBufferArea/globalBufferHeight;
 	GhTree->CalculateArea(max(NMheight, CMheight), max(NMwidth, CMwidth), param->treeFoldedRatio);
+	// ToDo: Check this
 	maxPool->CalculateUnitArea(NONE);
 	maxPool->CalculateArea(globalBufferWidth);
 	Gaccumulation->CalculateArea(NULL, globalBufferHeight/3, NONE);
@@ -602,7 +611,8 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 			areaGsigmoid += Gsigmoid->area;
 		}
 	}
-	
+
+	// ToDo: Check this
 	if (param->trainingEstimation) {
 		weightGradientUnit->CalculateArea();
 		gradientAccum->CalculateArea(globalBufferHeight, NULL, NONE);
@@ -645,6 +655,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 	// only get performance of single layer
 	int l = layerNumber;
 	// get weight matrix file Size
+	// ToDo: Check this
 	int weightMatrixRow = netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*numRowPerSynapse;
 	int weightMatrixCol = netStructure[l][5]*numColPerSynapse;
 
@@ -698,11 +709,13 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 	
 	int numInVector = (netStructure[l][0]-netStructure[l][3]+1)/netStructure[l][7]*(netStructure[l][1]-netStructure[l][4]+1)/netStructure[l][7];
 	int totalNumTile = 0;
+	// ToDo: Check this
 	for (int i=0; i<netStructure.size(); i++) {
 		totalNumTile += numTileEachLayer[0][i] * numTileEachLayer[1][i];
 	}
 	
 	if (markNM[l] == 0) {   // conventional mapping
+	// ToDo: Check this
 		for (int i=0; i<ceil((double) netStructure[l][2]*(double) netStructure[l][3]*(double) netStructure[l][4]*(double) numRowPerSynapse/desiredTileSizeCM); i++) {       // # of tiles in row
 			for (int j=0; j<ceil((double) netStructure[l][5]*(double) numColPerSynapse/(double) desiredTileSizeCM); j++) {   // # of tiles in Column
 				int numRowMatrix = min(desiredTileSizeCM, weightMatrixRow-i*desiredTileSizeCM);
@@ -716,7 +729,8 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 				
 				vector<vector<double> > tileInput;
 				tileInput = CopyInput(inputVector, i*desiredTileSizeCM, numInVector*param->numBitInput, numRowMatrix);
-				
+
+				// ToDo: Check this
 				TileCalculatePerformance(tileMemory, tileMemoryOld, tileInput, markNM[l], layerNumber, ceil((double)desiredTileSizeCM/(double)desiredPESizeCM), desiredPESizeCM, speedUpEachLayer[0][l], speedUpEachLayer[1][l],
 									numRowMatrix, numColMatrix, numInVector*param->numBitInput, tech, cell, &tileReadLatency, &tileReadDynamicEnergy, &tileLeakage,
 									&tileReadLatencyAG, &tileReadDynamicEnergyAG, &tileWriteLatencyWU, &tileWriteDynamicEnergyWU,
@@ -729,6 +743,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 				*readDynamicEnergy += tileReadDynamicEnergy;
 				*readLatencyPeakFW = MAX(tileReadLatencyPeakFW, (*readLatencyPeakFW));
 				*readDynamicEnergyPeakFW += tileReadDynamicEnergyPeakFW;
+				// ToDo: Check this
 				if (param->trainingEstimation) {
 					*readLatencyAG = MAX(tileReadLatencyAG, (*readLatencyAG));
 					*readDynamicEnergyAG += tileReadDynamicEnergyAG;
@@ -787,6 +802,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 			*readDynamicEnergy += Gaccumulation->readDynamicEnergy;
 			*readLatencyPeakFW += Gaccumulation->readLatency;
 			*readDynamicEnergyPeakFW += Gaccumulation->readDynamicEnergy;
+			// ToDo: Check this
 			if ((param->trainingEstimation) && (layerNumber!=0)) {
 				*readLatencyAG += Gaccumulation->readLatency;
 				*readDynamicEnergyAG += Gaccumulation->readDynamicEnergy;
@@ -798,6 +814,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		}
 		
 		// if this layer is followed by Max Pool
+		// ToDo: Check this
 		if (followedByMaxPool) {
 			maxPool->CalculateLatency(1e20, 0, ceil((double) (numInVector/(double) maxPool->window)/(double) desiredTileSizeCM));
 			maxPool->CalculatePower(ceil((double) (numInVector/maxPool->window)/(double) desiredTileSizeCM));
@@ -859,6 +876,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 				*readDynamicEnergy += tileReadDynamicEnergy;
 				*readLatencyPeakFW = MAX(tileReadLatencyPeakFW, (*readLatencyPeakFW));
 				*readDynamicEnergyPeakFW += tileReadDynamicEnergyPeakFW;
+				// ToDo: Check this
 				if (param->trainingEstimation) {
 					*readLatencyAG = MAX(tileReadLatencyAG, (*readLatencyAG));
 					*readDynamicEnergyAG += tileReadDynamicEnergyAG;
@@ -918,6 +936,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 			*readDynamicEnergy += Gaccumulation->readDynamicEnergy;
 			*readLatencyPeakFW += Gaccumulation->readLatency;
 			*readDynamicEnergyPeakFW += Gaccumulation->readDynamicEnergy;
+			// ToDo: Check this
 			if ((param->trainingEstimation) && (layerNumber!=0)) {
 				*readLatencyAG += Gaccumulation->readLatency;
 				*readDynamicEnergyAG += Gaccumulation->readDynamicEnergy;
@@ -929,6 +948,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		}
 		
 		// if this layer is followed by Max Pool
+		// ToDo: Check this
 		if (followedByMaxPool) {
 			maxPool->CalculateLatency(1e20, 0, ceil((double) (numInVector/(double) maxPool->window)/(double) desiredPESizeNM*sqrt((double) numPENM)));
 			maxPool->CalculatePower(ceil((double) (numInVector/maxPool->window)/(double) desiredPESizeNM*sqrt((double) numPENM)));
@@ -958,7 +978,8 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		globalBuffer->readLatency *= ceil(totalNumTile/(numTileEachLayer[0][l]*numTileEachLayer[1][l]));
 		globalBuffer->writeLatency *= ceil(totalNumTile/(numTileEachLayer[0][l]*numTileEachLayer[1][l]));
 	}
-	
+
+	// ToDo: Check this
 	// training: FW(up and down)->2; AG(up and down)->2; WG(up and down)->2
 	*bufferLatency += (globalBuffer->readLatency + globalBuffer->writeLatency)*((param->trainingEstimation)==true? ((layerNumber!=0)==true? 6:4):1);
 	*bufferDynamicEnergy += (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy)*((param->trainingEstimation)==true? ((layerNumber!=0)==true? 6:4):1);
@@ -986,7 +1007,8 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 	*readDynamicEnergy += (dRAM->readDynamicEnergy)*((param->trainingEstimation)==true? 0:1);
 	*dramLatency = (dRAM->readLatency*((param->trainingEstimation)==true? 0:1)); 
 	*dramDynamicEnergy = (dRAM->readDynamicEnergy*((param->trainingEstimation)==true? 0:1));
-	
+
+	// ToDo: Check this
 	if (param->trainingEstimation) {
 		// Dring on-chip training, the activation and gradient of activation of each layer will be sent to DRAM
 		// After all the image in the batch is done with the gradient of activation, the activation and gradient of activation will be sent back to the chip, to get the gradient of weight
@@ -1153,6 +1175,7 @@ vector<double> TileDesignCM(double tileSize, const vector<int > &markNM, const v
 	double numTileTotal = 0;
 	double matrixTotalCM = 0;
 	double utilization = 0;
+	// ToDo: Check this
 	for (int i=0; i<netStructure.size(); i++) {
 		if (markNM[i] == 0) {
 			numTileTotal += ceil((double) netStructure[i][2]*(double) netStructure[i][3]*(double) netStructure[i][4]*(double) numRowPerSynapse/(double) tileSize) * ceil(netStructure[i][5]*numColPerSynapse/tileSize);
@@ -1193,6 +1216,7 @@ vector<vector<double> > PEDesign(bool Design, double peSize, double desiredTileS
 	double utilization = 0;
 	vector<double> peDupRow;
 	vector<double> peDupCol;
+	// ToDo: Check this
 	for (int i=0; i<netStructure.size(); i++) {
 		int actualDupRow = 0;
 		int actualDupCol = 0;
@@ -1246,7 +1270,8 @@ vector<vector<double> > PEDesign(bool Design, double peSize, double desiredTileS
 vector<vector<double> > SubArrayDup(double desiredPESizeCM, double desiredPESizeNM, const vector<int > &markNM, const vector<vector<double> > &netStructure, int numRowPerSynapse, int numColPerSynapse) {
 	vector<double> subArrayDupRow;
 	vector<double> subArrayDupCol;
-	
+
+	// ToDo: Check this
 	for (int i=0; i<netStructure.size(); i++) {
 		int actualDupRow = 0;
 		int actualDupCol = 0;
@@ -1294,7 +1319,8 @@ vector<vector<double> > OverallEachLayer(bool utilization, bool speedUp, const v
 	vector<vector<double> > utilizationEachLayer;	
 	vector<double> speedUpEachLayerRow;
 	vector<double> speedUpEachLayerCol;
-	
+
+	// ToDo: Check this
 	for (int i=0; i<netStructure.size(); i++) {
 		vector<double> utilization;
 		double numtileEachLayerRow, numtileEachLayerCol, utilizationEach;
