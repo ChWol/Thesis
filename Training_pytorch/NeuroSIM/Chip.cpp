@@ -307,7 +307,6 @@ vector<vector<double> > ChipFloorPlan(bool findNumTile, bool findUtilization, bo
 			/*** SubArray Duplication ***/
 			subArrayDup = SubArrayDup((*desiredPESizeCM), 0, markNM, netStructure, numRowPerSynapse, numColPerSynapse);
 			/*** Design SubArray ***/
-			// ToDo: Check this
 			numTileEachLayer = OverallEachLayer(false, false, peDup, subArrayDup, pipelineSpeedUp, (*desiredTileSizeCM), 0, markNM, netStructure, numRowPerSynapse, numColPerSynapse, numPENM);
 			utilizationEachLayer = OverallEachLayer(true, false, peDup, subArrayDup, pipelineSpeedUp, (*desiredTileSizeCM), 0, markNM, netStructure, numRowPerSynapse, numColPerSynapse, numPENM);
 			speedUpEachLayer = OverallEachLayer(false, true, peDup, subArrayDup, pipelineSpeedUp, (*desiredTileSizeCM), 0, markNM, netStructure, numRowPerSynapse, numColPerSynapse, numPENM);
@@ -318,7 +317,6 @@ vector<vector<double> > ChipFloorPlan(bool findNumTile, bool findUtilization, bo
 		// update # of tile for pipeline system design
 		*desiredNumTileCM = 0;
 		*desiredNumTileNM = 0;
-		// ToDo: Check this
 		for (int i=0; i<netStructure.size(); i++) {
 			if (markNM[i] == 0) {
 				*desiredNumTileCM = (*desiredNumTileCM) + numTileEachLayer[0][i]*numTileEachLayer[1][i];
@@ -606,8 +604,6 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 		}
 	}
 
-    // ToDo: No area for the activation gradients?
-    // Are they computed in memory and thus not stored / demanding additional area?
 	if (param->trainingEstimation) {
 		weightGradientUnit->CalculateArea();
 		gradientAccum->CalculateArea(globalBufferHeight, NULL, NONE);
@@ -800,7 +796,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 
             // ToDo: In case we don't need the AG values, there should be no addition here as well
             // Layer 0 is excluded here too, so this might confirm the idea of not needing AG values
-            // Actually we still might need them, thinking about this... Compare DFA paper update rule
+            // Actually we still might need them, thinking about this... Compare DFA paper update rule, where last layer is some special case directly using the error
 			if ((param->trainingEstimation) && (layerNumber!=0)) {
 				*readLatencyAG += Gaccumulation->readLatency;
 				*readDynamicEnergyAG += Gaccumulation->readDynamicEnergy;
@@ -813,7 +809,9 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		
 		// if this layer is followed by Max Pool
 		// ToDo: Check with print statements that this is not called
+		cout << "Right before" << endl;
 		if (followedByMaxPool) {
+		cout << "This should not be printed" << endl;
 			maxPool->CalculateLatency(1e20, 0, ceil((double) (numInVector/(double) maxPool->window)/(double) desiredTileSizeCM));
 			maxPool->CalculatePower(ceil((double) (numInVector/maxPool->window)/(double) desiredTileSizeCM));
 			*readLatency += maxPool->readLatency;
@@ -874,7 +872,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 				*readDynamicEnergy += tileReadDynamicEnergy;
 				*readLatencyPeakFW = MAX(tileReadLatencyPeakFW, (*readLatencyPeakFW));
 				*readDynamicEnergyPeakFW += tileReadDynamicEnergyPeakFW;
-				// ToDo: Check this
+				// ToDo: Check this for need of AG
 				if (param->trainingEstimation) {
 					*readLatencyAG = MAX(tileReadLatencyAG, (*readLatencyAG));
 					*readDynamicEnergyAG += tileReadDynamicEnergyAG;
@@ -934,7 +932,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 			*readDynamicEnergy += Gaccumulation->readDynamicEnergy;
 			*readLatencyPeakFW += Gaccumulation->readLatency;
 			*readDynamicEnergyPeakFW += Gaccumulation->readDynamicEnergy;
-			// ToDo: Check this
+			// ToDo: Check this as well
 			if ((param->trainingEstimation) && (layerNumber!=0)) {
 				*readLatencyAG += Gaccumulation->readLatency;
 				*readDynamicEnergyAG += Gaccumulation->readDynamicEnergy;
@@ -947,8 +945,10 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		
 		// if this layer is followed by Max Pool
 		// ToDo: Check this
+		cout << "Right before" << endl;
 		if (followedByMaxPool) {
-			maxPool->CalculateLatency(1e20, 0, ceil((double) (numInVector/(double) maxPool->window)/(double) desiredPESizeNM*sqrt((double) numPENM)));
+		cout << "This should not be printed" << endl;
+ 			maxPool->CalculateLatency(1e20, 0, ceil((double) (numInVector/(double) maxPool->window)/(double) desiredPESizeNM*sqrt((double) numPENM)));
 			maxPool->CalculatePower(ceil((double) (numInVector/maxPool->window)/(double) desiredPESizeNM*sqrt((double) numPENM)));
 			*readLatency += maxPool->readLatency;
 			*readDynamicEnergy += maxPool->readDynamicEnergy;
@@ -979,7 +979,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 
 	// ToDo: Again the question here is whether we need AG here
 	// Is there anything about transferring the data from the last layer to the ones before that we can dismiss now?
-	// Do we need the same buffered values?
+
 	// training: FW(up and down)->2; AG(up and down)->2; WG(up and down)->2
 	*bufferLatency += (globalBuffer->readLatency + globalBuffer->writeLatency)*((param->trainingEstimation)==true? ((layerNumber!=0)==true? 6:4):1);
 	*bufferDynamicEnergy += (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy)*((param->trainingEstimation)==true? ((layerNumber!=0)==true? 6:4):1);

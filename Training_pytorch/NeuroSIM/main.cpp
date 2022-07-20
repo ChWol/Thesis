@@ -242,7 +242,6 @@ int main(int argc, char * argv[]) {
 	double NMTilewidth = 0;
 	vector<double> chipAreaResults;
 
-    // ToDo: Calculating the matrix size
     // My addition
     double dfaArea = 0;
 	double max_layer_output = 0;
@@ -258,13 +257,12 @@ int main(int argc, char * argv[]) {
 					&chipHeight, &chipWidth, &CMTileheight, &CMTilewidth, &NMTileheight, &NMTilewidth);
 	chipArea = chipAreaResults[0];
 	// ToDo: Add the area of the dfa matrix to the total chip area
-	// Is there any specific area breakdown this belongs to?
 	// Shouldn#t we assign a whole subArray or even Tile for this?
 	// What is the cell area?
 
 	// My addition
 	if (param->rule == "dfa") {
-	    // The 1 in the end needs to be updated
+	    // ToDo: The 1 in the end needs to be updated
 	    dfaArea = ((max_layer_output*num_classes*param->synapseBit)/param->cellBit)*1;
 	    // chipArea += dfaArea;
 	}
