@@ -226,11 +226,25 @@ int main(int argc, char * argv[]) {
     // Also: activation gradient not needed here as we have the same as last layer that gets subtracted here
     // In that case the second line is not needed, the last line would be the same
     // The resulting value can be compared to BP and the scaling factor applied to energy etc. (% of whole numComputation)
-	if (param->trainingEstimation) {
+	if (param->trainingEstimation && param->rule == "bp") {
 		numComputation *= 3;  // forward, computation of activation gradient, weight gradient
 		numComputation -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);  //L-1 does not need AG
 		numComputation *= param->batchSize * param->numIteration;  // count for one epoch
 	}
+	// My addition
+	cout << "Test" << endl;
+	cout << "Before: " << numComputation << endl;
+	if (param->trainingEstimation && param->rule == "dfa") {
+	    double numComputation_DFA = 0;
+	    for (int i=0; i<netStructure.size(); i++) {
+		    numComputation_DFA += 2*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
+	    }
+	    numComputation += numComputation_DFA; // for DFA calculation instead of saying #bp = #forward, activation gradient dismissed
+	    cout << "DFA: " << numComputation_DFA << endl;
+	    cout << "After: " << numComputation << endl;
+	}
+
+
 
 	ChipInitialize(inputParameter, tech, cell, netStructure, markNM, numTileEachLayer,
 					numPENM, desiredNumTileNM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow, numTileCol, &numArrayWriteParallel);
