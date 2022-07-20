@@ -271,12 +271,14 @@ int main(int argc, char * argv[]) {
 	// What is the cell area?
 
 	// My addition
+	/*
 	if (param->rule == "dfa") {
 	    // ToDo: The 1 in the end needs to be updated
 	    double dfaArea = 0;
 	    dfaArea = ((max_layer_output*num_classes*param->synapseBit)/param->cellBit)*1;
 	    // chipArea += dfaArea;
 	}
+	*/
 	// End of my addition
 
 	chipAreaIC = chipAreaResults[1];
