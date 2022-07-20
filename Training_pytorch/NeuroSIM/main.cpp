@@ -264,7 +264,6 @@ int main(int argc, char * argv[]) {
 
 	// My addition
 	if (param->rule == "dfa") {
-	    cout << "THIS IS A TEST" << endl;
 	    // The 1 in the end needs to be updated
 	    dfaArea = ((max_layer_output*num_classes*param->synapseBit)/param->cellBit)*1;
 	    // chipArea += dfaArea;
@@ -389,7 +388,6 @@ int main(int argc, char * argv[]) {
             layerfile << numTileEachLayer[0][i] * numTileEachLayer[1][i] << ", ";
             layerfile << speedUpEachLayer[0][i] * speedUpEachLayer[1][i] << ", ";
             layerfile << utilizationEachLayer[i][0] << ", ";
-            cout << "After layerfile" << endl;
 			cout << "layer" << i+1 << "'s readLatency of Forward is: " << layerReadLatency*1e9 << "ns" << endl;
 			layerfile << layerReadLatency*1e9 << ",";
 			cout << "layer" << i+1 << "'s readDynamicEnergy of Forward is: " << layerReadDynamicEnergy*1e12 << "pJ" << endl;

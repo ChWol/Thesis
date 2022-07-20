@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 parser = argparse.ArgumentParser(description='Evaluation of Biologically-Plausible Learning Rules on Neuromorphic '
                                              'Hardware Architectures')
 parser.add_argument('--dataset', default='mnist', help='dataset for training')
-parser.add_argument('--batch_size', type=int, default=100, help='input batch size for training')
+parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training')
 parser.add_argument('--epochs', type=int, default=50, help='number of epochs to train')
 parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
 parser.add_argument('--seed', type=int, default=117, help='random seed')

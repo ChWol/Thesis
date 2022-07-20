@@ -493,9 +493,8 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 				*coreLatencyOther /= (speedUpRow*speedUpCol);
 				*bufferLatency /= (speedUpRow*speedUpCol);
 				*icLatency /= (speedUpRow*speedUpCol);
-				
-				// whether go through accumulation?
-				// ToDo: Check this
+
+				// ToDo: Agg values needed?
 				if (ceil((double)weightMatrixRow/(double)peSize) > 1) {
 					accumulationCM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), ceil((double)weightMatrixRow/(double)peSize), 0);
 					accumulationCM->CalculatePower((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), ceil((double)weightMatrixRow/(double)peSize));
@@ -570,7 +569,8 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 					*coreEnergyOther += peEnergyOther;
 				}
 			}
-			// ToDo: Check this
+
+            // ToDo: AG values needed?
 			accumulationCM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), numPE, 0);
 			accumulationCM->CalculatePower((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), numPE);
 			*readLatency += accumulationCM->readLatency;
@@ -649,7 +649,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 		*bufferDynamicEnergy += inputBufferCM->readDynamicEnergy + outputBufferCM->readDynamicEnergy + inputBufferCM->writeDynamicEnergy + outputBufferCM->writeDynamicEnergy;
 		*icDynamicEnergy += hTreeCM->readDynamicEnergy;
 
-		// ToDo: Check this
+		// ToDo: AG values needed?
 		if (param->trainingEstimation) {
 			*readLatencyAG += (inputBufferCM->readLatency + inputBufferCM->writeLatency)*((layerNumber!=0)==true? 1:0);
 			*readDynamicEnergyAG += (inputBufferCM->readDynamicEnergy + inputBufferCM->writeDynamicEnergy)*((layerNumber!=0)==true? 1:0);
@@ -741,7 +741,6 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 		
 		*writeDynamicEnergyWU *= (speedUpRow*speedUpCol);
 
-// ToDo: Check this
 		accumulationNM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), numPE, 0);
 		accumulationNM->CalculatePower((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), numPE);
 		*readLatency += accumulationNM->readLatency;
@@ -821,7 +820,6 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 		*bufferDynamicEnergy += inputBufferNM->readDynamicEnergy + outputBufferNM->readDynamicEnergy + inputBufferNM->writeDynamicEnergy + outputBufferNM->writeDynamicEnergy;
 		*icDynamicEnergy += hTreeNM->readDynamicEnergy;
 
-        // ToDo: Check this
 		if (param->trainingEstimation) {
 			*readLatencyAG += (inputBufferNM->readLatency + inputBufferNM->writeLatency)*((layerNumber!=0)==true? 1:0);
 			*readDynamicEnergyAG += (inputBufferNM->readDynamicEnergy + inputBufferNM->writeDynamicEnergy)*((layerNumber!=0)==true? 1:0);
