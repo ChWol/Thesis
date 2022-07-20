@@ -231,10 +231,18 @@ int main(int argc, char * argv[]) {
 		numComputation -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);  //L-1 does not need AG
 		numComputation *= param->batchSize * param->numIteration;  // count for one epoch
 	}
+
 	// My addition
 	cout << "Test" << endl;
 	cout << "Before: " << numComputation << endl;
 	if (param->trainingEstimation && param->rule == "dfa") {
+	    double max_layer_output = 0;
+	    double num_classes = netStructure[netStructure.size()-1][5];
+	    for (int i=0; i<netStructure.size(); i++) {
+	        if (netStructure[i][5] > max_layer_output) {
+	            max_layer_output = netStructure[i][5];
+	        }
+	    }
 	    double numComputation_DFA = 0;
 	    for (int i=0; i<netStructure.size(); i++) {
 		    numComputation_DFA += 2*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
@@ -243,8 +251,7 @@ int main(int argc, char * argv[]) {
 	    cout << "DFA: " << numComputation_DFA << endl;
 	    cout << "After: " << numComputation << endl;
 	}
-
-
+	// End of my addition
 
 	ChipInitialize(inputParameter, tech, cell, netStructure, markNM, numTileEachLayer,
 					numPENM, desiredNumTileNM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow, numTileCol, &numArrayWriteParallel);
@@ -256,31 +263,22 @@ int main(int argc, char * argv[]) {
 	double NMTilewidth = 0;
 	vector<double> chipAreaResults;
 
-    // My addition
-    double dfaArea = 0;
-	double max_layer_output = 0;
-	double num_classes = netStructure[netStructure.size()-1][5];
-	for (int i=0; i<netStructure.size(); i++) {
-	    if (netStructure[i][5] > max_layer_output) {
-	        max_layer_output = netStructure[i][5];
-	    }
-	}
-	// End of my addition
-
 	chipAreaResults = ChipCalculateArea(inputParameter, tech, cell, desiredNumTileNM, numPENM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow,
 					&chipHeight, &chipWidth, &CMTileheight, &CMTilewidth, &NMTileheight, &NMTilewidth);
 	chipArea = chipAreaResults[0];
 	// ToDo: Add the area of the dfa matrix to the total chip area
-	// Shouldn#t we assign a whole subArray or even Tile for this?
+	// Shouldn't we assign a whole subArray or even Tile for this?
 	// What is the cell area?
 
 	// My addition
 	if (param->rule == "dfa") {
 	    // ToDo: The 1 in the end needs to be updated
+	    double dfaArea = 0;
 	    dfaArea = ((max_layer_output*num_classes*param->synapseBit)/param->cellBit)*1;
 	    // chipArea += dfaArea;
 	}
 	// End of my addition
+
 	chipAreaIC = chipAreaResults[1];
 	chipAreaADC = chipAreaResults[2];
 	chipAreaAccum = chipAreaResults[3];
