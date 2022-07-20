@@ -316,7 +316,8 @@ vector<double> TileCalculateArea(double numPE, double peSize, bool NMTile, doubl
 		inputBufferCM->area *= numInBufferCore;
 		outputBufferCM->area *= numOutBufferCore;												  
 		hTreeCM->CalculateArea(PEheight, PEwidth, 16);
-		
+
+		// ToDo: Maybe just add another PE for the matrix?
 		area += PEarea*numPE + accumulationCM->area + inputBufferCM->area + outputBufferCM->area + hTreeCM->area;
 		
 		*height = sqrt(area);

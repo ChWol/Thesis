@@ -566,8 +566,8 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 	double CMTileAreaOther = areaCMTile[4];
 	double CMTileAreaArray = areaCMTile[5];
 
-	// ToDo: Here the desiredNumTileCM is important to be updated according to the additional matrix
-	// Maybe we only need an addition Processing Element or only an additional SubArray?
+	// ToDo: Here the desiredNumTileCM is important to be updated according to the additional matrix?
+	// Maybe we only need an additional Processing Element or only an additional SubArray?
 	area += CMTileArea*desiredNumTileCM;
 	areaIC += CMTileAreaIC*desiredNumTileCM;
 	areaADC += CMTileAreaADC*desiredNumTileCM;
@@ -611,15 +611,16 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 		areaWG = weightGradientUnit->area + gradientAccum->area;
 	}
 
-	// ToDo: No maxpool needed?
+	// ToDo: No maxpool needed? Add area of DFA matrix here and then down there as well?
 	area += globalBufferArea + GhTree->area + maxPool->area + Gaccumulation->area;
 	areaIC += GhTree->area;
 	areaResults.push_back(area);
 	areaResults.push_back(areaIC);
 	areaResults.push_back(areaADC);
 	areaResults.push_back(areaAccum + Gaccumulation->area);
-	// ToDo: No maxpool here as well? But we're storing relu and sigmoid as well even though we only need one of them
+	// ToDo: No maxpool here as well? But we're storing relu and sigmoid as well even though we only need one of them, add DFA here as well?
 	areaResults.push_back(areaOther + globalBufferArea + maxPool->area + areaGreLu + areaGsigmoid);
+	// ToDo: Or maybe add it here, as it is part of the weight gradient calculation?
 	areaResults.push_back(areaWG);
 	areaResults.push_back(areaArray);
 	
@@ -806,12 +807,8 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 			*coreLatencyAccum += Gaccumulation->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 			*coreEnergyAccum += Gaccumulation->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 		}
-		
-		// if this layer is followed by Max Pool
-		// ToDo: Check with print statements that this is not called
-		cout << "Right before" << endl;
+
 		if (followedByMaxPool) {
-		cout << "This should not be printed" << endl;
 			maxPool->CalculateLatency(1e20, 0, ceil((double) (numInVector/(double) maxPool->window)/(double) desiredTileSizeCM));
 			maxPool->CalculatePower(ceil((double) (numInVector/maxPool->window)/(double) desiredTileSizeCM));
 			*readLatency += maxPool->readLatency;
@@ -943,12 +940,8 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 			*coreEnergyAccum += Gaccumulation->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 		}
 		
-		// if this layer is followed by Max Pool
-		// ToDo: Check this
-		cout << "Right before" << endl;
 		if (followedByMaxPool) {
-		cout << "This should not be printed" << endl;
- 			maxPool->CalculateLatency(1e20, 0, ceil((double) (numInVector/(double) maxPool->window)/(double) desiredPESizeNM*sqrt((double) numPENM)));
+			maxPool->CalculateLatency(1e20, 0, ceil((double) (numInVector/(double) maxPool->window)/(double) desiredPESizeNM*sqrt((double) numPENM)));
 			maxPool->CalculatePower(ceil((double) (numInVector/maxPool->window)/(double) desiredPESizeNM*sqrt((double) numPENM)));
 			*readLatency += maxPool->readLatency;
 			*readDynamicEnergy += maxPool->readDynamicEnergy;

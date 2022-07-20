@@ -111,6 +111,7 @@ void DecoderDriver::CalculateArea(double _newHeight, double _newWidth, AreaModif
 		CalculateGateArea(INV, 1, widthInvN, widthInvP, minCellHeight, tech, &hInv, &wInv);
 
 		double hUnit, wUnit;
+		cout << "This serves as test:" << cell.area << endl;
 		if (cell.accessType == CMOS_access) {	// 1T1R
 			if (mode == ROW_MODE) {
 				hUnit = MAX(hInv, hTg);

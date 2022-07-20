@@ -263,7 +263,8 @@ vector<double> ProcessingUnitCalculateArea(SubArray *subArray, int numSubArrayRo
 		bufferOutputCM->CalculateArea(NULL, numSubArrayCol*subArray->width, NONE);
 		
 		busInputCM->CalculateArea(1, true); 
-		busOutputCM->CalculateArea(1, true);	
+		busOutputCM->CalculateArea(1, true);
+		// ToDo: Maybe the matrix fits in a single subArray? ceil(out_features*num_classes / subarray_dim * subarray_dim) could give the number of subarrays?
 		area += subArray->usedArea * (numSubArrayRow*numSubArrayCol) + adderTreeCM->area + bufferInputCM->area + bufferOutputCM->area;
 		
 		*height = sqrt(area);
