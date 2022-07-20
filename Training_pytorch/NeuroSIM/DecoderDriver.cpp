@@ -70,7 +70,6 @@ void DecoderDriver::Initialize(int _mode, int _numOutput /* # of array rows/colu
 }
 
 void DecoderDriver::CalculateArea(double _newHeight, double _newWidth, AreaModify _option) {
-    cout << "This serves as test:" << cell.area << endl;
 	if (!initialized) {
 		cout << "[Decoder Driver] Error: Require initialization first!" << endl;
 	} else {

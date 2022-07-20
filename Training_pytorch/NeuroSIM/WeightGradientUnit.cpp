@@ -70,6 +70,7 @@ WeightGradientUnit::WeightGradientUnit(const InputParameter& _inputParameter, co
 										bufferInput(_inputParameter, _tech, _cell),
 										bufferOutput(_inputParameter, _tech, _cell){
 	initialized = false;
+	cout << "This serves as test:" << cell.area << endl;
 }
 
 void WeightGradientUnit::Initialize(int _numMemRow, int _numMemCol) {
