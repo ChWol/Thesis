@@ -220,6 +220,7 @@ int main(int argc, char * argv[]) {
 	for (int i=0; i<netStructure.size(); i++) {
 		numComputation += 2*(netStructure[i][0] * netStructure[i][1] * netStructure[i][2] * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	}
+	cout << "Num computation for normal forward pass: " << numComputation << endl;
     // ToDo: Here the new estimation of computation is needed, estimated to have same computations as forward
     // Maybe do forward estimation for dfa_matrix * netStructure.size(), based on the same assumption as above, but
     // smaller matrix, because of num_classes dimensionality -> new dimensions for forwards + weight gradient
@@ -233,8 +234,6 @@ int main(int argc, char * argv[]) {
 	}
 
 	// My addition
-	cout << "Test" << endl;
-	cout << "Before: " << numComputation << endl;
 	if (param->trainingEstimation && param->rule == "dfa") {
 	    double max_layer_output = 0;
 	    double num_classes = netStructure[netStructure.size()-1][5];
@@ -247,9 +246,10 @@ int main(int argc, char * argv[]) {
 	    for (int i=0; i<netStructure.size(); i++) {
 		    numComputation_DFA += 2*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	    }
-	    numComputation += numComputation_DFA; // for DFA calculation instead of saying #bp = #forward, activation gradient dismissed
-	    cout << "DFA: " << numComputation_DFA << endl;
-	    cout << "After: " << numComputation << endl;
+	    numComputation =*2; // do we need activation gradient or is this changed by the line below and the weight gradient stays the same?
+	    // Do we need a subtraction for the last layer then as well?
+	    numComputation += numComputation_DFA; // for DFA calculation instead of saying #bp = #forward
+	    cout << "Num computation for DFA forward pass: " << numComputation_DFA << endl;
 	}
 	// End of my addition
 
