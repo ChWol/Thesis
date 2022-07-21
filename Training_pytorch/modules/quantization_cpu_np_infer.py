@@ -226,6 +226,7 @@ class QLinear(nn.Linear):
         self.activation = activation
         if rule == 'dfa':
             B = torch.empty(out_features, num_classes, requires_grad=False)
+            B = B.to(device='cuda')
             if initial == 'xavier':
                 torch.nn.init.xavier_uniform_(B)
                 # ToDo: Won't work for deep networks

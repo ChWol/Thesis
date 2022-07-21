@@ -41,12 +41,6 @@ class MODEL(nn.Module):
                 continue
             print("DFA")
             print(layer.dfa_matrix.is_cuda)
-            print("output")
-            print(layer.output.is_cuda)
-            print("error")
-            print(error.is_cuda)
-            print("input")
-            print(layer.input.is_cuda)
             B = layer.dfa_matrix.cuda()
             a = torch.transpose(layer.output, 0, 1).cuda()
             e = torch.transpose(error, 0, 1).cuda()
