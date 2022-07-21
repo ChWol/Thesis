@@ -165,17 +165,11 @@ try:
                     error = wage_util.SSE(output, target)
                     loss = (0.5 * (error ** 2)).sum()
                     model.direct_feedback_alignment(error)
-                print("out, error")
-                print(output.requires_grad)
-                print(error.requires_grad)
             else:
                 output = model(data)
                 error = wage_util.SSE(output, target)
                 loss = (0.5 * (error ** 2)).sum()
                 loss.backward()
-                print("out, error")
-                print(output.requires_grad)
-                print(error.requires_grad)
             gradient_accumulated += time.time() - gradient_time
 
             j = 0

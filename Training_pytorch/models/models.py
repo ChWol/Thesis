@@ -45,12 +45,6 @@ class MODEL(nn.Module):
             e = torch.transpose(error, 0, 1).cuda()
             y = layer.input.cuda()
 
-            print("B, a, e, y")
-            print(B.requires_grad)
-            print(a.requires_grad)
-            print(e.requires_grad)
-            print(y.requires_grad)
-
             if layer.activation == 'relu':
                 a = torch.where(a > 0, 1, 0)
             elif layer.activation == 'tanh':
