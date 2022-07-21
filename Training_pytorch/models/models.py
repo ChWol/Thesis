@@ -39,10 +39,10 @@ class MODEL(nn.Module):
         for i, layer in enumerate(self.classifier):
             if not isinstance(layer, QLinear):
                 continue
-            B = layer.dfa_matrix.cuda()
-            a = torch.transpose(layer.output, 0, 1).cuda()
-            e = torch.transpose(error, 0, 1).cuda()
-            y = layer.input.cuda()
+            B = layer.dfa_matrix
+            a = torch.transpose(layer.output, 0, 1)
+            e = torch.transpose(error, 0, 1)
+            y = layer.input
 
             if layer.activation == 'relu':
                 a = torch.where(a > 0, 1, 0)
