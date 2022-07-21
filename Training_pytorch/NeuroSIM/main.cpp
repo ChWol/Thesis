@@ -276,11 +276,11 @@ int main(int argc, char * argv[]) {
 	    double cellArea = 0;
 	    if (param->memcelltype == 1) {
 	        cellArea = param->heightInFeatureSizeSRAM * param->widthInFeatureSizeSRAM;
-	        cellArea *= (param->technode * param->technode);
+	        cellArea *= (param->technode * param->technode * pow(10, -18));
 	    }
 	    else {
 	        cellArea = param->heightInFeatureSize1T1R * param->widthInFeatureSize1T1R;
-	        cellArea *= (param->technode * param->technode);
+	        cellArea *= (param->technode * param->technode * pow(10, -18));
 	    }
 	    cout << "Area of a single cell: " << cellArea << endl;
 	    dfaArea = ((max_layer_output*num_classes*param->synapseBit)/param->cellBit)*cellArea;
