@@ -220,7 +220,6 @@ int main(int argc, char * argv[]) {
 	for (int i=0; i<netStructure.size(); i++) {
 		numComputation += 2*(netStructure[i][0] * netStructure[i][1] * netStructure[i][2] * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	}
-	cout << "Num computation for normal forward pass: " << numComputation << endl;
     // ToDo: Here the new estimation of computation is needed, estimated to have same computations as forward
     // Maybe do forward estimation for dfa_matrix * netStructure.size(), based on the same assumption as above, but
     // smaller matrix, because of num_classes dimensionality -> new dimensions for forwards + weight gradient
@@ -234,14 +233,15 @@ int main(int argc, char * argv[]) {
 	}
 
 	// My addition
-	if (param->trainingEstimation && param->rule == "dfa") {
-	    double max_layer_output = 0;
-	    double num_classes = netStructure[netStructure.size()-1][5];
-	    for (int i=0; i<netStructure.size(); i++) {
-	        if (netStructure[i][5] > max_layer_output) {
-	            max_layer_output = netStructure[i][5];
-	        }
+	double max_layer_output = 0;
+	double num_classes = netStructure[netStructure.size()-1][5];
+	for (int i=0; i<netStructure.size(); i++) {
+	    if (netStructure[i][5] > max_layer_output) {
+	        max_layer_output = netStructure[i][5];
 	    }
+	}
+
+	if (param->trainingEstimation && param->rule == "dfa") {
 	    double numComputation_DFA = 0;
 	    for (int i=0; i<netStructure.size(); i++) {
 		    numComputation_DFA += 2*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
@@ -249,7 +249,6 @@ int main(int argc, char * argv[]) {
 	    numComputation *= 2; // do we need activation gradient or is this changed by the line below and the weight gradient stays the same?
 	    // Do we need a subtraction for the last layer then as well?
 	    numComputation += numComputation_DFA; // for DFA calculation instead of saying #bp = #forward
-	    cout << "Num computation for DFA forward pass: " << numComputation_DFA << endl;
 	}
 	// End of my addition
 
@@ -271,14 +270,24 @@ int main(int argc, char * argv[]) {
 	// What is the cell area?
 
 	// My addition
-	/*
 	if (param->rule == "dfa") {
 	    // ToDo: The 1 in the end needs to be updated
 	    double dfaArea = 0;
-	    dfaArea = ((max_layer_output*num_classes*param->synapseBit)/param->cellBit)*1;
+	    double cellArea = 0;
+	    if (param->memcelltype == 1) {
+	        cellArea = param->heightInFeatureSizeSRAM * param->widthInFeatureSizeSRAM;
+	        cellArea *= (param->technode * param->technode);
+	    }
+	    else {
+	        cellArea = param->heightInFeatureSize1T1R * param->widthInFeatureSize1T1R;
+	        cellArea *= (param->technode * param->technode);
+	    }
+	    cout << "Area of a single cell: " << cellArea << endl;
+	    dfaArea = ((max_layer_output*num_classes*param->synapseBit)/param->cellBit)*cellArea;
+	    cout << "DFA Area: " << dfaArea << endl;
+	    cout << "Chip Area: " << chipArea << endl;
 	    // chipArea += dfaArea;
 	}
-	*/
 	// End of my addition
 
 	chipAreaIC = chipAreaResults[1];
