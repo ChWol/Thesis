@@ -286,7 +286,7 @@ int main(int argc, char * argv[]) {
 	    dfaArea = ((max_layer_output*num_classes*param->synapseBit)/param->cellBit)*cellArea;
 	    cout << "DFA Area: " << dfaArea << endl;
 	    cout << "Chip Area: " << chipArea << endl;
-	    // chipArea += dfaArea;
+	    chipArea += dfaArea;
 	}
 	// End of my addition
 
