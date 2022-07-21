@@ -39,8 +39,6 @@ class MODEL(nn.Module):
         for i, layer in enumerate(self.classifier):
             if not isinstance(layer, QLinear):
                 continue
-            print("DFA")
-            print(layer.dfa_matrix.is_cuda)
             B = layer.dfa_matrix.cuda()
             a = torch.transpose(layer.output, 0, 1).cuda()
             e = torch.transpose(error, 0, 1).cuda()
