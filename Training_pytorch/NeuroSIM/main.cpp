@@ -246,7 +246,7 @@ int main(int argc, char * argv[]) {
 	    for (int i=0; i<netStructure.size(); i++) {
 		    numComputation_DFA += 2*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	    }
-	    numComputation =*2; // do we need activation gradient or is this changed by the line below and the weight gradient stays the same?
+	    numComputation *= 2; // do we need activation gradient or is this changed by the line below and the weight gradient stays the same?
 	    // Do we need a subtraction for the last layer then as well?
 	    numComputation += numComputation_DFA; // for DFA calculation instead of saying #bp = #forward
 	    cout << "Num computation for DFA forward pass: " << numComputation_DFA << endl;
