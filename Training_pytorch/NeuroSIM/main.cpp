@@ -226,15 +226,17 @@ int main(int argc, char * argv[]) {
     // Also: activation gradient not needed here as we have the same as last layer that gets subtracted here
     // In that case the second line is not needed, the last line would be the same
     // The resulting value can be compared to BP and the scaling factor applied to energy etc. (% of whole numComputation)
-    double numComputation_BP = 2*numComputation - 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
-    numComputation_BP *= param->batchSize * param->numIteration;
+    double numComputation_BP_Back = 2 * numComputation;
+    numComputation_BP_Back -= 2 * (netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
+    numComputation_BP_Back *= param->batchSize * param->numIteration;
 	if (param->trainingEstimation && param->rule == "bp") {
-		numComputation *= 3;  // forward, computation of activation gradient, weight gradient
-		numComputation -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);  //L-1 does not need AG
-		numComputation *= param->batchSize * param->numIteration;  // count for one epoch
+		// numComputation *= 3;  // forward, computation of activation gradient, weight gradient
+		// numComputation -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);  //L-1 does not need AG
+		numComputation = (numComputation * param->batchSize * param->numIteration) + numComputation_BP;
+		// numComputation *= param->batchSize * param->numIteration;  // count for one epoch
 	}
 
-	double buffer = numComputation;
+	double numComputation_BP = (numComputation * param->batchSize * param->numIteration) + numComputation_BP_Back;
 
 	// My addition
 	double max_layer_output = 0;
@@ -249,15 +251,17 @@ int main(int argc, char * argv[]) {
 	    double numComputation_DFA = 0;
 	    for (int i=0; i<netStructure.size(); i++) {
 		    numComputation_DFA += 2*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
+		    numComputation_DFA -= 2*(netStructure[0][0] * netStructure[0][1] * num_classes * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
+		    numComputation_DFA += numComputation;
 	    }
-	    numComputation *= 2; // do we need activation gradient or is this changed by the line below and the weight gradient stays the same?
+	    // do we need activation gradient or is this changed by the line below and the weight gradient stays the same?
 	    // Do we need a subtraction for the last layer then as well?
 	    numComputation += numComputation_DFA; // for DFA calculation instead of saying #bp = #forward
 	    numComputation *= param->batchSize * param->numIteration;
-	    cout << "BP: " << numComputation_BP << endl;
-	    cout << "DFA: " << numComputation_DFA *param->batchSize * param->numIteration << endl;
-	    cout << "Diff: " << numComputation_BP - numComputation_DFA * param->batchSize * param->numIteration << endl;
-	    cout << "Ratio: " << (numComputation_BP - numComputation_DFA * param->batchSize * param->numIteration) / buffer << endl;
+	    cout << "BP: " << numComputation_BP_Back << endl;
+	    cout << "DFA: " << numComputation_DFA * (param->batchSize * param->numIteration) << endl;
+	    cout << "Diff: " << numComputation_BP - numComputation_DFA * (param->batchSize * param->numIteration) << endl;
+	    cout << "Ratio: " << (numComputation_BP - numComputation_DFA * (param->batchSize * param->numIteration)) / numComputation_BP << endl;
 	}
 	// End of my addition
 
