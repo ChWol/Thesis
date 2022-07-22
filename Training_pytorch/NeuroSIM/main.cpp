@@ -227,18 +227,16 @@ int main(int argc, char * argv[]) {
     // Also: activation gradient not needed here as we have the same as last layer that gets subtracted here
     // In that case the second line is not needed, the last line would be the same
     // The resulting value can be compared to BP and the scaling factor applied to energy etc. (% of whole numComputation)
-
+    // My addition
     double numComputation_BP = 0;
-	if (param->trainingEstimation && param->rule == "bp") {
+	if (param->trainingEstimation) {
 		// numComputation *= 3;  // forward, computation of activation gradient, weight gradient
 		numComputation_BP = 2 * numComputation_Forward;
 		// numComputation -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);  //L-1 does not need AG
 		numComputation_BP -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
 		// numComputation *= param->batchSize * param->numIteration;  // count for one epoch
-		numComputation = numComputation_Forward + numComputation_BP;
 	}
 
-	// My addition
 	double max_layer_output = 0;
 	double num_classes = netStructure[netStructure.size()-1][5];
 	for (int i=0; i<netStructure.size(); i++) {
@@ -247,25 +245,33 @@ int main(int argc, char * argv[]) {
 	    }
 	}
 
-	if (param->trainingEstimation && param->rule == "dfa") {
-	    double numComputation_DFA = 0;
+    double  numComputation_DFA = 0;
+	if (param->trainingEstimation) {
+	    numComputation_DFA += numComputation_Forward;
 	    for (int i=0; i<netStructure.size(); i++) {
 		    numComputation_DFA += 2*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
-		    numComputation_DFA -= 2*(netStructure[0][0] * netStructure[0][1] * num_classes * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
-		    numComputation_DFA += numComputation;
 	    }
+	    numComputation_DFA -= 2*(netStructure[0][0] * netStructure[0][1] * num_classes * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
 	    // do we need activation gradient or is this changed by the line below and the weight gradient stays the same?
 	    // Do we need a subtraction for the last layer then as well?
-	    numComputation += numComputation_DFA; // for DFA calculation instead of saying #bp = #forward
-	    numComputation *= param->batchSize * param->numIteration;
 	    // cout << "BP: " << numComputation_BP_Back << endl;
 	    // cout << "DFA: " << numComputation_DFA * (param->batchSize * param->numIteration) << endl;
 	    // cout << "Diff: " << numComputation_BP - numComputation_DFA * (param->batchSize * param->numIteration) << endl;
 	    // cout << "Ratio: " << (numComputation_BP - numComputation_DFA * (param->batchSize * param->numIteration)) / numComputation_BP << endl;
 	}
-	// End of my addition
 
-	numComputation *= param->batchSize * param->numIteration;  // count for one epoch
+	cout << "BP: " << numComputation_BP << endl;
+	cout << "DFA: " << numComputation_DFA << endl;
+	cout << "Before: " << numComputation_Forward + numComputation_BP << endl;
+
+    if (param->rule == "bp") {
+        numComputation = numComputation_Forward + numComputation_BP;
+    }
+    else {
+        numComputation = numComputation_Forward + numComputation_DFA;
+    }
+	numComputation *= param->batchSize * param->numIteration;
+	// End of my addition
 
 	ChipInitialize(inputParameter, tech, cell, netStructure, markNM, numTileEachLayer,
 					numPENM, desiredNumTileNM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow, numTileCol, &numArrayWriteParallel);
