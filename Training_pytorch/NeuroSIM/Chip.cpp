@@ -1009,6 +1009,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		int dataLoadIn = (netStructure[l][0])*(netStructure[l][1])*param->numBitInput; 
 		int dataLoadWeight = netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]*weightGradientUnit->outPrecision;
 
+        // ToDo: Smaller layer size as transposed weights dont need to be transferred, only write access
 		// For activation and activation gradient transfer
 		dRAM->CalculateLatency(dataLoadIn);
 		dRAM->CalculatePower(dataLoadIn);
