@@ -226,7 +226,7 @@ int main(int argc, char * argv[]) {
     // Also: activation gradient not needed here as we have the same as last layer that gets subtracted here
     // In that case the second line is not needed, the last line would be the same
     // The resulting value can be compared to BP and the scaling factor applied to energy etc. (% of whole numComputation)
-    double numComputation_BP = 2*numComputation 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
+    double numComputation_BP = 2*numComputation - 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
     numComputation_BP *= param->batchSize * param->numIteration;
 	if (param->trainingEstimation && param->rule == "bp") {
 		numComputation *= 3;  // forward, computation of activation gradient, weight gradient
