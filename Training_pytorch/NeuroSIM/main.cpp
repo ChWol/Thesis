@@ -232,7 +232,7 @@ int main(int argc, char * argv[]) {
 	if (param->trainingEstimation && param->rule == "bp") {
 		// numComputation *= 3;  // forward, computation of activation gradient, weight gradient
 		// numComputation -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);  //L-1 does not need AG
-		numComputation = (numComputation * param->batchSize * param->numIteration) + numComputation_BP;
+		numComputation = (numComputation * param->batchSize * param->numIteration) + numComputation_BP_Back;
 		// numComputation *= param->batchSize * param->numIteration;  // count for one epoch
 	}
 
