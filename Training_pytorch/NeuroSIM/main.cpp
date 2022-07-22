@@ -251,7 +251,6 @@ int main(int argc, char * argv[]) {
 	    for (int i=0; i<netStructure.size(); i++) {
 		    numComputation_DFA += 2*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	    }
-	    cout << "Test: " << numComputation_DFA - numComputation_Forward;
 	    numComputation_DFA -= 2*(netStructure[0][0] * netStructure[0][1] * num_classes * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
 	    // do we need activation gradient or is this changed by the line below and the weight gradient stays the same?
 	    // Do we need a subtraction for the last layer then as well?
@@ -261,10 +260,10 @@ int main(int argc, char * argv[]) {
 	    // cout << "Ratio: " << (numComputation_BP - numComputation_DFA * (param->batchSize * param->numIteration)) / numComputation_BP << endl;
 	}
 
-    cout << "Forward: " << numComputation_Forward << endl;
 	cout << "BP: " << numComputation_BP << endl;
 	cout << "DFA: " << numComputation_DFA << endl;
-	cout << "Before: " << numComputation_Forward + numComputation_BP << endl;
+	cout << "Difference: " << numComputation_BP - numComputation_DFA << endl;
+	cout << "% saved: " << (numComputation_BP - numComputation_DFA) / (numComputation_Forward + numComputation_BP)
 
     if (param->rule == "bp") {
         numComputation = numComputation_Forward + numComputation_BP;
