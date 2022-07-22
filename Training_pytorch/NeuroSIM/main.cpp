@@ -263,7 +263,7 @@ int main(int argc, char * argv[]) {
 	cout << "BP: " << numComputation_BP << endl;
 	cout << "DFA: " << numComputation_DFA << endl;
 	cout << "Difference: " << numComputation_BP - numComputation_DFA << endl;
-	cout << "% saved: " << (numComputation_BP - numComputation_DFA) / (numComputation_Forward + numComputation_BP)
+	cout << "% saved: " << (numComputation_BP - numComputation_DFA) / (numComputation_Forward + numComputation_BP);
 
     if (param->rule == "bp") {
         numComputation = numComputation_Forward + numComputation_BP;
