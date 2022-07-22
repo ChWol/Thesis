@@ -265,6 +265,8 @@ int main(int argc, char * argv[]) {
 	}
 	// End of my addition
 
+	numComputation *= param->batchSize * param->numIteration;  // count for one epoch
+
 	ChipInitialize(inputParameter, tech, cell, netStructure, markNM, numTileEachLayer,
 					numPENM, desiredNumTileNM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow, numTileCol, &numArrayWriteParallel);
 
