@@ -260,7 +260,7 @@ int main(int argc, char * argv[]) {
 	    // cout << "Ratio: " << (numComputation_BP - numComputation_DFA * (param->batchSize * param->numIteration)) / numComputation_BP << endl;
 	}
 
-    cout << "Forward: " numComputation_Forward << endl;
+    cout << "Forward: " << numComputation_Forward << endl;
 	cout << "BP: " << numComputation_BP << endl;
 	cout << "DFA: " << numComputation_DFA << endl;
 	cout << "Before: " << numComputation_Forward + numComputation_BP << endl;
