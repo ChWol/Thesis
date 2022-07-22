@@ -217,8 +217,9 @@ int main(int argc, char * argv[]) {
     // ToDo: 2* for Multiply and Accumulate? This is done for every single entry of the weight matrices?
     // Can stay the same as this is the forward computation
 	double numComputation = 0;
+	double numComputation_Forward = 0;
 	for (int i=0; i<netStructure.size(); i++) {
-		numComputation += 2*(netStructure[i][0] * netStructure[i][1] * netStructure[i][2] * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
+		numComputation_Forward += 2*(netStructure[i][0] * netStructure[i][1] * netStructure[i][2] * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	}
     // ToDo: Here the new estimation of computation is needed, estimated to have same computations as forward
     // Maybe do forward estimation for dfa_matrix * netStructure.size(), based on the same assumption as above, but
@@ -226,17 +227,16 @@ int main(int argc, char * argv[]) {
     // Also: activation gradient not needed here as we have the same as last layer that gets subtracted here
     // In that case the second line is not needed, the last line would be the same
     // The resulting value can be compared to BP and the scaling factor applied to energy etc. (% of whole numComputation)
-    double numComputation_BP_Back = 2 * numComputation;
-    numComputation_BP_Back -= 2 * (netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
-    numComputation_BP_Back *= param->batchSize * param->numIteration;
+
+    double numComputation_BP = 0;
 	if (param->trainingEstimation && param->rule == "bp") {
 		// numComputation *= 3;  // forward, computation of activation gradient, weight gradient
+		numComputation_BP = 2 * numComputation_Forward;
 		// numComputation -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);  //L-1 does not need AG
-		numComputation = (numComputation * param->batchSize * param->numIteration) + numComputation_BP_Back;
+		numComputation_BP -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
 		// numComputation *= param->batchSize * param->numIteration;  // count for one epoch
+		numComputation = numComputation_Forward + numComputation_BP;
 	}
-
-	double numComputation_BP = (numComputation * param->batchSize * param->numIteration) + numComputation_BP_Back;
 
 	// My addition
 	double max_layer_output = 0;
