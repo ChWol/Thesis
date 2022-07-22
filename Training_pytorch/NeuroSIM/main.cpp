@@ -258,10 +258,10 @@ int main(int argc, char * argv[]) {
 	    // Do we need a subtraction for the last layer then as well?
 	    numComputation += numComputation_DFA; // for DFA calculation instead of saying #bp = #forward
 	    numComputation *= param->batchSize * param->numIteration;
-	    cout << "BP: " << numComputation_BP_Back << endl;
-	    cout << "DFA: " << numComputation_DFA * (param->batchSize * param->numIteration) << endl;
-	    cout << "Diff: " << numComputation_BP - numComputation_DFA * (param->batchSize * param->numIteration) << endl;
-	    cout << "Ratio: " << (numComputation_BP - numComputation_DFA * (param->batchSize * param->numIteration)) / numComputation_BP << endl;
+	    // cout << "BP: " << numComputation_BP_Back << endl;
+	    // cout << "DFA: " << numComputation_DFA * (param->batchSize * param->numIteration) << endl;
+	    // cout << "Diff: " << numComputation_BP - numComputation_DFA * (param->batchSize * param->numIteration) << endl;
+	    // cout << "Ratio: " << (numComputation_BP - numComputation_DFA * (param->batchSize * param->numIteration)) / numComputation_BP << endl;
 	}
 	// End of my addition
 
