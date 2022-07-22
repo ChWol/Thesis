@@ -234,6 +234,8 @@ int main(int argc, char * argv[]) {
 		numComputation *= param->batchSize * param->numIteration;  // count for one epoch
 	}
 
+	double buffer = numComputation;
+
 	// My addition
 	double max_layer_output = 0;
 	double num_classes = netStructure[netStructure.size()-1][5];
@@ -253,9 +255,9 @@ int main(int argc, char * argv[]) {
 	    numComputation += numComputation_DFA; // for DFA calculation instead of saying #bp = #forward
 	    numComputation *= param->batchSize * param->numIteration;
 	    cout << "BP: " << numComputation_BP << endl;
-	    cout << "DFA: " << numComputation_DFA *param->batchSize * param->numIteration; << endl;
-	    cout << "Diff: " << numComputation_BP - numComputation_DFA * param->batchSize * param->numIteration;<< endl;
-	    cout << Ratio
+	    cout << "DFA: " << numComputation_DFA *param->batchSize * param->numIteration << endl;
+	    cout << "Diff: " << numComputation_BP - numComputation_DFA * param->batchSize * param->numIteration << endl;
+	    cout << "Ratio: " << (numComputation_BP - numComputation_DFA * param->batchSize * param->numIteration) / buffer << endl;
 	}
 	// End of my addition
 
