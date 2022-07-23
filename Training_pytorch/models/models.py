@@ -59,8 +59,6 @@ class MODEL(nn.Module):
             else:
                 layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
 
-            print("{}: {}".format(i, torch.norm(layer.weight)/torch.norm(layer.weight.grad)))
-
 def build_csv(features, classifiers, linear_dimension, input_depth=3):
     current_dir = os.path.dirname(__file__)
     path = os.path.join(current_dir, '../NeuroSIM/NetWork.csv')
