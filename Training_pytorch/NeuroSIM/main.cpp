@@ -263,6 +263,7 @@ int main(int argc, char * argv[]) {
 	cout << "BP: " << numComputation_BP << endl;
 	cout << "DFA: " << numComputation_DFA << endl;
 	cout << "Difference: " << numComputation_BP - numComputation_DFA << endl;
+	// Use this difference / numComputation_DFA for all values originating from training Estimations, or maybe even just the compared forward passes
 	cout << "% saved: " << 100 * (numComputation_BP - numComputation_DFA) / (numComputation_Forward + numComputation_BP) << endl;
 
     if (param->rule == "bp") {
