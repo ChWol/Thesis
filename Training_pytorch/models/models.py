@@ -60,7 +60,7 @@ class MODEL(nn.Module):
                 layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
             if i == 0:
                 print("0: {}".format(torch.norm(layer.weight)))
-            if i == len(self.classifier):
+            if i == len(self.classifier)-1:
                 print("3: {}".format(torch.norm(layer.weight)))
 
 def build_csv(features, classifiers, linear_dimension, input_depth=3):
