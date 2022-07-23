@@ -45,7 +45,7 @@ class MODEL(nn.Module):
             y = layer.input
 
             if layer.activation == 'relu':
-                a = torch.where(a > 0, 1, 0)
+                a = torch.where(a > -1, 1, 0)
             elif layer.activation == 'tanh':
                 tanh = nn.Tanh()
                 a = torch.ones_like(a) - torch.square(tanh(a))
@@ -92,7 +92,7 @@ def make_features(features, args, logger, in_dimension):
     in_channels = in_dimension
 
     if args.activation == 'relu':
-        activation = nn.ReLU()
+        activation = torch.abs()
     elif args.activation == 'tanh':
         activation = nn.Tanh()
     elif args.activation == 'sigmoid':
@@ -121,7 +121,7 @@ def make_features(features, args, logger, in_dimension):
 
 def make_classifiers(classifiers, args, logger, in_dimension, num_classes):
     if args.activation == 'relu':
-        activation = nn.ReLU()
+        activation = torch.abs()
     elif args.activation == 'tanh':
         activation = nn.Tanh()
     elif args.activation == 'sigmoid':
