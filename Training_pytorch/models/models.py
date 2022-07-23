@@ -45,7 +45,7 @@ class MODEL(nn.Module):
             y = layer.input
 
             if layer.activation == 'relu':
-                a = torch.where(a > -1, 1, 0)
+                a = torch.where(a > 0, 1, 0)
             elif layer.activation == 'tanh':
                 tanh = nn.Tanh()
                 a = torch.ones_like(a) - torch.square(tanh(a))
@@ -58,6 +58,8 @@ class MODEL(nn.Module):
                 layer.weight.grad = torch.matmul(e, y)
             else:
                 layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
+            if i == 0:
+                print(torch.norm(B)/torch.norm(layer.weight.grad))
 
 def build_csv(features, classifiers, linear_dimension, input_depth=3):
     current_dir = os.path.dirname(__file__)
@@ -92,7 +94,7 @@ def make_features(features, args, logger, in_dimension):
     in_channels = in_dimension
 
     if args.activation == 'relu':
-        activation = torch.abs()
+        activation = nn.ReLU()
     elif args.activation == 'tanh':
         activation = nn.Tanh()
     elif args.activation == 'sigmoid':
@@ -121,7 +123,7 @@ def make_features(features, args, logger, in_dimension):
 
 def make_classifiers(classifiers, args, logger, in_dimension, num_classes):
     if args.activation == 'relu':
-        activation = torch.abs()
+        activation = nn.ReLU()
     elif args.activation == 'tanh':
         activation = nn.Tanh()
     elif args.activation == 'sigmoid':
@@ -178,10 +180,10 @@ def get_model(num_classes, network):
         },
         'five': {
             'features': [],
-            'classifier': [('L', 500, 1, 'same', 1),
-                           ('L', 500, 1, 'same', 1),
-                           ('L', 2000, 1, 'same', 1),
-                           ('L', 30, 1, 'same', 1),
+            'classifier': [('L', 1500, 1, 'same', 1),
+                           ('L', 1500, 1, 'same', 1),
+                           ('L', 1500, 1, 'same', 1),
+                           ('L', 1000, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         },
         'six': {
