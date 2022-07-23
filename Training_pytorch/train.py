@@ -112,7 +112,11 @@ if args.cuda:
     model.cuda()
 
 if args.optimizer == 'adam':
-    optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
+    # optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
+    optimizer = optim.Adam([{"params": model.classifier[0].parameters(), "lr": 1e-1},
+                            {"params": model.classifier[1].parameters(), "lr": 1e-3},
+                            {"params": model.classifier[2].parameters(), "lr": 1e-3}],
+                           lr=args.learning_rate)
 else:
     optimizer = optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9)
 if args.scheduler == 1:
