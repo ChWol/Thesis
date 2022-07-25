@@ -304,6 +304,7 @@ int main(int argc, char * argv[]) {
 	    }
 	    else {
 	        cellArea = param->heightInFeatureSize1T1R * param->widthInFeatureSize1T1R;
+	        cout << "Test of the F^2 cell Area: " << cellArea << endl;
 	        cellArea *= (param->technode * param->technode * pow(10, -18));
 	    }
 	    cout << "Area of a single cell: " << cellArea << endl;
