@@ -568,7 +568,7 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 
 	// ToDo: Here the desiredNumTileCM is important to be updated according to the additional matrix?
 	// Maybe we only need an additional Processing Element or only an additional SubArray?
-	area += CMTileArea*(desiredNumTileCM+1);
+	area += CMTileArea*(desiredNumTileCM);
 	areaIC += CMTileAreaIC*desiredNumTileCM;
 	areaADC += CMTileAreaADC*desiredNumTileCM;
 	areaAccum += CMTileAreaAccum*desiredNumTileCM;
