@@ -21,13 +21,9 @@ def Neural_Sim(self, input, output):
                                                 self.wl_input, input_file_name)
         input_activity.write(str(activity) + ",")
     else:
-        print(self.activation)
         activity = write_matrix_activation_fc(input[0].cpu().data.numpy(), None, self.wl_input, input_file_name)
         # Todo: Other way to check for last layer?
-        if (str(self.name) == 'FC2_'):
-            input_activity.write(str(activity) + "\n")
-        else:
-            input_activity.write(str(activity) + ",")
+        input_activity.write(str(activity) + ",")
     f.write(weight_file_name + ' ' + weightOld_file_name + ' ' + input_file_name + ' ' + str(activity) + ' ')
 
 
