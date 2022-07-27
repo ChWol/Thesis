@@ -114,7 +114,7 @@ if args.cuda:
 if args.optimizer == 'adam':
     optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 else:
-    optimizer = optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9)
+    optimizer = optim.SGD(model.parameters(), lr=args.learning_rate)
 if args.scheduler == 1:
     scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[20, 40], gamma=0.5)
 
@@ -159,7 +159,6 @@ try:
 
             gradient_time = time.time()
             if args.rule == 'dfa':
-                # ToDo: Optimize this calculation with torch no grad
                 with torch.no_grad():
                     output = model(data)
                     error = wage_util.SSE(output, target)
