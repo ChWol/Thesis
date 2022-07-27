@@ -568,9 +568,8 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 
 	// ToDo: Here the desiredNumTileCM is important to be updated according to the additional matrix?
 	// Maybe we only need an additional Processing Element or only an additional SubArray?
-	cout << "Area of a single tile: " << CMTileArea << endl;
-	cout << "Anzahl: " << desiredNumTileCM << endl;
 	area += CMTileArea*(desiredNumTileCM+1);
+	cout << "Area: " << area << endl;
 	areaIC += CMTileAreaIC*(desiredNumTileCM+1);
 	areaADC += CMTileAreaADC*(desiredNumTileCM+1);
 	areaAccum += CMTileAreaAccum*(desiredNumTileCM+1);
