@@ -512,8 +512,8 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 
 
 
-vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tech, MemCell& cell, double desiredNumTileNM, double numPENM, double desiredPESizeNM, double desiredNumTileCM, double desiredTileSizeCM, 
-						double desiredPESizeCM, int numTileRow, double *height, double *width, double *CMTileheight, double *CMTilewidth, double *NMTileheight, double *NMTilewidth, double dfaRows, double dfaColumns) {
+vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tech, MemCell& cell, double dfaRows, double dfaColumns, double desiredNumTileNM, double numPENM, double desiredPESizeNM, double desiredNumTileCM, double desiredTileSizeCM,
+						double desiredPESizeCM, int numTileRow, double *height, double *width, double *CMTileheight, double *CMTilewidth, double *NMTileheight, double *NMTilewidth) {
 	
 	vector<double> areaResults;
 	
