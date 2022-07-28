@@ -166,7 +166,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 
 			// ToDo: Is this needed? We don't need any transposition anymore
 			/* Transpose Peripheral for BP */
-			if (trainingEstimation && param->rule == "bp") {
+			if (trainingEstimation) {
 				wlDecoderBP.Initialize(REGULAR_ROW, (int)ceil(log2(numCol)), false, false);
 				senseAmpBP.Initialize(numCol, false, cell.minSenseVoltage, lengthCol/numRow, clkFreq, numReadCellPerOperationNeuro);
 				int adderBit = (int)ceil(log2(numCol)) + 1;	
