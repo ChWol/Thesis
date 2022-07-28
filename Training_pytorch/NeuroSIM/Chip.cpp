@@ -569,7 +569,7 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 	// ToDo: Should it be like this or could we do dfaRows*dfaColumns / desiredTileSize*desiredTileSize, because usually there are not many columns
 	double dfaTiles = 0;
 	if (param->rule == "dfa") {
-	    double dfaTileRows = ceil((dfaRows*(double) param->numRowPerSynapse/(double) desiredTileSizeCM);
+	    double dfaTileRows = ceil(dfaRows*(double) param->numRowPerSynapse/(double) desiredTileSizeCM);
         double dfaTileColumns = ceil(dfaColumns*(double) param->numColPerSynapse/(double) desiredTileSizeCM);
         dfaTiles = dfaTileRows*dfaTileColumns;
     }
