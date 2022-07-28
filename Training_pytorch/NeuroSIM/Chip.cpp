@@ -513,7 +513,7 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 
 
 vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tech, MemCell& cell, double desiredNumTileNM, double numPENM, double desiredPESizeNM, double desiredNumTileCM, double desiredTileSizeCM, 
-						double desiredPESizeCM, int numTileRow, double *height, double *width, double *CMTileheight, double *CMTilewidth, double *NMTileheight, double *NMTilewidth) {
+						double desiredPESizeCM, int numTileRow, double *height, double *width, double *CMTileheight, double *CMTilewidth, double *NMTileheight, double *NMTilewidth, double dfaRows, double dfaColumns) {
 	
 	vector<double> areaResults;
 	
@@ -566,15 +566,22 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 	double CMTileAreaOther = areaCMTile[4];
 	double CMTileAreaArray = areaCMTile[5];
 
-	// ToDo: Here the desiredNumTileCM is important to be updated according to the additional matrix?
-	// Maybe we only need an additional Processing Element or only an additional SubArray?
-	area += CMTileArea*(desiredNumTileCM+1);
-	cout << "Area: " << area << endl;
-	areaIC += CMTileAreaIC*(desiredNumTileCM+1);
-	areaADC += CMTileAreaADC*(desiredNumTileCM+1);
-	areaAccum += CMTileAreaAccum*(desiredNumTileCM+1);
-	areaOther += CMTileAreaOther*(desiredNumTileCM+1);
-	areaArray += CMTileAreaArray*(desiredNumTileCM+1);
+	// ToDo: Should it be like this or could we do dfaRows*dfaColumns / desiredTileSize*desiredTileSize, because usually there are not many columns
+	double dfaTiles = 0;
+	if (param->rule == "dfa") {
+	    double dfaTileRows = ceil((dfaRows*(double) numRowPerSynapse/(double) desiredTileSizeCM);
+        double dfaTileColumns = ceil(dfaColumns*(double) numColPerSynapse/(double) desiredTileSizeCM);
+        dfaTiles = dfaTileRows*dfaTileColumns;
+    }
+
+    cout << "# Tiles for DFA matrix: " << dfaTiles << endl;
+
+	area += CMTileArea*(desiredNumTileCM+dfaTiles);
+	areaIC += CMTileAreaIC*(desiredNumTileCM+dfaTiles);
+	areaADC += CMTileAreaADC*(desiredNumTileCM+dfaTiles);
+	areaAccum += CMTileAreaAccum*(desiredNumTileCM+dfaTiles);
+	areaOther += CMTileAreaOther*(desiredNumTileCM+dfaTiles);
+	areaArray += CMTileAreaArray*(desiredNumTileCM+dfaTiles);
 	*CMTileheight = CMheight;
 	*CMTilewidth = CMwidth;
 	

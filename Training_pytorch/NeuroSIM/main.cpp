@@ -286,32 +286,8 @@ int main(int argc, char * argv[]) {
 	vector<double> chipAreaResults;
 
 	chipAreaResults = ChipCalculateArea(inputParameter, tech, cell, desiredNumTileNM, numPENM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow,
-					&chipHeight, &chipWidth, &CMTileheight, &CMTilewidth, &NMTileheight, &NMTilewidth);
+					&chipHeight, &chipWidth, &CMTileheight, &CMTilewidth, &NMTileheight, &NMTilewidth, max_layer_output, num_classes);
 	chipArea = chipAreaResults[0];
-	// ToDo: Add the area of the dfa matrix to the total chip area
-	// Shouldn't we assign a whole subArray or even Tile for this?
-	// What is the cell area?
-
-	// My addition
-	if (param->rule == "dfa") {
-	    // ToDo: The 1 in the end needs to be updated
-	    double dfaArea = 0;
-	    double cellArea = 0;
-	    if (param->memcelltype == 1) {
-	        cellArea = param->heightInFeatureSizeSRAM * param->widthInFeatureSizeSRAM;
-	        cellArea *= (param->technode * param->technode * pow(10, -18));
-	    }
-	    else {
-	        cellArea = param->heightInFeatureSize1T1R * param->widthInFeatureSize1T1R;
-	        cellArea *= (param->technode * param->technode * pow(10, -18));
-	    }
-	    cout << "Area of a single cell: " << cellArea << endl;
-	    dfaArea = ((max_layer_output*num_classes*param->synapseBit)/param->cellBit)*cellArea;
-	    cout << "DFA Area: " << dfaArea << endl;
-	    cout << "Chip Area: " << chipArea << endl;
-	    chipArea += dfaArea;
-	}
-	// End of my addition
 
 	chipAreaIC = chipAreaResults[1];
 	chipAreaADC = chipAreaResults[2];
