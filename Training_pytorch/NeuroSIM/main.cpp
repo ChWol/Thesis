@@ -92,6 +92,7 @@ int main(int argc, char * argv[]) {
 	double max_layer_output = 0;
 	double num_classes = netStructure[netStructure.size()-1][5];
 	for (int i=0; i<netStructure.size(); i++) {
+	    cout << netStructure[i][5] << endl;
 	    if (netStructure[i][5] > max_layer_output) {
 	        max_layer_output = netStructure[i][5];
 	    }
@@ -504,6 +505,7 @@ int main(int argc, char * argv[]) {
 			cout << "************************ Breakdown of Latency and Dynamic Energy *************************" << endl;
 			cout << endl;
 
+            // ToDo: For AG and WG latencies only choose the maximum of all layers, check other latency values as well
 			chipReadLatency += layerReadLatency;
 			chipReadDynamicEnergy += layerReadDynamicEnergy;
 			chipReadLatencyAG += layerReadLatencyAG;

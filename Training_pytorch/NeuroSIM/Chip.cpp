@@ -617,16 +617,13 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 		areaWG = weightGradientUnit->area + gradientAccum->area;
 	}
 
-	// ToDo: No maxpool needed? Add area of DFA matrix here and then down there as well?
 	area += globalBufferArea + GhTree->area + maxPool->area + Gaccumulation->area;
 	areaIC += GhTree->area;
 	areaResults.push_back(area);
 	areaResults.push_back(areaIC);
 	areaResults.push_back(areaADC);
 	areaResults.push_back(areaAccum + Gaccumulation->area);
-	// ToDo: No maxpool here as well? But we're storing relu and sigmoid as well even though we only need one of them, add DFA here as well?
 	areaResults.push_back(areaOther + globalBufferArea + maxPool->area + areaGreLu + areaGsigmoid);
-	// ToDo: Or maybe add it here, as it is part of the weight gradient calculation?
 	areaResults.push_back(areaWG);
 	areaResults.push_back(areaArray);
 	
@@ -1184,7 +1181,7 @@ vector<double> TileDesignCM(double tileSize, const vector<int > &markNM, const v
 		}
 	}
 	utilization = matrixTotalCM/(numTileTotal*tileSize*tileSize);
-	
+
 	vector<double> tileDesignCM;
 	tileDesignCM.push_back(numTileTotal);
 	tileDesignCM.push_back(matrixTotalCM);
