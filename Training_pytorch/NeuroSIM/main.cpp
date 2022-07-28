@@ -187,7 +187,7 @@ int main(int argc, char * argv[]) {
         double dfaTileColumns = ceil(num_classes*(double) param->numColPerSynapse/(double) desiredTileSizeCM);
         dfaTiles = dfaTileRows*dfaTileColumns;
 
-        double utilization = (max_layer_output*numRowPerSynapse*num_classes*numColPerSynapse)/(dfaTiles*desiredTileSizeCM*desiredTileSizeCM);
+        double utilization = (max_layer_output*param->numRowPerSynapse*num_classes*param->numColPerSynapse)/(dfaTiles*desiredTileSizeCM*desiredTileSizeCM);
         dfaRealMappedMemory = dfaTiles*utilization;
     }
 
