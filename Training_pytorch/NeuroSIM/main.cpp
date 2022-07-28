@@ -188,6 +188,7 @@ int main(int argc, char * argv[]) {
         dfaTiles = dfaTileRows*dfaTileColumns;
 
         double utilization = (max_layer_output*param->numRowPerSynapse*num_classes*param->numColPerSynapse)/(dfaTiles*desiredTileSizeCM*desiredTileSizeCM);
+        cout << "DFA utilization: " << utilization << endl;
         dfaRealMappedMemory = dfaTiles*utilization;
     }
 
