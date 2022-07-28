@@ -228,7 +228,7 @@ int main(int argc, char * argv[]) {
 		realMappedMemory += numTileEachLayer[0][i] * numTileEachLayer[1][i] * utilizationEachLayer[i][0];
 	}
 	// My addition
-	realMappedMemory += ...;
+	realMappedMemory += dfaRealMappedMemory;
 
 	cout << "Memory Utilization of Whole Chip: " << realMappedMemory/totalNumTile*100 << " % " << endl;
 	cout << endl;
