@@ -88,6 +88,15 @@ int main(int argc, char * argv[]) {
 		param->cellBit = param->synapseBit;
 	}
 
+	// My addition
+	double max_layer_output = 0;
+	double num_classes = netStructure[netStructure.size()-1][5];
+	for (int i=0; i<netStructure.size(); i++) {
+	    if (netStructure[i][5] > max_layer_output) {
+	        max_layer_output = netStructure[i][5];
+	    }
+	}
+
 	/*** initialize operationMode as default ***/
 	param->conventionalParallel = 0;
 	param->conventionalSequential = 0;
@@ -170,6 +179,18 @@ int main(int argc, char * argv[]) {
 					maxPESizeNM, maxTileSizeCM, numPENM, pipelineSpeedUp,
 					&desiredNumTileNM, &desiredPESizeNM, &desiredNumTileCM, &desiredTileSizeCM, &desiredPESizeCM, &numTileRow, &numTileCol);
 
+	// My addition
+	double dfaTiles = 0;
+	double dfaRealMappedMemory = 0;
+	if (param->rule == "dfa") {
+	    double dfaTileRows = ceil(max_layer_output*(double) param->numRowPerSynapse/(double) desiredTileSizeCM);
+        double dfaTileColumns = ceil(num_classes*(double) param->numColPerSynapse/(double) desiredTileSizeCM);
+        dfaTiles = dfaTileRows*dfaTileColumns;
+
+        double utilization = (max_layer_output*numRowPerSynapse*num_classes*numColPerSynapse)/(dfaTiles*desiredTileSizeCM*desiredTileSizeCM);
+        dfaRealMappedMemory = dfaTiles*utilization;
+    }
+
 	cout << "------------------------------ FloorPlan --------------------------------" <<  endl;
 	cout << endl;
 	cout << "Tile and PE size are optimized to maximize memory utilization ( = memory mapped by synapse / total memory on chip)" << endl;
@@ -186,12 +207,12 @@ int main(int argc, char * argv[]) {
 	cout << endl;
 	cout << "----------------- # of tile used for each layer -----------------" <<  endl;
 	double totalNumTile = 0;
-	// ToDo: Do the same for additional matrix, add to totalNumTile
-	// Do we really need an additional tile for this or is a single subArray enough?
 	for (int i=0; i<netStructure.size(); i++) {
 		cout << "layer" << i+1 << ": " << numTileEachLayer[0][i] * numTileEachLayer[1][i] << endl;
 		totalNumTile += numTileEachLayer[0][i] * numTileEachLayer[1][i];
 	}
+	// My addition
+	totalNumTile += dfaTiles;
 	cout << endl;
 
 	cout << "----------------- Speed-up of each layer ------------------" <<  endl;
@@ -206,6 +227,8 @@ int main(int argc, char * argv[]) {
 		cout << "layer" << i+1 << ": " << utilizationEachLayer[i][0] << endl;
 		realMappedMemory += numTileEachLayer[0][i] * numTileEachLayer[1][i] * utilizationEachLayer[i][0];
 	}
+	// My addition
+	realMappedMemory += ...;
 
 	cout << "Memory Utilization of Whole Chip: " << realMappedMemory/totalNumTile*100 << " % " << endl;
 	cout << endl;
@@ -235,14 +258,6 @@ int main(int argc, char * argv[]) {
 		// numComputation -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);  //L-1 does not need AG
 		numComputation_BP -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
 		// numComputation *= param->batchSize * param->numIteration;  // count for one epoch
-	}
-
-	double max_layer_output = 0;
-	double num_classes = netStructure[netStructure.size()-1][5];
-	for (int i=0; i<netStructure.size(); i++) {
-	    if (netStructure[i][5] > max_layer_output) {
-	        max_layer_output = netStructure[i][5];
-	    }
 	}
 
     double  numComputation_DFA = 0;

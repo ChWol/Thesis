@@ -566,15 +566,13 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 	double CMTileAreaOther = areaCMTile[4];
 	double CMTileAreaArray = areaCMTile[5];
 
-	// ToDo: Should it be like this or could we do dfaRows*dfaColumns / desiredTileSize*desiredTileSize, because usually there are not many columns
+    // My addition
 	double dfaTiles = 0;
 	if (param->rule == "dfa") {
 	    double dfaTileRows = ceil(dfaRows*(double) param->numRowPerSynapse/(double) desiredTileSizeCM);
         double dfaTileColumns = ceil(dfaColumns*(double) param->numColPerSynapse/(double) desiredTileSizeCM);
         dfaTiles = dfaTileRows*dfaTileColumns;
     }
-
-    cout << "# Tiles for DFA matrix: " << dfaTiles << endl;
 
 	area += CMTileArea*(desiredNumTileCM+dfaTiles);
 	areaIC += CMTileAreaIC*(desiredNumTileCM+dfaTiles);
