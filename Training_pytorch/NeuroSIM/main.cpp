@@ -92,7 +92,6 @@ int main(int argc, char * argv[]) {
 	double max_layer_output = 0;
 	double num_classes = netStructure[netStructure.size()-1][5];
 	for (int i=0; i<netStructure.size(); i++) {
-	    cout << netStructure[i][5] << endl;
 	    if (netStructure[i][5] > max_layer_output) {
 	        max_layer_output = netStructure[i][5];
 	    }

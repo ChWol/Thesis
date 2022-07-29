@@ -42,9 +42,12 @@
 #include "constant.h"
 #include "formula.h"
 #include "SubArray.h"
+#include "Param.h"
 
 
 using namespace std;
+
+extern Param *param;
 
 SubArray::SubArray(InputParameter& _inputParameter, Technology& _tech, MemCell& _cell):
 						inputParameter(_inputParameter), tech(_tech), cell(_cell),
@@ -166,7 +169,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 
 			// ToDo: Is this needed? We don't need any transposition anymore
 			/* Transpose Peripheral for BP */
-			if (trainingEstimation) {
+			if (trainingEstimation && param->rule == "dfa") {
 				wlDecoderBP.Initialize(REGULAR_ROW, (int)ceil(log2(numCol)), false, false);
 				senseAmpBP.Initialize(numCol, false, cell.minSenseVoltage, lengthCol/numRow, clkFreq, numReadCellPerOperationNeuro);
 				int adderBit = (int)ceil(log2(numCol)) + 1;	
@@ -201,7 +204,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 			}
 			// ToDo: This might be influenced by answering above question
 			// Should ParallelBP set to true for DFA as we're calculating in parallel
-			if (trainingEstimation) {
+			if (trainingEstimation && param->rule == "dfa") {
 				wlSwitchMatrixBP.Initialize(ROW_MODE, numCol, resCol, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, 1, clkFreq);
 				if (parallelBP) {
 					if (numRowMuxedBP>1) {
@@ -349,7 +352,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 			
 			/* Transpose Peripheral for BP */
 			// ToDo: Is this needed? We don't need any transposition anymore
-			if (trainingEstimation) {
+			if (trainingEstimation && param->rule == "dfa") {
 				if (numRowMuxedBP>1) {
 					muxBP.Initialize(ceil(numRow/numRowMuxedBP), numRowMuxedBP, resTg, FPGA);       
 					muxDecoderBP.Initialize(REGULAR_ROW, (int)ceil(log2(numRowMuxedBP)), true, false);
@@ -402,7 +405,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 			
 			/* Transpose Peripheral for BP */
 			// ToDo: Is this needed? We don't need any transposition anymore
-			if (trainingEstimation) {
+			if (trainingEstimation && param->rule == "dfa") {
 				if (numRowMuxedBP>1) {
 					muxBP.Initialize(ceil(numRow/numRowMuxedBP), numRowMuxedBP, cell.resMemCellOn/numCol, FPGA);       
 					muxDecoderBP.Initialize(REGULAR_ROW, (int)ceil(log2(numRowMuxedBP)), true, false);
@@ -552,7 +555,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 
 				/* Transpose Peripheral for BP */
 				// ToDo: Is this needed? We don't need any transposition anymore
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "dfa") {
 					wlDecoderBP.CalculateArea(NULL, widthArray, NONE);
 					senseAmpBP.CalculateArea(heightArray, NULL, NONE);
 					dffBP.CalculateArea(heightArray, NULL, NONE);
@@ -608,7 +611,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 				
 				/* Transpose Peripheral for BP */
 				// ToDo: Is this needed? We don't need any transposition anymore
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "dfa") {
 					wlSwitchMatrixBP.CalculateArea(NULL, widthArray, NONE);
 					
 					if (parallelBP) {
@@ -759,7 +762,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 				
 				/* Transpose Peripheral for BP */
 				// ToDo: Is this needed? We don't need any transposition anymore
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "dfa") {
 					if (numRowMuxedBP>1) {
 						muxBP.CalculateArea(heightArray, NULL, NONE);
 						muxDecoderBP.CalculateArea(NULL, NULL, NONE);
@@ -834,7 +837,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 				
 				/* Transpose Peripheral for BP */
 				// ToDo: Is this needed? We don't need any transposition anymore
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "dfa") {
 					if (numRowMuxedBP>1) {
 						muxBP.CalculateArea(heightArray, NULL, NONE);
 						muxDecoderBP.CalculateArea(NULL, NULL, NONE);
@@ -1036,7 +1039,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				
 				/* Transpose Peripheral for BP */
 				// ToDo: Is this needed? We don't need any transposition anymore
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "dfa") {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						int numReadOperationPerCol = (int)ceil((double)numCol/numReadCellPerOperationNeuro);
@@ -1136,7 +1139,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				
 				/* Transpose Peripheral for BP */
 				// ToDo: Is this needed? We don't need any transposition anymore
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "dfa") {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						int numReadOperationPerCol = (int)ceil((double)numCol/numReadCellPerOperationNeuro);
@@ -1419,7 +1422,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				
 				/* Transpose Peripheral for BP */
 				// ToDo: Is this needed? We don't need any transposition anymore
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "dfa") {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						double capRow = lengthRow * 0.2e-15/1e-6 + CalculateDrainCap(cell.widthAccessCMOS * tech.featureSize, NMOS, cell.widthInFeatureSize * tech.featureSize, tech) * numCol;
@@ -1519,7 +1522,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				
 				/* Transpose Peripheral for BP */
 				// ToDo: Is this needed? We don't need any transposition anymore
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "dfa") {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						double capRow = lengthRow * 0.2e-15/1e-6 + CalculateDrainCap(cell.widthAccessCMOS * tech.featureSize, NMOS, cell.widthInFeatureSize * tech.featureSize, tech) * numCol;
@@ -1788,7 +1791,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				
 				/* Transpose Peripheral for BP */
 				// ToDo: Is this needed? We don't need any transposition anymore
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "dfa") {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
 						int numReadOperationPerCol = numRow / numReadCellPerOperationNeuro;
@@ -1886,7 +1889,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				
 				/* Transpose Peripheral for BP */
 				// ToDo: Is this needed? We don't need any transposition anymore
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "dfa") {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
 						if (parallelBP) {
@@ -2167,7 +2170,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 
 				/* Transpose Peripheral for BP */
 				// ToDo: Is this needed? We don't need any transposition anymore
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "dfa") {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
 						readDynamicEnergyArray = 0;
@@ -2298,7 +2301,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				
 				/* Transpose Peripheral for BP */
 				// ToDo: Is this needed? We don't need any transposition anymore
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "dfa") {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
 						if (parallelBP) {
