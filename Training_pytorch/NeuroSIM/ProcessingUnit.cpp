@@ -610,6 +610,7 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 					// accumulate write latency as array need to be write sequentially (worst case)
 					// limitation by on-chip buffer, write latency will be divided by numArrayWriteParallel (real case)
 					// ToDo: Yes yes, here we go again: Treat all the layers the same, or only in case of AG values?
+					cout << layerNumber << ": " << subArray->writeLatency << endl;
 					*writeLatencyWU += subArray->writeLatency*((param->trainingEstimation)==true? 1:0);
 					*writeDynamicEnergyWU += subArray->writeDynamicEnergy*((param->trainingEstimation)==true? 1:0);
 					*readLatency = MAX(subArrayReadLatency, (*readLatency));
