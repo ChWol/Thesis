@@ -1035,7 +1035,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				writeLatency += wlDecoder.writeLatency;
 				writeLatency += precharger.writeLatency;
 				writeLatency += sramWriteDriver.writeLatency;
-				
+
 				/* Transpose Peripheral for BP */
 				// My addition
 				if (trainingEstimation && param->rule == "bp") {
@@ -1518,6 +1518,9 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				writeLatencyArray += totalNumWritePulse * cell.writePulseWidth;
 				writeLatency += MAX(wlNewSwitchMatrix.writeLatency + wlSwitchMatrix.writeLatency, slSwitchMatrix.writeLatency);
 				writeLatency += writeLatencyArray;
+
+				cout << horowitz(tau, beta, 1e20, NULL) * numWriteOperationPerRow * numRow * activityRowWrite << ", " << wlDecoder.writeLatency << ", " << precharger.writeLatency << ", " << sramWriteDriver.writeLatency << endl;
+
 				
 				/* Transpose Peripheral for BP */
 				// My addition
