@@ -403,6 +403,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 				*readDynamicEnergy = PEreadDynamicEnergy;   // since subArray.cpp takes all input vectors, no need to *numPE here
 				*readLatencyAG = PEreadLatencyAG/(numPE*numPE);
 				*readDynamicEnergyAG = PEreadDynamicEnergyAG;
+				cout << layerNumber << ": " << PEwriteLatencyWU << ", " << numPE << endl;
 				*writeLatencyWU = PEwriteLatencyWU*(numPE*numPE);
 				*writeDynamicEnergyWU = PEwriteDynamicEnergyWU*(numPE*numPE);
 				
