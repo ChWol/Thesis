@@ -73,6 +73,7 @@ Sigmoid *Gsigmoid;
 BitShifter *GreLu;
 MaxPooling *maxPool;
 DRAM *dRAM;
+// ToDo: Liste davon anlegen für jedes Layer eines
 WeightGradientUnit *weightGradientUnit;
 Adder *gradientAccum;
 
@@ -414,8 +415,10 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 	
 	dRAM->Initialize(param->dramType);
 	if (param->trainingEstimation) {
+	    // ToDo: No calculation of maxIFMLayer, but for loop
 		int numMemInRow = (netStructure[maxIFMLayer][0]-netStructure[maxIFMLayer][3]+1)*(netStructure[maxIFMLayer][1]-netStructure[maxIFMLayer][4]+1);
 		int numMemInCol = netStructure[maxIFMLayer][2]*param->numBitInput;
+		// ToDo: Might need this for each layer to perform gradient updates in parallel
 		weightGradientUnit->Initialize(numMemInRow, numMemInCol);
 		int maxWeight = 0;
 		for (int i=0; i<netStructure.size(); i++) {
@@ -433,6 +436,7 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 		}
 		// update the buffer size to save weight gradient
 		bufferSize += bufferOverHead;
+		// ToDo: Same here
 		gradientAccum->Initialize(weightGradientUnit->outPrecision+ceil(log2(param->batchSize)), (*numArrayWriteParallel)*param->numRowSubArray*param->numColSubArray);
 	} 
 	
@@ -611,6 +615,7 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 	}
 
 	if (param->trainingEstimation) {
+	    // ToDo: For each layer again
 		weightGradientUnit->CalculateArea();
 		gradientAccum->CalculateArea(globalBufferHeight, NULL, NONE);
 		area += weightGradientUnit->area + gradientAccum->area;
@@ -737,8 +742,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 				*readLatencyPeakFW = MAX(tileReadLatencyPeakFW, (*readLatencyPeakFW));
 				*readDynamicEnergyPeakFW += tileReadDynamicEnergyPeakFW;
 
-                // ToDo: Do we need the AG values for DFA? WU is needed for the updates, but do we need activation gradients?
-                // In that case: Can we save some area with this?
 				if (param->trainingEstimation) {
 					*readLatencyAG = MAX(tileReadLatencyAG, (*readLatencyAG));
 					*readDynamicEnergyAG += tileReadDynamicEnergyAG;
@@ -798,9 +801,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 			*readLatencyPeakFW += Gaccumulation->readLatency;
 			*readDynamicEnergyPeakFW += Gaccumulation->readDynamicEnergy;
 
-            // ToDo: In case we don't need the AG values, there should be no addition here as well
-            // Layer 0 is excluded here too, so this might confirm the idea of not needing AG values
-            // Actually we still might need them, thinking about this... Compare DFA paper update rule, where last layer is some special case directly using the error
 			if ((param->trainingEstimation) && (layerNumber!=0)) {
 				*readLatencyAG += Gaccumulation->readLatency;
 				*readDynamicEnergyAG += Gaccumulation->readDynamicEnergy;
@@ -872,7 +872,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 				*readDynamicEnergy += tileReadDynamicEnergy;
 				*readLatencyPeakFW = MAX(tileReadLatencyPeakFW, (*readLatencyPeakFW));
 				*readDynamicEnergyPeakFW += tileReadDynamicEnergyPeakFW;
-				// ToDo: Check this for need of AG
 				if (param->trainingEstimation) {
 					*readLatencyAG = MAX(tileReadLatencyAG, (*readLatencyAG));
 					*readDynamicEnergyAG += tileReadDynamicEnergyAG;
@@ -932,7 +931,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 			*readDynamicEnergy += Gaccumulation->readDynamicEnergy;
 			*readLatencyPeakFW += Gaccumulation->readLatency;
 			*readDynamicEnergyPeakFW += Gaccumulation->readDynamicEnergy;
-			// ToDo: Check this as well
 			if ((param->trainingEstimation) && (layerNumber!=0)) {
 				*readLatencyAG += Gaccumulation->readLatency;
 				*readDynamicEnergyAG += Gaccumulation->readDynamicEnergy;
@@ -973,9 +971,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		globalBuffer->writeLatency *= ceil(totalNumTile/(numTileEachLayer[0][l]*numTileEachLayer[1][l]));
 	}
 
-	// ToDo: Again the question here is whether we need AG here
-	// Is there anything about transferring the data from the last layer to the ones before that we can dismiss now?
-
 	// training: FW(up and down)->2; AG(up and down)->2; WG(up and down)->2
 	*bufferLatency += (globalBuffer->readLatency + globalBuffer->writeLatency)*((param->trainingEstimation)==true? ((layerNumber!=0)==true? 6:4):1);
 	*bufferDynamicEnergy += (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy)*((param->trainingEstimation)==true? ((layerNumber!=0)==true? 6:4):1);
@@ -1004,15 +999,13 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 	*dramLatency = (dRAM->readLatency*((param->trainingEstimation)==true? 0:1)); 
 	*dramDynamicEnergy = (dRAM->readDynamicEnergy*((param->trainingEstimation)==true? 0:1));
 
-	// ToDo: Once again the question is whether we need this or we can treat every layer as if it was layer 0
 	if (param->trainingEstimation) {
 		// Dring on-chip training, the activation and gradient of activation of each layer will be sent to DRAM
 		// After all the image in the batch is done with the gradient of activation, the activation and gradient of activation will be sent back to the chip, to get the gradient of weight
 		// Limited by global buffer, the weight gradient will be sent to DRAM and then grab back to be accumulated across batch
-		int dataLoadIn = (netStructure[l][0])*(netStructure[l][1])*param->numBitInput; 
+		int dataLoadIn = (netStructure[l][0])*(netStructure[l][1])*param->numBitInput;
 		int dataLoadWeight = netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]*weightGradientUnit->outPrecision;
 
-        // ToDo: Smaller layer size as transposed weights dont need to be transferred, only write access
 		// For activation and activation gradient transfer
 		dRAM->CalculateLatency(dataLoadIn);
 		dRAM->CalculatePower(dataLoadIn);
@@ -1050,7 +1043,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		dRAM->CalculateLatency(dataLoadWeight);
 		dRAM->CalculatePower(dataLoadWeight);
 		// Dring calculation of weight gradient, need to load in activation and gradient of activation
-		// ToDo: Gradient of activation needed?
 		globalBuffer->CalculateLatency(globalBuffer->interface_width, dataLoadWeight/globalBuffer->interface_width,
 								globalBuffer->interface_width, dataLoadWeight/globalBuffer->interface_width);
 		globalBuffer->CalculatePower(globalBuffer->interface_width, dataLoadWeight/globalBuffer->interface_width,
@@ -1060,6 +1052,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		globalBuffer->writeLatency /= MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width));
 		
 		// calculation of weight gradient
+		// ToDo: Do this for corresponding l'th weightGradientUnit
 		weightGradientUnit->CalculateLatency(netStructure[l][5], (netStructure[l][0]-netStructure[l][3]+1)*(netStructure[l][1]-netStructure[l][4]+1)*param->numBitInput);
 		weightGradientUnit->CalculatePower(netStructure[l][5], (netStructure[l][0]-netStructure[l][3]+1)*(netStructure[l][1]-netStructure[l][4]+1)*param->numBitInput);
 		// here consider speed up 
@@ -1173,7 +1166,6 @@ vector<double> TileDesignCM(double tileSize, const vector<int > &markNM, const v
 	double numTileTotal = 0;
 	double matrixTotalCM = 0;
 	double utilization = 0;
-	// ToDo: Add DFA Matrix area here with an additional tile?
 	for (int i=0; i<netStructure.size(); i++) {
 		if (markNM[i] == 0) {
 			numTileTotal += ceil((double) netStructure[i][2]*(double) netStructure[i][3]*(double) netStructure[i][4]*(double) numRowPerSynapse/(double) tileSize) * ceil(netStructure[i][5]*numColPerSynapse/tileSize);
@@ -1214,7 +1206,6 @@ vector<vector<double> > PEDesign(bool Design, double peSize, double desiredTileS
 	double utilization = 0;
 	vector<double> peDupRow;
 	vector<double> peDupCol;
-	// ToDo: Same question here
 	for (int i=0; i<netStructure.size(); i++) {
 		int actualDupRow = 0;
 		int actualDupCol = 0;
@@ -1269,7 +1260,6 @@ vector<vector<double> > SubArrayDup(double desiredPESizeCM, double desiredPESize
 	vector<double> subArrayDupRow;
 	vector<double> subArrayDupCol;
 
-	// ToDo: And the same question here again
 	for (int i=0; i<netStructure.size(); i++) {
 		int actualDupRow = 0;
 		int actualDupCol = 0;
@@ -1318,7 +1308,6 @@ vector<vector<double> > OverallEachLayer(bool utilization, bool speedUp, const v
 	vector<double> speedUpEachLayerRow;
 	vector<double> speedUpEachLayerCol;
 
-	// ToDo: Once again
 	for (int i=0; i<netStructure.size(); i++) {
 		vector<double> utilization;
 		double numtileEachLayerRow, numtileEachLayerCol, utilizationEach;

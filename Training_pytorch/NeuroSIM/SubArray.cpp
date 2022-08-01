@@ -167,7 +167,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 				shiftAddInput.Initialize(numAdder, adderBit+numCellPerSynapse, clkFreq, spikingMode, numReadPulse);
 			}
 
-			// ToDo: Is this needed? We don't need any transposition anymore
+			// My addition
 			/* Transpose Peripheral for BP */
 			if (trainingEstimation && param->rule == "bp") {
 				wlDecoderBP.Initialize(REGULAR_ROW, (int)ceil(log2(numCol)), false, false);
@@ -202,7 +202,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 			if (numReadPulse > 1) {
 				shiftAddInput.Initialize(ceil(numCol/numColMuxed), log2(levelOutput)+numCellPerSynapse, clkFreq, spikingMode, numReadPulse);
 			}
-			// ToDo: This might be influenced by answering above question
+			// My Addition
 			if (trainingEstimation && param->rule == "bp") {
 				wlSwitchMatrixBP.Initialize(ROW_MODE, numCol, resCol, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, 1, clkFreq);
 				if (parallelBP) {
@@ -350,7 +350,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 			}
 			
 			/* Transpose Peripheral for BP */
-			// ToDo: Is this needed? We don't need any transposition anymore
+			// My addition
 			if (trainingEstimation && param->rule == "bp") {
 				if (numRowMuxedBP>1) {
 					muxBP.Initialize(ceil(numRow/numRowMuxedBP), numRowMuxedBP, resTg, FPGA);       
@@ -403,7 +403,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 			}
 			
 			/* Transpose Peripheral for BP */
-			// ToDo: Is this needed? We don't need any transposition anymore
+			// My addition
 			if (trainingEstimation && param->rule == "bp") {
 				if (numRowMuxedBP>1) {
 					muxBP.Initialize(ceil(numRow/numRowMuxedBP), numRowMuxedBP, cell.resMemCellOn/numCol, FPGA);       
@@ -553,7 +553,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 				areaOther = wlDecoder.area + sramWriteDriver.area;
 
 				/* Transpose Peripheral for BP */
-				// ToDo: Is this needed? We don't need any transposition anymore
+				// My addition
 				if (trainingEstimation && param->rule == "bp") {
 					wlDecoderBP.CalculateArea(NULL, widthArray, NONE);
 					senseAmpBP.CalculateArea(heightArray, NULL, NONE);
@@ -609,7 +609,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 				areaOther = wlSwitchMatrix.area + sramWriteDriver.area + mux.area + muxDecoder.area;
 				
 				/* Transpose Peripheral for BP */
-				// ToDo: Is this needed? We don't need any transposition anymore
+				// My addition
 				if (trainingEstimation && param->rule == "bp") {
 					wlSwitchMatrixBP.CalculateArea(NULL, widthArray, NONE);
 					
@@ -760,7 +760,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 				areaOther = wlDecoder.area + wlNewDecoderDriver.area + wlDecoderDriver.area + slSwitchMatrix.area + mux.area + muxDecoder.area;
 				
 				/* Transpose Peripheral for BP */
-				// ToDo: Is this needed? We don't need any transposition anymore
+				// My addition
 				if (trainingEstimation && param->rule == "bp") {
 					if (numRowMuxedBP>1) {
 						muxBP.CalculateArea(heightArray, NULL, NONE);
@@ -835,7 +835,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 				areaOther = wlNewSwitchMatrix.area + wlSwitchMatrix.area + slSwitchMatrix.area + mux.area + muxDecoder.area;
 				
 				/* Transpose Peripheral for BP */
-				// ToDo: Is this needed? We don't need any transposition anymore
+				// My addition
 				if (trainingEstimation && param->rule == "bp") {
 					if (numRowMuxedBP>1) {
 						muxBP.CalculateArea(heightArray, NULL, NONE);
@@ -1037,7 +1037,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				writeLatency += sramWriteDriver.writeLatency;
 				
 				/* Transpose Peripheral for BP */
-				// ToDo: Is this needed? We don't need any transposition anymore
+				// My addition
 				if (trainingEstimation && param->rule == "bp") {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
@@ -1137,7 +1137,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				
 				
 				/* Transpose Peripheral for BP */
-				// ToDo: Is this needed? We don't need any transposition anymore
+				// My addition
 				if (trainingEstimation && param->rule == "bp") {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
@@ -1420,7 +1420,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				writeLatency += writeLatencyArray;
 				
 				/* Transpose Peripheral for BP */
-				// ToDo: Is this needed? We don't need any transposition anymore
+				// My addition
 				if (trainingEstimation && param->rule == "bp") {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
@@ -1520,7 +1520,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				writeLatency += writeLatencyArray;
 				
 				/* Transpose Peripheral for BP */
-				// ToDo: Is this needed? We don't need any transposition anymore
+				// My addition
 				if (trainingEstimation && param->rule == "bp") {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
@@ -1789,7 +1789,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				
 				
 				/* Transpose Peripheral for BP */
-				// ToDo: Is this needed? We don't need any transposition anymore
+				// My addition
 				if (trainingEstimation && param->rule == "bp") {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
@@ -1887,7 +1887,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				readDynamicEnergyOther = wlSwitchMatrix.readDynamicEnergy + ( ((numColMuxed > 1)==true? (mux.readDynamicEnergy + muxDecoder.readDynamicEnergy):0) )/numReadPulse;
 				
 				/* Transpose Peripheral for BP */
-				// ToDo: Is this needed? We don't need any transposition anymore
+				// My addition
 				if (trainingEstimation && param->rule == "bp") {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
@@ -2168,7 +2168,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				readDynamicEnergyOther = wlDecoder.readDynamicEnergy + wlNewDecoderDriver.readDynamicEnergy + wlDecoderDriver.readDynamicEnergy + ( ((numColMuxed > 1)==true? (mux.readDynamicEnergy + muxDecoder.readDynamicEnergy):0) )/numReadPulse;
 
 				/* Transpose Peripheral for BP */
-				// ToDo: Is this needed? We don't need any transposition anymore
+				// My addition
 				if (trainingEstimation && param->rule == "bp") {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
@@ -2299,7 +2299,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				readDynamicEnergyOther = wlNewSwitchMatrix.readDynamicEnergy + wlSwitchMatrix.readDynamicEnergy + ( ((numColMuxed > 1)==true? (mux.readDynamicEnergy + muxDecoder.readDynamicEnergy):0) )/numReadPulse;
 				
 				/* Transpose Peripheral for BP */
-				// ToDo: Is this needed? We don't need any transposition anymore
+				// My addition
 				if (trainingEstimation && param->rule == "bp") {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {

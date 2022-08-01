@@ -65,7 +65,7 @@ int main(int argc, char * argv[]) {
 	auto start = chrono::high_resolution_clock::now();
 	
 	gen.seed(0);
-	
+
 	vector<vector<double> > netStructure;
 	netStructure = getNetStructure(argv[2]);
 	
@@ -188,7 +188,6 @@ int main(int argc, char * argv[]) {
         dfaTiles = dfaTileRows*dfaTileColumns;
 
         double utilization = (max_layer_output*param->numRowPerSynapse*num_classes*param->numColPerSynapse)/(dfaTiles*desiredTileSizeCM*desiredTileSizeCM);
-        cout << "DFA utilization: " << utilization << endl;
         dfaRealMappedMemory = dfaTiles*utilization;
     }
 
@@ -207,6 +206,8 @@ int main(int argc, char * argv[]) {
 	cout << "User-defined SubArray Size: " << param->numRowSubArray << "x" << param->numColSubArray << endl;
 	cout << endl;
 	cout << "----------------- # of tile used for each layer -----------------" <<  endl;
+	cout << endl;
+
 	double totalNumTile = 0;
 	for (int i=0; i<netStructure.size(); i++) {
 		cout << "layer" << i+1 << ": " << numTileEachLayer[0][i] * numTileEachLayer[1][i] << endl;
@@ -214,7 +215,6 @@ int main(int argc, char * argv[]) {
 	}
 	// My addition
 	totalNumTile += dfaTiles;
-	cout << endl;
 
 	cout << "----------------- Speed-up of each layer ------------------" <<  endl;
 	for (int i=0; i<netStructure.size(); i++) {
@@ -239,18 +239,13 @@ int main(int argc, char * argv[]) {
 	cout << endl;
 
     // ToDo: 2* for Multiply and Accumulate? This is done for every single entry of the weight matrices?
-    // Can stay the same as this is the forward computation
 	double numComputation = 0;
 	double numComputation_Forward = 0;
 	for (int i=0; i<netStructure.size(); i++) {
 		numComputation_Forward += 2*(netStructure[i][0] * netStructure[i][1] * netStructure[i][2] * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	}
     // ToDo: Here the new estimation of computation is needed, estimated to have same computations as forward
-    // Maybe do forward estimation for dfa_matrix * netStructure.size(), based on the same assumption as above, but
-    // smaller matrix, because of num_classes dimensionality -> new dimensions for forwards + weight gradient
-    // Also: activation gradient not needed here as we have the same as last layer that gets subtracted here
-    // In that case the second line is not needed, the last line would be the same
-    // The resulting value can be compared to BP and the scaling factor applied to energy etc. (% of whole numComputation)
+    // ToDo: Use the result as scaling factor for WG energy
     // My addition
     double numComputation_BP = 0;
 	if (param->trainingEstimation) {
@@ -268,19 +263,7 @@ int main(int argc, char * argv[]) {
 		    numComputation_DFA += 2*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	    }
 	    numComputation_DFA -= 2*(netStructure[0][0] * netStructure[0][1] * num_classes * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
-	    // do we need activation gradient or is this changed by the line below and the weight gradient stays the same?
-	    // Do we need a subtraction for the last layer then as well?
-	    // cout << "BP: " << numComputation_BP_Back << endl;
-	    // cout << "DFA: " << numComputation_DFA * (param->batchSize * param->numIteration) << endl;
-	    // cout << "Diff: " << numComputation_BP - numComputation_DFA * (param->batchSize * param->numIteration) << endl;
-	    // cout << "Ratio: " << (numComputation_BP - numComputation_DFA * (param->batchSize * param->numIteration)) / numComputation_BP << endl;
 	}
-
-	cout << "BP: " << numComputation_BP << endl;
-	cout << "DFA: " << numComputation_DFA << endl;
-	cout << "Difference: " << numComputation_BP - numComputation_DFA << endl;
-	// Use this difference / numComputation_DFA for all values originating from training Estimations, or maybe even just the compared forward passes
-	cout << "% saved: " << 100 * (numComputation_BP - numComputation_DFA) / (numComputation_Forward + numComputation_BP) << endl;
 
     if (param->rule == "bp") {
         numComputation = numComputation_Forward + numComputation_BP;
@@ -289,7 +272,6 @@ int main(int argc, char * argv[]) {
         numComputation = numComputation_Forward + numComputation_DFA;
     }
 	numComputation *= param->batchSize * param->numIteration;
-	// End of my addition
 
 	ChipInitialize(inputParameter, tech, cell, netStructure, markNM, numTileEachLayer,
 					numPENM, desiredNumTileNM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow, numTileCol, &numArrayWriteParallel);
@@ -304,7 +286,6 @@ int main(int argc, char * argv[]) {
 	chipAreaResults = ChipCalculateArea(inputParameter, tech, cell, max_layer_output, num_classes, desiredNumTileNM, numPENM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow,
 					&chipHeight, &chipWidth, &CMTileheight, &CMTilewidth, &NMTileheight, &NMTilewidth);
 	chipArea = chipAreaResults[0];
-
 	chipAreaIC = chipAreaResults[1];
 	chipAreaADC = chipAreaResults[2];
 	chipAreaAccum = chipAreaResults[3];
@@ -414,6 +395,8 @@ int main(int argc, char * argv[]) {
 
 			double numTileOtherLayer = 0;
 			double layerLeakageEnergy = 0;
+			// ToDo: Why not use the desiredNumTile?
+			// ToDo: Add DFA tiles here, too
 			for (int j=0; j<netStructure.size(); j++) {
 				if (j != i) {
 					numTileOtherLayer += numTileEachLayer[0][j] * numTileEachLayer[1][j];
@@ -504,7 +487,17 @@ int main(int argc, char * argv[]) {
 			cout << "************************ Breakdown of Latency and Dynamic Energy *************************" << endl;
 			cout << endl;
 
-            // ToDo: For AG and WG latencies only choose the maximum of all layers, check other latency values as well
+            // My addition
+            // ToDo: Check if new maximum and decide which latencies to be included
+            if (param->rule == "dfa") {
+                chipReadLatencyAG = layerReadLatencyAG;
+                chipReadLatencyWG = layerReadLatencyWG;
+                chipWriteLatencyWU = layerWriteLatencyWU;
+                chipReadLatencyPeakAG = layerReadLatencyPeakAG;
+                chipReadLatencyPeakWG = layerReadLatencyPeakWG;
+            }
+
+            // ToDo: Read values for DFA as well, DRAM? but no FW, AG, WG or WU
 			chipReadLatency += layerReadLatency;
 			chipReadDynamicEnergy += layerReadDynamicEnergy;
 			chipReadLatencyAG += layerReadLatencyAG;
@@ -518,9 +511,9 @@ int main(int argc, char * argv[]) {
 
 			chipReadLatencyPeakFW += layerReadLatencyPeakFW;
 			chipReadDynamicEnergyPeakFW += layerReadDynamicEnergyPeakFW;
-			chipReadLatencyPeakAG += layerReadLatencyPeakAG;
+			// chipReadLatencyPeakAG += layerReadLatencyPeakAG;
 			chipReadDynamicEnergyPeakAG += layerReadDynamicEnergyPeakAG;
-			chipReadLatencyPeakWG += layerReadLatencyPeakWG;
+			// chipReadLatencyPeakWG += layerReadLatencyPeakWG;
 			chipReadDynamicEnergyPeakWG += layerReadDynamicEnergyPeakWG;
 			chipWriteLatencyPeakWU += layerWriteLatencyPeakWU;
 			chipWriteDynamicEnergyPeakWU += layerWriteDynamicEnergyPeakWU;
@@ -532,6 +525,7 @@ int main(int argc, char * argv[]) {
 			chipicLatency += layericLatency;
 			chipicReadDynamicEnergy += layericDynamicEnergy;
 
+            // ToDo: Not needed for DFA
 			chipLatencyADC += coreLatencyADC;
 			chipLatencyAccum += coreLatencyAccum;
 			chipLatencyOther += coreLatencyOther;
@@ -539,6 +533,7 @@ int main(int argc, char * argv[]) {
 			chipEnergyAccum += coreEnergyAccum;
 			chipEnergyOther += coreEnergyOther;
 		}
+		// ToDo: Use numComputation as scaling factor for WG energy
 		layerfile.close();
 	} else {
 		// pipeline system
@@ -853,7 +848,8 @@ int main(int argc, char * argv[]) {
 	cout << "Chip PEAK total Latency (per epoch) is: " << (chipReadLatencyPeakFW+chipReadLatencyPeakAG+chipReadLatencyPeakWG+chipWriteLatencyPeakWU)*1e9 << "ns" << endl;
 	summaryfile << (chipReadLatencyPeakFW+chipReadLatencyPeakAG+chipReadLatencyPeakWG+chipWriteLatencyPeakWU)*1e9 << ",";
 	cout << "Chip PEAK total Energy (per epoch) is: " << (chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*1e12 << "pJ" << endl;
-	summaryfile << (chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*1e12 << ",";
+	summaryfile << (chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamic
+	EnergyPeakWG+chipWriteDynamicEnergyPeakWU)*1e12 << ",";
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 	cout << "Chip leakage Energy is: " << chipLeakageEnergy*1e12 << "pJ" << endl;
 	summaryfile << chipLeakageEnergy*1e12 << ",";
