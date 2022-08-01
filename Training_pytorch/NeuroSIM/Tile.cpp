@@ -403,7 +403,6 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 				*readDynamicEnergy = PEreadDynamicEnergy;   // since subArray.cpp takes all input vectors, no need to *numPE here
 				*readLatencyAG = PEreadLatencyAG/(numPE*numPE);
 				*readDynamicEnergyAG = PEreadDynamicEnergyAG;
-				cout << layerNumber << ": " << PEwriteLatencyWU << ", " << numPE << endl;
 				*writeLatencyWU = PEwriteLatencyWU*(numPE*numPE);
 				*writeDynamicEnergyWU = PEwriteDynamicEnergyWU*(numPE*numPE);
 				
@@ -458,6 +457,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 							*readDynamicEnergyAG += PEreadDynamicEnergyAG;
 							// accumulate write latency as array need to be write sequentially (worst case)
 							// limitation by on-chip buffer, write latency will be divided by numArrayWriteParallel (real case)
+							cout << layerNumber << ": " << PEwriteLatencyWU << ", " << numPE << endl;
 							*writeLatencyWU += PEwriteLatencyWU;
 							*writeDynamicEnergyWU += PEwriteDynamicEnergyWU;
 							
