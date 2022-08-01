@@ -457,7 +457,6 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 							*readDynamicEnergyAG += PEreadDynamicEnergyAG;
 							// accumulate write latency as array need to be write sequentially (worst case)
 							// limitation by on-chip buffer, write latency will be divided by numArrayWriteParallel (real case)
-							cout << layerNumber << ": " << PEwriteLatencyWU << ", " << numPE << endl;
 							*writeLatencyWU += PEwriteLatencyWU;
 							*writeDynamicEnergyWU += PEwriteDynamicEnergyWU;
 							
@@ -544,6 +543,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 					*readDynamicEnergyAG += PEreadDynamicEnergyAG;
 					// accumulate write latency as array need to be write sequentially (worst case)
 					// limitation by on-chip buffer, write latency will be divided by numArrayWriteParallel (real case)
+					cout << layerNumber << ": " << PEwriteLatencyWU << ", " << numPE << endl;
 					*writeLatencyWU += PEwriteLatencyWU;
 					*writeDynamicEnergyWU += PEwriteDynamicEnergyWU;
 					
