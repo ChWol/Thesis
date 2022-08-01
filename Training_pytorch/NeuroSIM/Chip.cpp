@@ -747,6 +747,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 					*readDynamicEnergyAG += tileReadDynamicEnergyAG;
 					// accumulate write latency as array need to be write sequentially (worst case)
 					// limitation by on-chip buffer, write latency will be divided by numArrayWriteParallel (real case)
+					cout << layerNumber << ": " tileWriteLatencyWU << endl;
 					*writeLatencyWU += tileWriteLatencyWU;
 					*writeDynamicEnergyWU += tileWriteDynamicEnergyWU;
 					
