@@ -694,7 +694,7 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 	}
 	*writeLatencyPeakWU = (*writeLatencyWU);
 	*writeDynamicEnergyPeakWU = (*writeDynamicEnergyWU);
-	cout << "Test: " << *writeDynamicEnergyWU;
+	cout << layerNumber << " : " << *writeDynamicEnergyWU endl;
 	return 0;
 }
 
