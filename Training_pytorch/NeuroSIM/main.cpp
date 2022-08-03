@@ -257,14 +257,15 @@ int main(int argc, char * argv[]) {
 	    for (int i=0; i<netStructure.size(); i++) {
 		    numComputation_DFA += 2*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	    }
-	    cout << "DFA Forward: " << numComputation_DFA - numComputation_Forward << endl;
 	    numComputation_DFA -= 2*(netStructure[0][0] * netStructure[0][1] * num_classes * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
 	}
 
-    cout << "Forward: " << numComputation_Forward << endl;
-	cout << "BP: " << numComputation_BP << endl;
-	cout << "DFA: " << numComputation_DFA << endl;
-	cout << "Scaling factor: " << (numComputation_BP - numComputation_DFA) / (numComputation_Forward + numComputation_BP) << endl;
+	double scalingFactor_Total = 1;
+	double scalingFactor_WG = 1;
+	if (param->rule == "dfa") {
+	    scalingFactor_Total = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_Forward + numComputation_BP);
+	    scalingFactor_WG = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_BP)
+	}
 
     if (param->rule == "bp") {
         numComputation = numComputation_Forward + numComputation_BP;
@@ -404,6 +405,7 @@ int main(int argc, char * argv[]) {
 					numTileOtherLayer += numTileEachLayer[0][j] * numTileEachLayer[1][j];
 				}
 			}
+			// My addition
 			layerLeakageEnergy = numTileOtherLayer*tileLeakage*(layerReadLatency+layerReadLatencyAG);
 
             layerfile << numTileEachLayer[0][i] * numTileEachLayer[1][i] << ", ";
@@ -419,8 +421,9 @@ int main(int argc, char * argv[]) {
 			layerfile << layerReadDynamicEnergyAG*1e12 << ",";
 			cout << "layer" << i+1 << "'s readLatency of Weight Gradient is: " << layerReadLatencyWG*1e9 << "ns" << endl;
 			layerfile << layerReadLatencyWG*1e9 << ",";
-			cout << "layer" << i+1 << "'s readDynamicEnergy of Weight Gradient is: " << layerReadDynamicEnergyWG*1e12 << "pJ" << endl;
-			layerfile << layerReadDynamicEnergyWG*1e12 << ",";
+			// My addition
+			cout << "layer" << i+1 << "'s readDynamicEnergy of Weight Gradient is: " << layerReadDynamicEnergyWG*scalingFactor_WG*1e12<< "pJ" << endl;
+			layerfile << layerReadDynamicEnergyWG*scalingFactor_WG*1e12 << ",";
 			cout << "layer" << i+1 << "'s writeLatency of Weight Update is: " << layerWriteLatencyWU*1e9 << "ns" << endl;
 			layerfile << layerWriteLatencyWU*1e9 << ",";
 			cout << "layer" << i+1 << "'s writeDynamicEnergy of Weight Update is: " << layerWriteDynamicEnergyWU*1e12 << "pJ" << endl;
@@ -436,8 +439,8 @@ int main(int argc, char * argv[]) {
 			layerfile << layerReadDynamicEnergyPeakAG*1e12 << ",";
 			cout << "layer" << i+1 << "'s PEAK readLatency of Weight Gradient is: " << layerReadLatencyPeakWG*1e9 << "ns" << endl;
 			layerfile << layerReadLatencyPeakWG*1e9 << ",";
-			cout << "layer" << i+1 << "'s PEAK readDynamicEnergy of Weight Gradient is: " << layerReadDynamicEnergyPeakWG*1e12 << "pJ" << endl;
-			layerfile << layerReadDynamicEnergyPeakWG*1e12 << ",";
+			cout << "layer" << i+1 << "'s PEAK readDynamicEnergy of Weight Gradient is: " << layerReadDynamicEnergyPeakWG*scalingFactor_WG*1e12 << "pJ" << endl;
+			layerfile << layerReadDynamicEnergyPeakWG*scalingFactor_WG*1e12 << ",";
 			cout << "layer" << i+1 << "'s PEAK writeLatency of Weight Update is: " << layerWriteLatencyPeakWU*1e9 << "ns" << endl;
 			layerfile << layerWriteLatencyPeakWU*1e9 << ",";
 			cout << "layer" << i+1 << "'s PEAK writeDynamicEnergy of Weight Update is: " << layerWriteDynamicEnergyPeakWU*1e12 << "pJ" << endl;
@@ -468,18 +471,18 @@ int main(int argc, char * argv[]) {
 			cout << "----------- DRAM data transfer Latency is : " << layerDRAMLatency*1e9 << "ns" << endl;
 			layerfile << layerDRAMLatency*1e9 << ",";
 			cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-			cout << "----------- ADC (or S/As and precharger for SRAM) readDynamicEnergy is : " << coreEnergyADC*1e12 << "pJ" << endl;
-			layerfile << coreEnergyADC*1e12 << ",";
-			cout << "----------- Accumulation Circuits (subarray level: adders, shiftAdds; PE/Tile/Global level: accumulation units) readDynamicEnergy is : " << coreEnergyAccum*1e12 << "pJ" << endl;
-			layerfile << coreEnergyAccum*1e12 << ",";
+			cout << "----------- ADC (or S/As and precharger for SRAM) readDynamicEnergy is : " << coreEnergyADC*scalingFactor_Total*1e12 << "pJ" << endl;
+			layerfile << coreEnergyADC*scalingFactor_Total*1e12 << ",";
+			cout << "----------- Accumulation Circuits (subarray level: adders, shiftAdds; PE/Tile/Global level: accumulation units) readDynamicEnergy is : " << coreEnergyAccum*scalingFactor_Total*1e12 << "pJ" << endl;
+			layerfile << coreEnergyAccum*scalingFactor_Total*1e12 << ",";
 			cout << "----------- Synaptic Array w/o ADC (Forward + Activate Gradient) readDynamicEnergy is : " << coreEnergyOther*1e12 << "pJ" << endl;
 			layerfile << coreEnergyOther*1e12 << ",";
 			cout << "----------- Buffer readDynamicEnergy is: " << layerbufferDynamicEnergy*1e12 << "pJ" << endl;
 			layerfile << layerbufferDynamicEnergy*1e12 << ",";
 			cout << "----------- Interconnect readDynamicEnergy is: " << layericDynamicEnergy*1e12 << "pJ" << endl;
 			layerfile << layericDynamicEnergy*1e12 << ",";
-			cout << "----------- Weight Gradient Calculation readDynamicEnergy is : " << layerReadDynamicEnergyPeakWG*1e12 << "pJ" << endl;
-			layerfile << layerReadDynamicEnergyPeakWG*1e12 << ",";
+			cout << "----------- Weight Gradient Calculation readDynamicEnergy is : " << layerReadDynamicEnergyPeakWG*scalingFactor_Total*1e12 << "pJ" << endl;
+			layerfile << layerReadDynamicEnergyPeakWG*scalingFactor_Total*1e12 << ",";
 			cout << "----------- Weight Update writeDynamicEnergy is : " << layerWriteDynamicEnergyPeakWU*1e12 << "pJ" << endl;
 			layerfile << layerWriteDynamicEnergyPeakWU*1e12 << ",";
 			cout << "----------- DRAM data transfer Energy is : " << layerDRAMDynamicEnergy*1e12 << "pJ" << endl;
@@ -818,8 +821,9 @@ int main(int argc, char * argv[]) {
 	summaryfile << chipReadDynamicEnergyAG*1e12 << ",";
 	cout << "Chip readLatency of Weight Gradient (per epoch) is: " << chipReadLatencyWG*1e9 << "ns" << endl;
 	summaryfile << chipReadLatencyWG*1e9 << ",";
-	cout << "Chip readDynamicEnergy of Weight Gradient (per epoch) is: " << chipReadDynamicEnergyWG*1e12 << "pJ" << endl;
-	summaryfile << chipReadDynamicEnergyWG*1e12 << ",";
+	// My addition
+	cout << "Chip readDynamicEnergy of Weight Gradient (per epoch) is: " << chipReadDynamicEnergyWG*scalingFactor_WG*1e12 << "pJ" << endl;
+	summaryfile << chipReadDynamicEnergyWG*scalingFactor_WG*1e12 << ",";
 	cout << "Chip writeLatency of Weight Update (per epoch) is: " << chipWriteLatencyWU*1e9 << "ns" << endl;
 	summaryfile << chipWriteLatencyWU*1e9 << ",";
 	cout << "Chip writeDynamicEnergy of Weight Update (per epoch) is: " << chipWriteDynamicEnergyWU*1e12 << "pJ" << endl;
@@ -827,8 +831,9 @@ int main(int argc, char * argv[]) {
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 	cout << "Chip total Latency (per epoch) is: " << (chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU)*1e9 << "ns" << endl;
 	summaryfile << (chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU)*1e9 << ",";
-	cout << "Chip total Energy (per epoch) is: " << (chipReadDynamicEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*1e12 << "pJ" << endl;
-	summaryfile << (chipReadDynamicEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*1e12 << ",";
+	// My addition
+	cout << "Chip total Energy (per epoch) is: " << (chipReadDynamicEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*scalingFactor_Total*1e12 << "pJ" << endl;
+	summaryfile << (chipReadDynamicEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*scalingFactor_Total*1e12 << ",";
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 	cout << "Chip PEAK readLatency of Forward (per epoch) is: " << chipReadLatencyPeakFW*1e9 << "ns" << endl;
 	summaryfile << chipReadLatencyPeakFW*1e9 << ",";
@@ -840,8 +845,9 @@ int main(int argc, char * argv[]) {
 	summaryfile << chipReadDynamicEnergyPeakAG*1e12 << ",";
 	cout << "Chip PEAK readLatency of Weight Gradient (per epoch) is: " << chipReadLatencyPeakWG*1e9 << "ns" << endl;
 	summaryfile << chipReadLatencyPeakWG*1e9 << ",";
-	cout << "Chip PEAK readDynamicEnergy of Weight Gradient (per epoch) is: " << chipReadDynamicEnergyPeakWG*1e12 << "pJ" << endl;
-	summaryfile << chipReadDynamicEnergyPeakWG*1e12 << ",";
+	// My addition
+	cout << "Chip PEAK readDynamicEnergy of Weight Gradient (per epoch) is: " << chipReadDynamicEnergyPeakWG*scalingFactor_WG*1e12 << "pJ" << endl;
+	summaryfile << chipReadDynamicEnergyPeakWG*scalingFactor_WG*1e12 << ",";
 	cout << "Chip PEAK writeLatency of Weight Update (per epoch) is: " << chipWriteLatencyPeakWU*1e9 << "ns" << endl;
 	summaryfile << chipWriteLatencyPeakWU*1e9 << ",";
 	cout << "Chip PEAK writeDynamicEnergy of Weight Update (per epoch) is: " << chipWriteDynamicEnergyPeakWU*1e12 << "pJ" << endl;
@@ -849,8 +855,9 @@ int main(int argc, char * argv[]) {
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 	cout << "Chip PEAK total Latency (per epoch) is: " << (chipReadLatencyPeakFW+chipReadLatencyPeakAG+chipReadLatencyPeakWG+chipWriteLatencyPeakWU)*1e9 << "ns" << endl;
 	summaryfile << (chipReadLatencyPeakFW+chipReadLatencyPeakAG+chipReadLatencyPeakWG+chipWriteLatencyPeakWU)*1e9 << ",";
-	cout << "Chip PEAK total Energy (per epoch) is: " << (chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*1e12 << "pJ" << endl;
-	summaryfile << (chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*1e12 << ",";
+	// My addition
+	cout << "Chip PEAK total Energy (per epoch) is: " << (chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*scalingFactor_Total*1e12 << "pJ" << endl;
+	summaryfile << (chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*scalingFactor_Total*1e12 << ",";
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 	cout << "Chip leakage Energy is: " << chipLeakageEnergy*1e12 << "pJ" << endl;
 	summaryfile << chipLeakageEnergy*1e12 << ",";
@@ -876,18 +883,20 @@ int main(int argc, char * argv[]) {
 	cout << "----------- DRAM data transfer Latency is : " << chipDRAMLatency*1e9 << "ns" << endl;
 	summaryfile << chipDRAMLatency*1e9 << ",";
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-	cout << "----------- ADC (or S/As and precharger for SRAM) readDynamicEnergy is : " << chipEnergyADC*1e12 << "pJ" << endl;
-	summaryfile << chipEnergyADC*1e12 << ",";
-	cout << "----------- Accumulation Circuits (subarray level: adders, shiftAdds; PE/Tile/Global level: accumulation units) readDynamicEnergy is : " << chipEnergyAccum*1e12 << "pJ" << endl;
-	summaryfile << chipEnergyAccum*1e12 << ",";
+	// My addition
+	cout << "----------- ADC (or S/As and precharger for SRAM) readDynamicEnergy is : " << chipEnergyADC*scalingFactor_Total*1e12 << "pJ" << endl;
+	summaryfile << chipEnergyADC*scalingFactor_Total*1e12 << ",";
+	// My addition
+	cout << "----------- Accumulation Circuits (subarray level: adders, shiftAdds; PE/Tile/Global level: accumulation units) readDynamicEnergy is : " << chipEnergyAccum*scalingFactor_Total*1e12 << "pJ" << endl;
+	summaryfile << chipEnergyAccum*scalingFactor_Total*1e12 << ",";
 	cout << "----------- Synaptic Array w/o ADC (Forward + Activate Gradient) readDynamicEnergy is : " << chipEnergyOther*1e12 << "pJ" << endl;
 	summaryfile << chipEnergyOther*1e12 << ",";
 	cout << "----------- Buffer readDynamicEnergy is: " << chipbufferReadDynamicEnergy*1e12 << "pJ" << endl;
 	summaryfile << chipbufferReadDynamicEnergy*1e12 << ",";
 	cout << "----------- Interconnect readDynamicEnergy is: " << chipicReadDynamicEnergy*1e12 << "pJ" << endl;
 	summaryfile << chipicReadDynamicEnergy*1e12 << ",";
-	cout << "----------- Weight Gradient Calculation readDynamicEnergy is : " << chipReadDynamicEnergyPeakWG*1e12 << "pJ" << endl;
-	summaryfile << chipReadDynamicEnergyPeakWG*1e12 << ",";
+	cout << "----------- Weight Gradient Calculation readDynamicEnergy is : " << chipReadDynamicEnergyPeakWG*scalingFactor_WG*1e12 << "pJ" << endl;
+	summaryfile << chipReadDynamicEnergyPeakWG*scalingFactor_WG*1e12 << ",";
 	cout << "----------- Weight Update writeDynamicEnergy is : " << chipWriteDynamicEnergyPeakWU*1e12 << "pJ" << endl;
 	summaryfile << chipWriteDynamicEnergyPeakWU*1e12 << ",";
 	cout << "----------- DRAM data transfer DynamicEnergy is : " << chipDRAMDynamicEnergy*1e12 << "pJ" << endl;
@@ -902,15 +911,17 @@ int main(int argc, char * argv[]) {
 		cout << "--------------------------------------Chip pipeline Performance---------------------------------" << endl;
 	}
 
-	cout << "Energy Efficiency TOPS/W: " << numComputation/((chipReadDynamicEnergy+chipLeakageEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*1e12) << endl;
-	summaryfile << numComputation/((chipReadDynamicEnergy+chipLeakageEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*1e12) << ",";
+    // My addition
+	cout << "Energy Efficiency TOPS/W: " << numComputation/((chipReadDynamicEnergy+chipLeakageEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*scalingFactor_Total*1e12) << endl;
+	summaryfile << numComputation/((chipReadDynamicEnergy+chipLeakageEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*scalingFactor_Total*1e12) << ",";
 	cout << "Throughput TOPS: " << numComputation/(chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU)*1e-12 << endl;
 	summaryfile << numComputation/(chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU)*1e-12 << ",";
 	cout << "Throughput FPS: " << 1/(chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU) << endl;
 	summaryfile << 1/(chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU) << ",";
 	cout << "--------------------------------------------------------------------------" << endl;
-	cout << "Peak Energy Efficiency TOPS/W: " << numComputation/((chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*1e12) << endl;
-	summaryfile << numComputation/((chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*1e12) << ",";
+	// My addition
+	cout << "Peak Energy Efficiency TOPS/W: " << numComputation/((chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*scalingFactor_Total*1e12) << endl;
+	summaryfile << numComputation/((chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*scalingFactor_Total*1e12) << ",";
 	cout << "Peak Throughput TOPS: " << numComputation/(chipReadLatencyPeakFW+chipReadLatencyPeakAG+chipReadLatencyPeakWG+chipWriteLatencyPeakWU)*1e-12 << endl;
 	summaryfile << numComputation/(chipReadLatencyPeakFW+chipReadLatencyPeakAG+chipReadLatencyPeakWG+chipWriteLatencyPeakWU)*1e-12 << ",";
 	cout << "Peak Throughput FPS: " << 1/(chipReadLatencyPeakFW+chipReadLatencyPeakAG+chipReadLatencyPeakWG+chipWriteLatencyPeakWU) << endl;
