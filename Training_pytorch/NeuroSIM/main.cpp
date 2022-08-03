@@ -307,6 +307,9 @@ int main(int argc, char * argv[]) {
 	cout << "DFA: " << flopsDFA << endl;
 	cout << "Scaling factor: " << 1- (flopsBP - flopsDFA) / (flopsBP) << endl;
 
+	cout << endl;
+	cout << "Total: " << scalingFactor_Total << endl;
+
 	ChipInitialize(inputParameter, tech, cell, netStructure, markNM, numTileEachLayer,
 					numPENM, desiredNumTileNM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow, numTileCol, &numArrayWriteParallel);
 
