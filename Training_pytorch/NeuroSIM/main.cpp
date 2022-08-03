@@ -253,13 +253,15 @@ int main(int argc, char * argv[]) {
 
     double  numComputation_DFA = 0;
 	if (param->trainingEstimation) {
-	    // numComputation_DFA = 1 * numComputation_Forward;
+	    numComputation_DFA = 1 * numComputation_Forward;
 	    for (int i=0; i<netStructure.size(); i++) {
-		    numComputation_DFA += 4*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
+		    numComputation_DFA += 2*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	    }
+	    cout << "DFA Forward: " << numComputation_DFA - numComputation_Forward << endl;
 	    numComputation_DFA -= 2*(netStructure[0][0] * netStructure[0][1] * num_classes * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
 	}
 
+    cout << "Forward: " << numComputation_Forward << endl;
 	cout << "BP: " << numComputation_BP << endl;
 	cout << "DFA: " << numComputation_DFA << endl;
 	cout << "Scaling factor: " << (numComputation_BP - numComputation_DFA) / (numComputation_Forward + numComputation_BP) << endl;
