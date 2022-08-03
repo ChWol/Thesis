@@ -526,34 +526,35 @@ int main(int argc, char * argv[]) {
 			cout << endl;
 
             // My addition
-            // ToDo: Check if new maximum and decide which latencies to be included
-            if (param->rule == "dfa") {
+            if (param->rule == "dfa" && chipReadLatencyAG_max+chipReadLatencyWG_max+chipReadLatencyWU_max > chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU) {
                 chipReadLatencyAG = layerReadLatencyAG;
                 chipReadLatencyWG = layerReadLatencyWG;
                 chipWriteLatencyWU = layerWriteLatencyWU;
                 chipReadLatencyPeakAG = layerReadLatencyPeakAG;
                 chipReadLatencyPeakWG = layerReadLatencyPeakWG;
+                chipWriteLatencyPeakWU = layerWriteLatencyPeakWU;
+            }
+            else {
+			    chipReadLatencyAG += layerReadLatencyAG;
+                chipReadLatencyWG += layerReadLatencyWG;
+                chipWriteLatencyWU += layerWriteLatencyWU;
+                chipReadLatencyPeakAG += layerReadLatencyPeakAG;
+                chipReadLatencyPeakWG += layerReadLatencyPeakWG;
+                chipWriteLatencyPeakWU += layerWriteLatencyPeakWU;
             }
 
-            // ToDo: Read values for DFA as well, DRAM? but no FW, AG, WG or WU
 			chipReadLatency += layerReadLatency;
 			chipReadDynamicEnergy += layerReadDynamicEnergy;
-			chipReadLatencyAG += layerReadLatencyAG;
 			chipReadDynamicEnergyAG += layerReadDynamicEnergyAG;
-			chipReadLatencyWG += layerReadLatencyWG;
 			chipReadDynamicEnergyWG += layerReadDynamicEnergyWG;
-			chipWriteLatencyWU += layerWriteLatencyWU;
 			chipWriteDynamicEnergyWU += layerWriteDynamicEnergyWU;
 			chipDRAMLatency += layerDRAMLatency;
 			chipDRAMDynamicEnergy += layerDRAMDynamicEnergy;
 
 			chipReadLatencyPeakFW += layerReadLatencyPeakFW;
 			chipReadDynamicEnergyPeakFW += layerReadDynamicEnergyPeakFW;
-			// chipReadLatencyPeakAG += layerReadLatencyPeakAG;
 			chipReadDynamicEnergyPeakAG += layerReadDynamicEnergyPeakAG;
-			// chipReadLatencyPeakWG += layerReadLatencyPeakWG;
 			chipReadDynamicEnergyPeakWG += layerReadDynamicEnergyPeakWG;
-			chipWriteLatencyPeakWU += layerWriteLatencyPeakWU;
 			chipWriteDynamicEnergyPeakWU += layerWriteDynamicEnergyPeakWU;
 
 			chipLeakageEnergy += layerLeakageEnergy;
@@ -563,7 +564,6 @@ int main(int argc, char * argv[]) {
 			chipicLatency += layericLatency;
 			chipicReadDynamicEnergy += layericDynamicEnergy;
 
-            // ToDo: Not needed for DFA
 			chipLatencyADC += coreLatencyADC;
 			chipLatencyAccum += coreLatencyAccum;
 			chipLatencyOther += coreLatencyOther;
@@ -571,7 +571,6 @@ int main(int argc, char * argv[]) {
 			chipEnergyAccum += coreEnergyAccum;
 			chipEnergyOther += coreEnergyOther;
 		}
-		// ToDo: Use numComputation as scaling factor for WG energy
 		layerfile.close();
 	} else {
 		// pipeline system
