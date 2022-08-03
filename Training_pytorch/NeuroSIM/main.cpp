@@ -238,23 +238,40 @@ int main(int argc, char * argv[]) {
 	cout << endl;
 	cout << endl;
 
-    // ToDo: 2* for Multiply and Accumulate? This is done for every single entry of the weight matrices?
-
-    // ToDo: Here the new estimation of computation is needed, estimated to have same computations as forward
-    // ToDo: Use the result as scaling factor for WG energy
     // My addition
-    double numComputation = 0;
+	double numComputation = 0;
+	double numComputation_Forward = 0;
 	for (int i=0; i<netStructure.size(); i++) {
-		numComputation += 2*(netStructure[i][0] * netStructure[i][1] * netStructure[i][2] * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
+		numComputation_Forward += 2*(netStructure[i][0] * netStructure[i][1] * netStructure[i][2] * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	}
 
+    double numComputation_BP = 0;
 	if (param->trainingEstimation) {
-		numComputation *= 3;  // forward, computation of activation gradient, weight gradient
-		numComputation -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);  //L-1 does not need AG
-		numComputation *= param->batchSize * param->numIteration;  // count for one epoch
+		numComputation_BP = 2 * numComputation_Forward;
+		numComputation_BP -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
 	}
 
-	cout << "Num computation: " << numComputation;
+    double  numComputation_DFA = 0;
+	if (param->trainingEstimation) {
+	    numComputation_DFA = 1 * numComputation_Forward;
+	    for (int i=0; i<netStructure.size(); i++) {
+		    numComputation_DFA += 2*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
+	    }
+	    numComputation_DFA -= 2*(netStructure[0][0] * netStructure[0][1] * num_classes * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
+	}
+
+	cout << "BP: " << numComputation_BP << endl;
+	cout << "DFA: " << numComputation_DFA << endl;
+	cout << "Scaling factor: " << (numComputation_BP - numComputation_DFA) / (numComputation_Forward + numComputation_BP) << endl;
+
+    if (param->rule == "bp") {
+        numComputation = numComputation_Forward + numComputation_BP;
+    }
+    else {
+        numComputation = numComputation_Forward + numComputation_DFA;
+    }
+	numComputation *= param->batchSize * param->numIteration;
+	// End of my addition
 
 	ChipInitialize(inputParameter, tech, cell, netStructure, markNM, numTileEachLayer,
 					numPENM, desiredNumTileNM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow, numTileCol, &numArrayWriteParallel);
