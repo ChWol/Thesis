@@ -512,6 +512,7 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 				*coreEnergyOther += subArray->readDynamicEnergyOther;
 			}
 			*writeLatencyWU += subArray->writeLatency*((param->trainingEstimation)==true? 1:0);
+			cout << layerNumber << ": " << subArray->writeDynamicEnergyWU << ", " << arrayDupRow << ", " << arrayDupCol << endl;
 			*writeDynamicEnergyWU += subArray->writeDynamicEnergy*(arrayDupRow*arrayDupCol)*((param->trainingEstimation)==true? 1:0);
 			// do not pass adderTree 
 			*readLatency = subArrayReadLatency/(arrayDupRow*arrayDupCol);
@@ -694,7 +695,6 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 	}
 	*writeLatencyPeakWU = (*writeLatencyWU);
 	*writeDynamicEnergyPeakWU = (*writeDynamicEnergyWU);
-	cout << layerNumber << " : " << *writeDynamicEnergyWU << endl;
 	return 0;
 }
 
