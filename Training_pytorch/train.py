@@ -311,7 +311,7 @@ try:
                 log_input = {"Epoch": epoch + 1}
                 for key, value in summary_out.items():
                     exponential = '%.2E' % Decimal(value[0])
-                    log_input[key] = exponential
+                    log_input[key] = value[0]
                 wandb.log(log_input)
 
 
