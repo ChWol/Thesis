@@ -278,18 +278,14 @@ int main(int argc, char * argv[]) {
 
 	// Alternative approach
 	// BP
-	double matrix (double left, double middle, double right) {
-	    return left*right*2*(middle-1);
-	}
-
 	double flopsBP = 0;
 	for (int i=0; i<netStructure.size(); i++) {
-	    flopsBP += matrix(netStructure[i][5], netStructure[i][2], param->batchSize) + netStructure[i][5] * param->batchSize + matrix(netStructure[i][5], param->batchSize, netStructure[i][2]) + netStructure[i][5] * param->batchSize;
+	    flopsBP += netStructure[i][5]*(netStructure[i][2]-1)*2*param->batchSize + netStructure[i][5] * param->batchSize + netStructure[i][5]*2*(param->batchSize-1)*netStructure[i][2] + netStructure[i][5] * param->batchSize;
 	}
 	// DFA
 	double flopsDFA = 0;
 	for (int i=0; i<netStructure.size(); i++) {
-	    flopsDFA += matrix(netStructure[i][5], num_classes, param->batchSize) + netStructure[i][5] * param->batchSize + matrix(netStructure[i][5], param->batchSize, netStructure[i][2]) + netStructure[i][5] * param->batchSize;
+	    flopsDFA += netStructure[i][5]*2*(num_classes-1)*param->batchSize + netStructure[i][5] * param->batchSize + netStructure[i][5]*2*(param->batchSize-1)*netStructure[i][2]) + netStructure[i][5] * param->batchSize;
 	}
 
 	cout << "BP: " << flopsBP << endl;
