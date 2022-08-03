@@ -280,17 +280,31 @@ int main(int argc, char * argv[]) {
 	// BP
 	double flopsBP = 0;
 	for (int i=0; i<netStructure.size(); i++) {
-	    flopsBP += netStructure[i][5]*(netStructure[i][2]-1)*2*param->batchSize + netStructure[i][5] * param->batchSize + netStructure[i][5]*2*(param->batchSize-1)*netStructure[i][2] + netStructure[i][5] * param->batchSize;
+	    if (i == netStructure.size() - 1) {
+	        flopsBP += netStructure[i][5]*(netStructure[i][2]-1)*2*param->batchSize + netStructure[i][5] * param->batchSize + netStructure[i][5]*2*(param->batchSize-1)*netStructure[i][2] + netStructure[i][5] * param->batchSize;
+	    }
+	    else {
+	        flopsBP += num_classes * 2 * (param->batchSize-1) * netStructure[i][2] + numComputation_Forward;
+	    }
 	}
 	// DFA
 	double flopsDFA = 0;
 	for (int i=0; i<netStructure.size(); i++) {
-	    flopsDFA += netStructure[i][5]*2*(num_classes-1)*param->batchSize + netStructure[i][5] * param->batchSize + netStructure[i][5]*2*(param->batchSize-1)*netStructure[i][2] + netStructure[i][5] * param->batchSize;
+	    if (i == netStructure.size() - 1) {
+	        flopsDFA += netStructure[i][5]*2*(num_classes-1)*param->batchSize + netStructure[i][5] * param->batchSize + netStructure[i][5]*2*(param->batchSize-1)*netStructure[i][2] + netStructure[i][5] * param->batchSize;
+	    }
+	    else {
+	        flopsBP += num_classes * 2 * (param->batchSize-1) * netStructure[i][2] + numComputation_Forward;
+	    }
 	}
+
+	cout << "BP: " << numComputation_BP << endl;
+	cout << "DFA: " << numComputation_DFA << endl;
+	cout << "Scaling factor" << scalingFactor_Total << endl;
 
 	cout << "BP: " << flopsBP << endl;
 	cout << "DFA: " << flopsDFA << endl;
-	cout << "Scaling factor: " << (flopsBP - flopsDFA) / (numComputation_Forward + flopsBP);
+	cout << "Scaling factor: " << 1- (flopsBP - flopsDFA) / (numComputation_Forward + flopsBP) << endl;
 
 	ChipInitialize(inputParameter, tech, cell, netStructure, markNM, numTileEachLayer,
 					numPENM, desiredNumTileNM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow, numTileCol, &numArrayWriteParallel);
