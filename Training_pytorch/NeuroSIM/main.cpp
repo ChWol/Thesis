@@ -526,7 +526,7 @@ int main(int argc, char * argv[]) {
 			cout << endl;
 
             // My addition
-            if (param->rule == "bp" && chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU > layerReadLatencyAG+layerReadLatencyWG+layerWriteLatencyWU) {
+            if (param->rule == "bp" && chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU < layerReadLatencyAG+layerReadLatencyWG+layerWriteLatencyWU) {
                 chipReadLatencyAG = layerReadLatencyAG;
                 chipReadLatencyWG = layerReadLatencyWG;
                 chipWriteLatencyWU = layerWriteLatencyWU;
