@@ -262,13 +262,12 @@ int main(int argc, char * argv[]) {
 
 	double scalingFactor_Total = 1;
 	double scalingFactor_WG = 1;
-	// ToDo: Chane back to DFA
-	if (param->rule == "bp") {
+	if (param->rule == "dfa") {
 	    scalingFactor_Total = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_Forward + numComputation_BP);
 	    scalingFactor_WG = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_BP);
 	}
-    // To: Change back to param->rule == "bp"
-    if (false) {
+
+    if (param->rule == "bp") {
         numComputation = numComputation_Forward + numComputation_BP;
     }
     else {
@@ -276,6 +275,26 @@ int main(int argc, char * argv[]) {
     }
 	numComputation *= param->batchSize * param->numIteration;
 	// End of my addition
+
+	// Alternative approach
+	// BP
+	double matrix (double left, double middle, double right) {
+	    return left*right*2*(middle-1);
+	}
+
+	double flopsBP = 0;
+	for (int i=0; i<netStructure.size(); i++) {
+	    flopsBP += matrix(netStructure[i][5], netStructure[i][2], param->batchSize) + netStructure[i][5] * param->batchSize + matrix(netStructure[i][5], param->batchSize, netStructure[i][2]) + netStructure[i][5] * param->batchSize;
+	}
+	// DFA
+	double flopsDFA = 0;
+	for (int i=0; i<netStructure.size(); i++) {
+	    flopsDFA += matrix(netStructure[i][5], num_classes, param->batchSize) + netStructure[i][5] * param->batchSize + matrix(netStructure[i][5], param->batchSize, netStructure[i][2]) + netStructure[i][5] * param->batchSize;
+	}
+
+	cout << "BP: " << flopsBP << endl;
+	cout << "DFA: " << flopsDFA << endl;
+	cout << "Scaling factor: " << (flopsBP - flopsDFA) / (numComputation_Forward + flopsBP);
 
 	ChipInitialize(inputParameter, tech, cell, netStructure, markNM, numTileEachLayer,
 					numPENM, desiredNumTileNM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow, numTileCol, &numArrayWriteParallel);
