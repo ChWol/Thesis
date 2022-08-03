@@ -254,10 +254,10 @@ int main(int argc, char * argv[]) {
     double  numComputation_DFA = 0;
 	if (param->trainingEstimation) {
 	    numComputation_DFA = 1 * numComputation_Forward;
+	    numComputation_DFA -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
 	    for (int i=0; i<netStructure.size(); i++) {
 		    numComputation_DFA += 2*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	    }
-	    numComputation_DFA -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
 	}
 
 	double scalingFactor_Total = 1;
@@ -268,7 +268,7 @@ int main(int argc, char * argv[]) {
 	}
 
     if (param->rule == "bp") {
-        numComputation = numComputation_Forward + numComputation_BP;
+        numComputation = numComputation_BP;
     }
     else {
         numComputation = numComputation_Forward + numComputation_DFA;
@@ -300,12 +300,12 @@ int main(int argc, char * argv[]) {
     cout << "Approximation via forward pass" << endl;
 	cout << "BP: " << numComputation_BP << endl;
 	cout << "DFA: " << numComputation_DFA << endl;
-	cout << "Scaling factor: " << scalingFactor_Total << endl;
+	cout << "Scaling factor: " << scalingFactor_WG << endl;
 	cout << endl;
     cout << "FLOPs approach" << endl;
 	cout << "BP: " << flopsBP << endl;
 	cout << "DFA: " << flopsDFA << endl;
-	cout << "Scaling factor: " << 1- (flopsBP - flopsDFA) / (numComputation_Forward + flopsBP) << endl;
+	cout << "Scaling factor: " << 1- (flopsBP - flopsDFA) / (flopsBP) << endl;
 
 	ChipInitialize(inputParameter, tech, cell, netStructure, markNM, numTileEachLayer,
 					numPENM, desiredNumTileNM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow, numTileCol, &numArrayWriteParallel);
