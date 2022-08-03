@@ -239,23 +239,10 @@ int main(int argc, char * argv[]) {
 	cout << endl;
 
     // ToDo: 2* for Multiply and Accumulate? This is done for every single entry of the weight matrices?
-	double numComputation = 0;
-	double numComputation_Forward = 0;
-	for (int i=0; i<netStructure.size(); i++) {
-		numComputation_Forward += 2*(netStructure[i][0] * netStructure[i][1] * netStructure[i][2] * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
-	}
+
     // ToDo: Here the new estimation of computation is needed, estimated to have same computations as forward
     // ToDo: Use the result as scaling factor for WG energy
     // My addition
-    double numComputation_BP = 0;
-	if (param->trainingEstimation) {
-		// numComputation *= 3;  // forward, computation of activation gradient, weight gradient
-		numComputation_BP = 2 * numComputation_Forward;
-		// numComputation -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);  //L-1 does not need AG
-		numComputation_BP -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
-		// numComputation *= param->batchSize * param->numIteration;  // count for one epoch
-	}
-
     double numComputation = 0;
 	for (int i=0; i<netStructure.size(); i++) {
 		numComputation += 2*(netStructure[i][0] * netStructure[i][1] * netStructure[i][2] * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
