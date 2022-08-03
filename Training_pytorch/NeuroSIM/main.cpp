@@ -285,7 +285,7 @@ int main(int argc, char * argv[]) {
 	// DFA
 	double flopsDFA = 0;
 	for (int i=0; i<netStructure.size(); i++) {
-	    flopsDFA += netStructure[i][5]*2*(num_classes-1)*param->batchSize + netStructure[i][5] * param->batchSize + netStructure[i][5]*2*(param->batchSize-1)*netStructure[i][2]) + netStructure[i][5] * param->batchSize;
+	    flopsDFA += netStructure[i][5]*2*(num_classes-1)*param->batchSize + netStructure[i][5] * param->batchSize + netStructure[i][5]*2*(param->batchSize-1)*netStructure[i][2] + netStructure[i][5] * param->batchSize;
 	}
 
 	cout << "BP: " << flopsBP << endl;
