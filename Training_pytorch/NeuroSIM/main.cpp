@@ -526,7 +526,7 @@ int main(int argc, char * argv[]) {
 			cout << endl;
 
             // My addition
-            if (param->rule == "dfa" && chipReadLatencyAG_max+chipReadLatencyWG_max+chipReadLatencyWU_max > chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU) {
+            if (param->rule == "dfa" && chipReadLatencyAG+chipReadLatencyWG+chipReadLatencyWU > chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU) {
                 chipReadLatencyAG = layerReadLatencyAG;
                 chipReadLatencyWG = layerReadLatencyWG;
                 chipWriteLatencyWU = layerWriteLatencyWU;
