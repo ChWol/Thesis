@@ -317,12 +317,11 @@ vector<double> TileCalculateArea(double numPE, double peSize, bool NMTile, doubl
 		outputBufferCM->area *= numOutBufferCore;												  
 		hTreeCM->CalculateArea(PEheight, PEwidth, 16);
 
-		// ToDo: Maybe just add another PE for the matrix?
 		area += PEarea*numPE + accumulationCM->area + inputBufferCM->area + outputBufferCM->area + hTreeCM->area;
-		
+
 		*height = sqrt(area);
 		*width = area/(*height);
-		
+
 		areaResults.push_back(area);
 		areaResults.push_back(hTreeCM->area);
 		areaResults.push_back(PEareaADC*numPE);
@@ -334,11 +333,11 @@ vector<double> TileCalculateArea(double numPE, double peSize, bool NMTile, doubl
 }
 
 
-void TileCalculatePerformance(const vector<vector<double> > &newMemory, const vector<vector<double> > &oldMemory, const vector<vector<double> > &inputVector, int novelMap, int layerNumber, double numPE, 
-							double peSize, int speedUpRow, int speedUpCol, int weightMatrixRow, int weightMatrixCol, int numInVector, Technology& tech, MemCell& cell, 
+void TileCalculatePerformance(const vector<vector<double> > &newMemory, const vector<vector<double> > &oldMemory, const vector<vector<double> > &inputVector, int novelMap, int layerNumber, double numPE,
+							double peSize, int speedUpRow, int speedUpCol, int weightMatrixRow, int weightMatrixCol, int numInVector, Technology& tech, MemCell& cell,
 							double *readLatency, double *readDynamicEnergy, double *leakage, double *readLatencyAG, double *readDynamicEnergyAG, double *writeLatencyWU, double *writeDynamicEnergyWU,
 							double *bufferLatency, double *bufferDynamicEnergy, double *icLatency, double *icDynamicEnergy,
-							double *coreLatencyADC, double *coreLatencyAccum, double *coreLatencyOther, double *coreEnergyADC, 
+							double *coreLatencyADC, double *coreLatencyAccum, double *coreLatencyOther, double *coreEnergyADC,
 							double *coreEnergyAccum, double *coreEnergyOther, double *readLatencyPeakFW, double *readDynamicEnergyPeakFW,
 							double *readLatencyPeakAG, double *readDynamicEnergyPeakAG, double *writeLatencyPeakWU, double *writeDynamicEnergyPeakWU) {
 
@@ -352,21 +351,21 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 	double peReadLatencyPeakFW, peReadDynamicEnergyPeakFW, peReadLatencyPeakAG, peReadDynamicEnergyPeakAG, peWriteLatencyPeakWU, peWriteDynamicEnergyPeakWU;
 	int numSubArrayRow = ceil((double)peSize/(double)param->numRowSubArray);
 	int numSubArrayCol = ceil((double)peSize/(double)param->numColSubArray);
-	
+
 	*readLatency = 0;
 	*readDynamicEnergy = 0;
 	*readLatencyAG = 0;
 	*readDynamicEnergyAG = 0;
 	*writeLatencyWU = 0;
 	*writeDynamicEnergyWU = 0;
-	
+
 	*readLatencyPeakFW = 0;
 	*readDynamicEnergyPeakFW = 0;
 	*readLatencyPeakAG = 0;
 	*readDynamicEnergyPeakAG = 0;
 	*writeLatencyPeakWU = 0;
 	*writeDynamicEnergyPeakWU = 0;
-	
+
 	*leakage = 0;
 	*bufferLatency = 0;
 	*bufferDynamicEnergy = 0;
@@ -378,7 +377,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 	*coreLatencyADC = 0;
 	*coreLatencyAccum = 0;
 	*coreLatencyOther = 0;
-	
+
 	if (!novelMap) {   // conventional Mapping
 		if (speedUpRow*speedUpCol > 1) {
 			if ((speedUpRow >= numPE) && (speedUpCol >= numPE)) {
@@ -390,38 +389,38 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 				pEMemory = CopyPEArray(newMemory, 0, 0, weightMatrixRow, weightMatrixCol);
 				vector<vector<double> > pEInput;
 				pEInput = CopyPEInput(inputVector, 0, numInVector, weightMatrixRow);
-				
-				ProcessingUnitCalculatePerformance(subArrayInPE, tech, cell, layerNumber, false, pEMemory, pEMemoryOld, pEInput, ceil((double)speedUpRow/(double)numPE), ceil((double)speedUpCol/(double)numPE), 
+
+				ProcessingUnitCalculatePerformance(subArrayInPE, tech, cell, layerNumber, false, pEMemory, pEMemoryOld, pEInput, ceil((double)speedUpRow/(double)numPE), ceil((double)speedUpCol/(double)numPE),
 											numSubArrayRow, numSubArrayCol, weightMatrixRow, weightMatrixCol, numInVector, &PEreadLatency, &PEreadDynamicEnergy, &PEleakage,
 											&PEreadLatencyAG, &PEreadDynamicEnergyAG, &PEwriteLatencyWU, &PEwriteDynamicEnergyWU,
 											&PEbufferLatency, &PEbufferDynamicEnergy, &PEicLatency, &PEicDynamicEnergy,
-											&peLatencyADC, &peLatencyAccum, &peLatencyOther, &peEnergyADC, &peEnergyAccum, &peEnergyOther, 
+											&peLatencyADC, &peLatencyAccum, &peLatencyOther, &peEnergyADC, &peEnergyAccum, &peEnergyOther,
 											&peReadLatencyPeakFW, &peReadDynamicEnergyPeakFW, &peReadLatencyPeakAG, &peReadDynamicEnergyPeakAG,
 											&peWriteLatencyPeakWU, &peWriteDynamicEnergyPeakWU);
-				
+
 				*readLatency = PEreadLatency/(numPE*numPE);  // further speed up in PE level
 				*readDynamicEnergy = PEreadDynamicEnergy;   // since subArray.cpp takes all input vectors, no need to *numPE here
 				*readLatencyAG = PEreadLatencyAG/(numPE*numPE);
 				*readDynamicEnergyAG = PEreadDynamicEnergyAG;
 				*writeLatencyWU = PEwriteLatencyWU*(numPE*numPE);
 				*writeDynamicEnergyWU = PEwriteDynamicEnergyWU*(numPE*numPE);
-				
+
 				*readLatencyPeakFW = peReadLatencyPeakFW/(numPE*numPE);
 				*readDynamicEnergyPeakFW = peReadDynamicEnergyPeakFW;
 				*readLatencyPeakAG = peReadLatencyPeakAG/(numPE*numPE);
 				*readDynamicEnergyPeakAG = peReadDynamicEnergyPeakAG;
 				*writeLatencyPeakWU = peWriteLatencyPeakWU*(numPE*numPE);
 				*writeDynamicEnergyPeakWU = peWriteDynamicEnergyPeakWU*(numPE*numPE);
-				
+
 				*bufferLatency = PEbufferLatency/(numPE*numPE);
 				*bufferDynamicEnergy = PEbufferDynamicEnergy;
 				*icLatency = PEicLatency/(numPE*numPE);
 				*icDynamicEnergy = PEicDynamicEnergy;
-				
+
 				*coreLatencyADC = peLatencyADC/(numPE*numPE);
 				*coreLatencyAccum = peLatencyAccum/(numPE*numPE);
 				*coreLatencyOther = peLatencyOther/(numPE*numPE);
-				
+
 				*coreEnergyADC = peEnergyADC;
 				*coreEnergyAccum = peEnergyAccum;
 				*coreEnergyOther = peEnergyOther;
@@ -434,7 +433,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 						if ( (i*peSize < weightMatrixRow) && (j*peSize < weightMatrixCol) ) {
 							int numRowMatrix = min(peSize, (double) weightMatrixRow-i*peSize);
 							int numColMatrix = min(peSize, (double) weightMatrixCol-j*peSize);
-					
+
 							// assign weight and input to specific tile
 							vector<vector<double> > pEMemoryOld;
 							pEMemoryOld = CopyPEArray(oldMemory, i*peSize, j*peSize, numRowMatrix, numColMatrix);
@@ -442,15 +441,15 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 							pEMemory = CopyPEArray(newMemory, i*peSize, j*peSize, numRowMatrix, numColMatrix);
 							vector<vector<double> > pEInput;
 							pEInput = CopyPEInput(inputVector, i*peSize, numInVector, numRowMatrix);
-							
-							ProcessingUnitCalculatePerformance(subArrayInPE, tech, cell, layerNumber, false, pEMemory, pEMemoryOld, pEInput, 1, 1, 
+
+							ProcessingUnitCalculatePerformance(subArrayInPE, tech, cell, layerNumber, false, pEMemory, pEMemoryOld, pEInput, 1, 1,
 												numSubArrayRow, numSubArrayCol, numRowMatrix, numColMatrix, numInVector, &PEreadLatency, &PEreadDynamicEnergy, &PEleakage,
 												&PEreadLatencyAG, &PEreadDynamicEnergyAG, &PEwriteLatencyWU, &PEwriteDynamicEnergyWU,
 												&PEbufferLatency, &PEbufferDynamicEnergy, &PEicLatency, &PEicDynamicEnergy,
-												&peLatencyADC, &peLatencyAccum, &peLatencyOther, &peEnergyADC, &peEnergyAccum, &peEnergyOther, 
+												&peLatencyADC, &peLatencyAccum, &peLatencyOther, &peEnergyADC, &peEnergyAccum, &peEnergyOther,
 												&peReadLatencyPeakFW, &peReadDynamicEnergyPeakFW, &peReadLatencyPeakAG, &peReadDynamicEnergyPeakAG,
 												&peWriteLatencyPeakWU, &peWriteDynamicEnergyPeakWU);
-					
+
 							*readLatency = MAX(PEreadLatency, (*readLatency));
 							*readDynamicEnergy += PEreadDynamicEnergy;
 							*readLatencyAG = MAX(PEreadLatencyAG, (*readLatencyAG));
@@ -459,7 +458,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 							// limitation by on-chip buffer, write latency will be divided by numArrayWriteParallel (real case)
 							*writeLatencyWU += PEwriteLatencyWU;
 							*writeDynamicEnergyWU += PEwriteDynamicEnergyWU;
-							
+
 							*readLatencyPeakFW = MAX(peReadLatencyPeakFW, (*readLatencyPeakFW));
 							*readDynamicEnergyPeakFW += peReadDynamicEnergyPeakFW;
 							*readLatencyPeakAG = MAX(peReadLatencyPeakAG, (*readLatencyPeakAG));
@@ -474,11 +473,11 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 							*bufferDynamicEnergy += PEbufferDynamicEnergy;
 							*icLatency = MAX(PEicLatency,(*icLatency));
 							*icDynamicEnergy += PEicDynamicEnergy;
-							
+
 							*coreLatencyADC = MAX(peLatencyADC, (*coreLatencyADC));
 							*coreLatencyAccum = MAX(peLatencyAccum, (*coreLatencyAccum));
 							*coreLatencyOther = MAX(peLatencyOther, (*coreLatencyOther));
-							
+
 							*coreEnergyADC += peEnergyADC;
 							*coreEnergyAccum += peEnergyAccum;
 							*coreEnergyOther += peEnergyOther;
@@ -495,22 +494,23 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 				*bufferLatency /= (speedUpRow*speedUpCol);
 				*icLatency /= (speedUpRow*speedUpCol);
 
+				// whether go through accumulation?
 				if (ceil((double)weightMatrixRow/(double)peSize) > 1) {
 					accumulationCM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), ceil((double)weightMatrixRow/(double)peSize), 0);
 					accumulationCM->CalculatePower((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), ceil((double)weightMatrixRow/(double)peSize));
-					*readLatency += accumulationCM->readLatency; 
-					*readLatencyAG += accumulationCM->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0); 
-					*readLatencyPeakFW += accumulationCM->readLatency; 
-					*readLatencyPeakAG += accumulationCM->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0); 
+					*readLatency += accumulationCM->readLatency;
+					*readLatencyAG += accumulationCM->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
+					*readLatencyPeakFW += accumulationCM->readLatency;
+					*readLatencyPeakAG += accumulationCM->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
 					*readDynamicEnergy += accumulationCM->readDynamicEnergy;
 					*readDynamicEnergyAG += accumulationCM->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
 					*readDynamicEnergyPeakFW += accumulationCM->readDynamicEnergy;
 					*readDynamicEnergyPeakAG += accumulationCM->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
-					*coreLatencyAccum += accumulationCM->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1); 
+					*coreLatencyAccum += accumulationCM->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 					*coreEnergyAccum += accumulationCM->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 				}
 			}
-			
+
 		} else {
 			// no duplication --> tell PE to further partition the weight and grab data (redefine a few data-grab start-point)
 			for (int i=0; i<numPE; i++) {
@@ -520,14 +520,14 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 						// assign weight and input to specific tile
 						int numRowMatrix = min(peSize, (double) weightMatrixRow-i*peSize);
 						int numColMatrix = min(peSize, (double) weightMatrixCol-j*peSize);
-						
+
 						vector<vector<double> > pEMemoryOld;
 						pEMemoryOld = CopyPEArray(oldMemory, i*peSize, j*peSize, numRowMatrix, numColMatrix);
 						vector<vector<double> > pEMemory;
 						pEMemory = CopyPEArray(newMemory, i*peSize, j*peSize, numRowMatrix, numColMatrix);
 						vector<vector<double> > pEInput;
 						pEInput = CopyPEInput(inputVector, i*peSize, numInVector, numRowMatrix);
-							
+
 						ProcessingUnitCalculatePerformance(subArrayInPE, tech, cell, layerNumber, false, pEMemory, pEMemoryOld, pEInput, 1, 1, numSubArrayRow, numSubArrayCol, numRowMatrix,
 												numColMatrix, numInVector, &PEreadLatency, &PEreadDynamicEnergy, &PEleakage,
 												&PEreadLatencyAG, &PEreadDynamicEnergyAG, &PEwriteLatencyWU, &PEwriteDynamicEnergyWU,
@@ -544,7 +544,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 					// limitation by on-chip buffer, write latency will be divided by numArrayWriteParallel (real case)
 					*writeLatencyWU += PEwriteLatencyWU;
 					*writeDynamicEnergyWU += PEwriteDynamicEnergyWU;
-					
+
 					*readLatencyPeakFW = MAX(peReadLatencyPeakFW, (*readLatencyPeakFW));
 					*readDynamicEnergyPeakFW += peReadDynamicEnergyPeakFW;
 					*readLatencyPeakAG = MAX(peReadLatencyPeakAG, (*readLatencyPeakAG));
@@ -559,17 +559,16 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 					*bufferDynamicEnergy += PEbufferDynamicEnergy;
 					*icLatency = MAX(PEicLatency,(*icLatency));
 					*icDynamicEnergy += PEicDynamicEnergy;
-					
+
 					*coreLatencyADC = MAX(peLatencyADC, (*coreLatencyADC));
 					*coreLatencyAccum = MAX(peLatencyAccum, (*coreLatencyAccum));
 					*coreLatencyOther = MAX(peLatencyOther, (*coreLatencyOther));
-					
+
 					*coreEnergyADC += peEnergyADC;
 					*coreEnergyAccum += peEnergyAccum;
 					*coreEnergyOther += peEnergyOther;
 				}
 			}
-
 			accumulationCM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), numPE, 0);
 			accumulationCM->CalculatePower((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), numPE);
 			*readLatency += accumulationCM->readLatency;
@@ -583,7 +582,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 			*coreLatencyAccum += accumulationCM->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 			*coreEnergyAccum += accumulationCM->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 		}
-		double numBitToLoadOut, numBitToLoadIn;								 
+		double numBitToLoadOut, numBitToLoadIn;
 		if (!param->chipActivation) {
 			if (param->reLu) {
 				reLuCM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse)/reLuCM->numUnit);
@@ -592,7 +591,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 				*readDynamicEnergy += reLuCM->readDynamicEnergy;
 				*readLatencyPeakFW += reLuCM->readLatency;
 				*readDynamicEnergyPeakFW += reLuCM->readDynamicEnergy;
-				
+
 				*coreLatencyOther += reLuCM->readLatency;
 				*coreEnergyOther += reLuCM->readDynamicEnergy;
 				numBitToLoadIn = MAX(ceil(weightMatrixCol/param->numColPerSynapse)*(1+reLuCM->numBit)*numInVector/param->numBitInput, 0);
@@ -605,7 +604,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 				*readDynamicEnergy += sigmoidCM->readDynamicEnergy;
 				*readLatencyPeakFW += sigmoidCM->readLatency;
 				*readDynamicEnergyPeakFW += sigmoidCM->readDynamicEnergy;
-				
+
 				*coreLatencyOther += sigmoidCM->readLatency;
 				*coreEnergyOther += sigmoidCM->readDynamicEnergy;
 				numBitToLoadIn = MAX(ceil(weightMatrixCol/param->numColPerSynapse)*(1+sigmoidCM->numYbit)*numInVector/param->numBitInput, 0);
@@ -617,7 +616,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 			outputBufferCM->CalculateLatency(outputBufferCM->interface_width, numBitToLoadIn/outputBufferCM->interface_width, outputBufferCM->interface_width, numBitToLoadIn/outputBufferCM->interface_width);
 			outputBufferCM->CalculatePower(outputBufferCM->interface_width, numBitToLoadIn/outputBufferCM->interface_width, outputBufferCM->interface_width, numBitToLoadIn/outputBufferCM->interface_width);
 		}
-		
+
 		//considering buffer activation: no matter speedup or not, the total number of data transferred is fixed
 		numBitToLoadOut = MAX(weightMatrixRow*numInVector, 0);
 		inputBufferCM->CalculateLatency(inputBufferCM->interface_width, numBitToLoadOut/inputBufferCM->interface_width, inputBufferCM->interface_width, numBitToLoadOut/inputBufferCM->interface_width);
@@ -627,7 +626,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 		inputBufferCM->writeLatency /= MIN(numInBufferCore, ceil(hTreeCM->busWidth/inputBufferCM->interface_width));
 		outputBufferCM->readLatency /= MIN(numOutBufferCore, ceil(hTreeCM->busWidth/outputBufferCM->interface_width));
 		outputBufferCM->writeLatency /= MIN(numOutBufferCore, ceil(hTreeCM->busWidth/outputBufferCM->interface_width));
-		
+
 		// used to define travel distance
 		double PEheight, PEwidth, PEbufferArea;
 		int numSubArray = ceil((double) peSize/(double) param->numRowSubArray)*ceil((double) peSize/(double) param->numColSubArray);
@@ -635,14 +634,14 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 		PEarea = ProcessingUnitCalculateArea(subArrayInPE, ceil((double)sqrt((double)numSubArray)), ceil((double)sqrt((double)numSubArray)), false, &PEheight, &PEwidth, &PEbufferArea);
 		hTreeCM->CalculateLatency(NULL, NULL, NULL, NULL, PEheight, PEwidth, (numBitToLoadOut+numBitToLoadIn)/hTreeCM->busWidth);
 		hTreeCM->CalculatePower(NULL, NULL, NULL, NULL, PEheight, PEwidth, hTreeCM->busWidth, (numBitToLoadOut+numBitToLoadIn)/hTreeCM->busWidth);
-		
+
 		*readLatency += (inputBufferCM->readLatency + inputBufferCM->writeLatency);
 		*readDynamicEnergy += inputBufferCM->readDynamicEnergy + inputBufferCM->writeDynamicEnergy;
 		*readLatency += (outputBufferCM->readLatency + outputBufferCM->writeLatency);
 		*readDynamicEnergy += outputBufferCM->readDynamicEnergy + outputBufferCM->writeDynamicEnergy;
 		*readLatency += hTreeCM->readLatency;
 		*readDynamicEnergy += hTreeCM->readDynamicEnergy;
-		
+
 		*bufferLatency += (inputBufferCM->readLatency + outputBufferCM->readLatency + inputBufferCM->writeLatency + outputBufferCM->writeLatency);
 		*icLatency += hTreeCM->readLatency;
 		*bufferDynamicEnergy += inputBufferCM->readDynamicEnergy + outputBufferCM->readDynamicEnergy + inputBufferCM->writeDynamicEnergy + outputBufferCM->writeDynamicEnergy;
@@ -655,12 +654,12 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 			*readDynamicEnergyAG += (outputBufferCM->readDynamicEnergy + outputBufferCM->writeDynamicEnergy)*((layerNumber!=0)==true? 1:0);
 			*readLatencyAG += hTreeCM->readLatency*((layerNumber!=0)==true? 1:0);
 			*readDynamicEnergyAG += hTreeCM->readDynamicEnergy*((layerNumber!=0)==true? 1:0);
-			
+
 			*bufferLatency += (inputBufferCM->readLatency + outputBufferCM->readLatency + inputBufferCM->writeLatency + outputBufferCM->writeLatency)*((layerNumber!=0)==true? 1:0);
 			*icLatency += hTreeCM->readLatency*((layerNumber!=0)==true? 1:0);
 			*bufferDynamicEnergy += (inputBufferCM->readDynamicEnergy + outputBufferCM->readDynamicEnergy + inputBufferCM->writeDynamicEnergy + outputBufferCM->writeDynamicEnergy)*((layerNumber!=0)==true? 1:0);
 			*icDynamicEnergy += hTreeCM->readDynamicEnergy*((layerNumber!=0)==true? 1:0);
-			
+
 			// for delta weight transfer
 			double numDeltaWeightBit = weightMatrixRow*weightMatrixCol;
 			inputBufferCM->CalculateLatency(inputBufferCM->interface_width, numDeltaWeightBit/inputBufferCM->interface_width, inputBufferCM->interface_width, numDeltaWeightBit/inputBufferCM->interface_width);
@@ -669,20 +668,20 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 			hTreeCM->CalculatePower(NULL, NULL, NULL, NULL, PEheight, PEwidth, hTreeCM->busWidth, (numDeltaWeightBit)/hTreeCM->busWidth);
 			*writeLatencyWU += (inputBufferCM->readLatency + inputBufferCM->writeLatency + hTreeCM->readLatency);
 			*writeDynamicEnergyWU += (inputBufferCM->readDynamicEnergy + inputBufferCM->writeDynamicEnergy + hTreeCM->readDynamicEnergy);
-		
+
 			*bufferLatency += (inputBufferCM->readLatency+ inputBufferCM->writeLatency);
 			*icLatency += hTreeCM->readLatency;
 			*bufferDynamicEnergy += (inputBufferCM->readDynamicEnergy + inputBufferCM->writeDynamicEnergy);
 			*icDynamicEnergy += hTreeCM->readDynamicEnergy;
-		
-		} 
+
+		}
 		*leakage = PEleakage*numPE*numPE + accumulationCM->leakage + inputBufferCM->leakage + outputBufferCM->leakage;
 	} else {  // novel Mapping
 		for (int i=0; i<numPE; i++) {
 			int location = i*MIN(peSize, (int) weightMatrixRow/numPE);
 			vector<vector<double> > pEMemoryOld;
 			pEMemoryOld = CopyPEArray(oldMemory, location, 0, (int)(weightMatrixRow/numPE), weightMatrixCol);
-			
+
 			vector<vector<double> > pEMemory;
 			pEMemory = CopyPEArray(newMemory, location, 0, (int)(weightMatrixRow/numPE), weightMatrixCol);
 			vector<vector<double> > pEInput;
@@ -691,7 +690,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 			ProcessingUnitCalculatePerformance(subArrayInPE, tech, cell, layerNumber, true, pEMemory, pEMemoryOld, pEInput, 1, 1, numSubArrayRow, numSubArrayCol, weightMatrixRow/numPE,
 									weightMatrixCol, numInVector, &PEreadLatency, &PEreadDynamicEnergy, &PEleakage,
 									&PEreadLatencyAG, &PEreadDynamicEnergyAG, &PEwriteLatencyWU, &PEwriteDynamicEnergyWU,
-									&PEbufferLatency, &PEbufferDynamicEnergy, &PEicLatency, &PEicDynamicEnergy, 
+									&PEbufferLatency, &PEbufferDynamicEnergy, &PEicLatency, &PEicDynamicEnergy,
 									&peLatencyADC, &peLatencyAccum, &peLatencyOther, &peEnergyADC, &peEnergyAccum, &peEnergyOther,
 									&peReadLatencyPeakFW, &peReadDynamicEnergyPeakFW, &peReadLatencyPeakAG, &peReadDynamicEnergyPeakAG,
 									&peWriteLatencyPeakWU, &peWriteDynamicEnergyPeakWU);
@@ -702,9 +701,9 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 			*readDynamicEnergyAG += PEreadDynamicEnergyAG;
 			// accumulate write latency as array need to be write sequentially (worst case)
 			// limitation by on-chip buffer, write latency will be divided by numArrayWriteParallel (real case)
-			*writeLatencyWU += PEwriteLatencyWU; 
+			*writeLatencyWU += PEwriteLatencyWU;
 			*writeDynamicEnergyWU += PEwriteDynamicEnergyWU;
-			
+
 			*readLatencyPeakFW = MAX(peReadLatencyPeakFW, (*readLatencyPeakFW));
 			*readDynamicEnergyPeakFW += peReadDynamicEnergyPeakFW;
 			*readLatencyPeakAG = MAX(peReadLatencyPeakAG, (*readLatencyPeakAG));
@@ -718,11 +717,11 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 			*bufferDynamicEnergy += PEbufferDynamicEnergy;
 			*icLatency = MAX(PEicLatency,(*icLatency));
 			*icDynamicEnergy += PEicDynamicEnergy;
-			
+
 			*coreLatencyADC = MAX(peLatencyADC, (*coreLatencyADC));
 			*coreLatencyAccum = MAX(peLatencyAccum, (*coreLatencyAccum));
 			*coreLatencyOther = MAX(peLatencyOther, (*coreLatencyOther));
-			
+
 			*coreEnergyADC += peEnergyADC;
 			*coreEnergyAccum += peEnergyAccum;
 			*coreEnergyOther += peEnergyOther;
@@ -736,7 +735,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 		*coreLatencyOther /= (speedUpRow*speedUpCol);
 		*bufferLatency /= (speedUpRow*speedUpCol);
 		*icLatency /= (speedUpRow*speedUpCol);
-		
+
 		*writeDynamicEnergyWU *= (speedUpRow*speedUpCol);
 
 		accumulationNM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), numPE, 0);
@@ -749,17 +748,17 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 		*readDynamicEnergyPeakFW += accumulationNM->readDynamicEnergy;
 		*readLatencyPeakAG += accumulationNM->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
 		*readDynamicEnergyPeakAG += accumulationNM->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
-		
+
 		*coreLatencyAccum += accumulationNM->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 		*coreEnergyAccum += accumulationNM->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
-		
+
 		//considering buffer activation: no matter speedup or not, the total number of data transferred is fixed
 		double numBitToLoadOut, numBitToLoadIn;
 		numBitToLoadOut= MAX(weightMatrixRow*numInVector/sqrt(numPE), 0);
 		inputBufferNM->CalculateLatency(inputBufferNM->interface_width, numBitToLoadOut/inputBufferNM->interface_width, inputBufferNM->interface_width, numBitToLoadOut/inputBufferNM->interface_width);
 		inputBufferNM->CalculatePower(inputBufferNM->interface_width, numBitToLoadOut/inputBufferNM->interface_width, inputBufferNM->interface_width, numBitToLoadOut/inputBufferNM->interface_width);
 
- 		if (!param->chipActivation) {
+		if (!param->chipActivation) {
 			if (param->reLu) {
 				reLuNM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse)/reLuNM->numUnit);
 				reLuNM->CalculatePower((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse)/reLuNM->numUnit);
@@ -769,7 +768,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 				*readDynamicEnergyPeakFW += reLuNM->readDynamicEnergy;
 				*coreLatencyOther += reLuNM->readLatency;
 				*coreEnergyOther += reLuNM->readDynamicEnergy;
-				
+
 				numBitToLoadIn = MAX(ceil(weightMatrixCol/param->numColPerSynapse)*(1+reLuNM->numBit)*numInVector/param->numBitInput/numPE, 0);
 				outputBufferNM->CalculateLatency(outputBufferNM->interface_width, numBitToLoadIn/outputBufferNM->interface_width, outputBufferNM->interface_width, numBitToLoadIn/outputBufferNM->interface_width);
 				outputBufferNM->CalculatePower(outputBufferNM->interface_width, numBitToLoadIn/outputBufferNM->interface_width, outputBufferNM->interface_width, numBitToLoadIn/outputBufferNM->interface_width);
@@ -782,7 +781,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 				*readDynamicEnergyPeakFW += sigmoidNM->readDynamicEnergy;
 				*coreLatencyOther += sigmoidNM->readLatency;
 				*coreEnergyOther += sigmoidNM->readDynamicEnergy;
-				
+
 				numBitToLoadIn = MAX(ceil(weightMatrixCol/param->numColPerSynapse)*(1+sigmoidNM->numYbit)*numInVector/param->numBitInput/numPE, 0);
 				outputBufferNM->CalculateLatency(outputBufferNM->interface_width, numBitToLoadIn/outputBufferNM->interface_width, outputBufferNM->interface_width, numBitToLoadIn/outputBufferNM->interface_width);
 				outputBufferNM->CalculatePower(outputBufferNM->interface_width, numBitToLoadIn/outputBufferNM->interface_width, outputBufferNM->interface_width, numBitToLoadIn/outputBufferNM->interface_width);
@@ -797,7 +796,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 		inputBufferNM->writeLatency /= MIN(numInBufferCore, ceil(hTreeNM->busWidth/inputBufferNM->interface_width));
 		outputBufferNM->readLatency /= MIN(numOutBufferCore, ceil(hTreeNM->busWidth/inputBufferNM->interface_width));
 		outputBufferNM->writeLatency /= MIN(numOutBufferCore, ceil(hTreeNM->busWidth/inputBufferNM->interface_width));
-		
+
 		// used to define travel distance
 		double PEheight, PEwidth, PEbufferArea;
 		int numSubArray = ceil((double) peSize/(double) param->numRowSubArray)*ceil((double) peSize/(double) param->numColSubArray);
@@ -805,14 +804,14 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 		PEarea = ProcessingUnitCalculateArea(subArrayInPE, ceil((double)sqrt((double)numSubArray)), ceil((double)sqrt((double)numSubArray)), true, &PEheight, &PEwidth, &PEbufferArea);
 		hTreeNM->CalculateLatency(0, 0, 1, 1, PEheight, PEwidth, (numBitToLoadOut+numBitToLoadIn)/hTreeNM->busWidth);
 		hTreeNM->CalculatePower(0, 0, 1, 1, PEheight, PEwidth, hTreeNM->busWidth, (numBitToLoadOut+numBitToLoadIn)/hTreeNM->busWidth);
-		
+
 		*readLatency += inputBufferNM->readLatency + inputBufferNM->writeLatency;
 		*readDynamicEnergy += inputBufferNM->readDynamicEnergy + inputBufferNM->writeDynamicEnergy;
 		*readLatency += (outputBufferNM->readLatency + outputBufferNM->writeLatency);
 		*readDynamicEnergy += outputBufferNM->readDynamicEnergy + outputBufferNM->writeDynamicEnergy;
 		*readLatency += hTreeNM->readLatency;
 		*readDynamicEnergy += hTreeNM->readDynamicEnergy;
-		
+
 		*bufferLatency += (inputBufferNM->readLatency + outputBufferNM->readLatency + inputBufferNM->writeLatency + outputBufferNM->writeLatency);
 		*icLatency += hTreeNM->readLatency;
 		*bufferDynamicEnergy += inputBufferNM->readDynamicEnergy + outputBufferNM->readDynamicEnergy + inputBufferNM->writeDynamicEnergy + outputBufferNM->writeDynamicEnergy;
@@ -825,12 +824,12 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 			*readDynamicEnergyAG += (outputBufferNM->readDynamicEnergy + outputBufferNM->writeDynamicEnergy)*((layerNumber!=0)==true? 1:0);
 			*readLatencyAG += hTreeNM->readLatency*((layerNumber!=0)==true? 1:0);
 			*readDynamicEnergyAG += hTreeNM->readDynamicEnergy*((layerNumber!=0)==true? 1:0);
-			
+
 			*bufferLatency += (inputBufferNM->readLatency + outputBufferNM->readLatency + inputBufferNM->writeLatency + outputBufferNM->writeLatency)*((layerNumber!=0)==true? 1:0);
 			*icLatency += hTreeNM->readLatency*((layerNumber!=0)==true? 1:0);
 			*bufferDynamicEnergy += (inputBufferNM->readDynamicEnergy + outputBufferNM->readDynamicEnergy + inputBufferNM->writeDynamicEnergy + outputBufferNM->writeDynamicEnergy)*((layerNumber!=0)==true? 1:0);
 			*icDynamicEnergy += hTreeNM->readDynamicEnergy*((layerNumber!=0)==true? 1:0);
-			
+
 			// for delta weight transfer
 			double numDeltaWeightBit = weightMatrixRow*weightMatrixCol;
 			inputBufferNM->CalculateLatency(inputBufferNM->interface_width, numDeltaWeightBit/inputBufferNM->interface_width, inputBufferNM->interface_width, numDeltaWeightBit/inputBufferNM->interface_width);
@@ -839,7 +838,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 			hTreeNM->CalculatePower(0, 0, 1, 1, PEheight, PEwidth, hTreeNM->busWidth, (numDeltaWeightBit)/hTreeNM->busWidth);
 			*writeLatencyWU += (inputBufferNM->readLatency + inputBufferNM->writeLatency + hTreeNM->readLatency);
 			*writeDynamicEnergyWU += (inputBufferNM->readDynamicEnergy + inputBufferNM->writeDynamicEnergy + hTreeNM->readDynamicEnergy);
-			
+
 			*bufferLatency += (inputBufferNM->readLatency+ inputBufferNM->writeLatency);
 			*icLatency += hTreeNM->readLatency;
 			*bufferDynamicEnergy += (inputBufferNM->readDynamicEnergy + inputBufferNM->writeDynamicEnergy);
@@ -851,6 +850,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 
 
 vector<vector<double> > CopyPEArray(const vector<vector<double> > &orginal, int positionRow, int positionCol, int numRow, int numCol) {
+
 	vector<vector<double> > copy;
 	for (int i=0; i<numRow; i++) {
 		vector<double> copyRow;
@@ -862,7 +862,7 @@ vector<vector<double> > CopyPEArray(const vector<vector<double> > &orginal, int 
 	}
 	return copy;
 	copy.clear();
-} 
+}
 
 
 vector<vector<double> > CopyPEInput(const vector<vector<double> > &orginal, int positionRow, int numInputVector, int numRow) {
@@ -878,4 +878,3 @@ vector<vector<double> > CopyPEInput(const vector<vector<double> > &orginal, int 
 	return copy;
 	copy.clear();
 }
-

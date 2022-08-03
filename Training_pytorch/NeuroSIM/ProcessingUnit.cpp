@@ -264,7 +264,6 @@ vector<double> ProcessingUnitCalculateArea(SubArray *subArray, int numSubArrayRo
 		
 		busInputCM->CalculateArea(1, true); 
 		busOutputCM->CalculateArea(1, true);
-		// ToDo: Maybe the matrix fits in a single subArray? ceil(out_features*num_classes / subarray_dim * subarray_dim) could give the number of subarrays?
 		area += subArray->usedArea * (numSubArrayRow*numSubArrayCol) + adderTreeCM->area + bufferInputCM->area + bufferOutputCM->area;
 		
 		*height = sqrt(area);
@@ -389,7 +388,6 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 							subArrayReadLatency += subArray->readLatency;
 							*readDynamicEnergy += subArray->readDynamicEnergy;
 							subArrayLeakage = subArray->leakage;
-							// ToDo: AG values needed?
 							subArrayReadLatencyAG += subArray->readLatencyAG*((param->trainingEstimation)==true? 1:0);
 							*readDynamicEnergyAG += subArray->readDynamicEnergyAG*((param->trainingEstimation)==true? 1:0);
 
@@ -403,7 +401,6 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 						}
 						// accumulate write latency as array need to be write sequentially (worst case)
 						// limitation by on-chip buffer, write latency will be divided by numArrayWriteParallel (real case)
-						// ToDo: 0 here as well, as layers should be treated as the last one?
 						*writeLatencyWU += subArray->writeLatency*((param->trainingEstimation)==true? 1:0);
 						*writeDynamicEnergyWU += subArray->writeDynamicEnergy*((param->trainingEstimation)==true? 1:0);
 						if (NMpe) {
@@ -413,13 +410,11 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 							*readLatency = MAX(subArrayReadLatency + adderTreeNM->readLatency, (*readLatency));
 							*readDynamicEnergy += adderTreeNM->readDynamicEnergy;
 							*readLatencyAG = MAX(subArrayReadLatencyAG + adderTreeNM->readLatency, (*readLatencyAG));
-							// ToDo: AG values needed?
 							*readDynamicEnergyAG += adderTreeNM->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
 							
 							*coreLatencyADC = MAX(subArrayLatencyADC, (*coreLatencyADC));
 							*coreLatencyAccum = MAX(subArrayLatencyAccum + adderTreeNM->readLatency, (*coreLatencyAccum));
 							*coreLatencyOther = MAX(subArrayLatencyOther, (*coreLatencyOther));
-							// ToDo: It's the same question all the time I know
 							*coreEnergyAccum += adderTreeNM->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 						} else {
 							adderTreeCM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), ceil((double) weightMatrixRow/(double) param->numRowSubArray), 0);
@@ -428,13 +423,11 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 							*readLatency = MAX(subArrayReadLatency + adderTreeCM->readLatency, (*readLatency));
 							*readDynamicEnergy += adderTreeCM->readDynamicEnergy;
 							*readLatencyAG = MAX(subArrayReadLatencyAG + adderTreeCM->readLatency, (*readLatencyAG));
-							// ToDo: AG values needed?
 							*readDynamicEnergyAG += adderTreeCM->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
 							
 							*coreLatencyADC = MAX(subArrayLatencyADC, (*coreLatencyADC));
 							*coreLatencyAccum = MAX(subArrayLatencyAccum + adderTreeCM->readLatency, (*coreLatencyAccum));
 							*coreLatencyOther = MAX(subArrayLatencyOther, (*coreLatencyOther));
-							// ToDo: AG values needed?
 							*coreEnergyAccum += adderTreeCM->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 						}
 					}
@@ -507,7 +500,6 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 				subArrayReadLatency += subArray->readLatency;
 				*readDynamicEnergy += subArray->readDynamicEnergy;
 				subArrayLeakage = subArray->leakage;
-				// ToDo: Yep, you know the question
 				subArrayReadLatencyAG += subArray->readLatencyAG*((param->trainingEstimation)==true? 1:0);
 				*readDynamicEnergyAG += subArray->readDynamicEnergyAG*((param->trainingEstimation)==true? 1:0);
 				
@@ -519,7 +511,6 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 				*coreEnergyAccum += subArray->readDynamicEnergyAccum;
 				*coreEnergyOther += subArray->readDynamicEnergyOther;
 			}
-			// ToDo: Basically, this is the same code as above...
 			*writeLatencyWU += subArray->writeLatency*((param->trainingEstimation)==true? 1:0);
 			*writeDynamicEnergyWU += subArray->writeDynamicEnergy*(arrayDupRow*arrayDupCol)*((param->trainingEstimation)==true? 1:0);
 			// do not pass adderTree 
@@ -594,7 +585,6 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 						subArrayReadLatency += subArray->readLatency;
 						*readDynamicEnergy += subArray->readDynamicEnergy;
 						subArrayLeakage = subArray->leakage;
-						// ToDo: Who would have expected?
 						subArrayReadLatencyAG += subArray->readLatencyAG*((param->trainingEstimation)==true? 1:0);
 						*readDynamicEnergyAG += subArray->readDynamicEnergyAG*((param->trainingEstimation)==true? 1:0);
 						
@@ -609,7 +599,6 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 					}
 					// accumulate write latency as array need to be write sequentially (worst case)
 					// limitation by on-chip buffer, write latency will be divided by numArrayWriteParallel (real case)
-					// ToDo: Yes yes, here we go again: Treat all the layers the same, or only in case of AG values?
 					*writeLatencyWU += subArray->writeLatency*((param->trainingEstimation)==true? 1:0);
 					*writeDynamicEnergyWU += subArray->writeDynamicEnergy*((param->trainingEstimation)==true? 1:0);
 					*readLatency = MAX(subArrayReadLatency, (*readLatency));
@@ -624,7 +613,6 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 			adderTreeNM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), ceil((double) weightMatrixRow/(double) param->numRowSubArray), 0);
 			adderTreeNM->CalculatePower((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), ceil((double) weightMatrixRow/(double) param->numRowSubArray));
 			*readLatency += adderTreeNM->readLatency;
-			// ToDo: ...
 			*readLatencyAG += adderTreeNM->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
 			*coreLatencyAccum += adderTreeNM->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 			*readDynamicEnergy += adderTreeNM->readDynamicEnergy;
@@ -634,7 +622,6 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 			adderTreeCM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), ceil((double) weightMatrixRow/(double) param->numRowSubArray), 0);
 			adderTreeCM->CalculatePower((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), ceil((double) weightMatrixRow/(double) param->numRowSubArray));
 			*readLatency += adderTreeCM->readLatency;
-			// ToDo: ...
 			*readLatencyAG += adderTreeCM->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
 			*coreLatencyAccum += adderTreeCM->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 			*readDynamicEnergy += adderTreeCM->readDynamicEnergy;
@@ -670,11 +657,9 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 		
 		*readLatency += (bufferInputNM->readLatency + bufferOutputNM->readLatency + busInputNM->readLatency + busOutputNM->readLatency);
 		*readDynamicEnergy += (bufferInputNM->readDynamicEnergy + bufferOutputNM->readDynamicEnergy + busInputNM->readDynamicEnergy + busOutputNM->readDynamicEnergy);
-		// ToDo: ...
 		*readLatencyAG += (bufferInputNM->readLatency + bufferOutputNM->readLatency + busInputNM->readLatency + busOutputNM->readLatency)*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
 		*readDynamicEnergyAG += (bufferInputNM->readDynamicEnergy + bufferOutputNM->readDynamicEnergy + busInputNM->readDynamicEnergy + busOutputNM->readDynamicEnergy)*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
 
-		// ToDo: ...
 		*bufferLatency = (bufferInputNM->readLatency + bufferOutputNM->readLatency)*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 		*icLatency = (busInputNM->readLatency + busOutputNM->readLatency)*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 		*bufferDynamicEnergy = (bufferInputNM->readDynamicEnergy + bufferOutputNM->readDynamicEnergy)*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
@@ -699,11 +684,9 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 		
 		*readLatency += (bufferInputCM->readLatency + bufferOutputCM->readLatency + busInputCM->readLatency + busOutputCM->readLatency);
 		*readDynamicEnergy += (bufferInputCM->readDynamicEnergy + bufferOutputCM->readDynamicEnergy + busInputCM->readDynamicEnergy + busOutputCM->readDynamicEnergy);
-		// ToDo: ...
 		*readLatencyAG += (bufferInputCM->readLatency + bufferOutputCM->readLatency + busInputCM->readLatency + busOutputCM->readLatency)*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
 		*readDynamicEnergyAG += (bufferInputCM->readDynamicEnergy + bufferOutputCM->readDynamicEnergy + busInputCM->readDynamicEnergy + busOutputCM->readDynamicEnergy)*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
 
-		// ToDo: ...
 		*bufferLatency = (bufferInputCM->readLatency + bufferOutputCM->readLatency)*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 		*icLatency = (busInputCM->readLatency + busOutputCM->readLatency)*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 		*bufferDynamicEnergy = (bufferInputCM->readDynamicEnergy + bufferOutputCM->readDynamicEnergy)*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);

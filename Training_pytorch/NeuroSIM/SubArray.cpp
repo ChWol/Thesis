@@ -42,12 +42,9 @@
 #include "constant.h"
 #include "formula.h"
 #include "SubArray.h"
-#include "Param.h"
 
 
 using namespace std;
-
-extern Param *param;
 
 SubArray::SubArray(InputParameter& _inputParameter, Technology& _tech, MemCell& _cell):
 						inputParameter(_inputParameter), tech(_tech), cell(_cell),
@@ -91,11 +88,11 @@ SubArray::SubArray(InputParameter& _inputParameter, Technology& _tech, MemCell& 
 }
 
 void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //initialization module
-	
+
 	numRow = _numRow;    //import parameters
 	numCol = _numCol;
 	unitWireRes = _unitWireRes;
-	
+
 	double MIN_CELL_HEIGHT = MAX_TRANSISTOR_HEIGHT;  //set real layout cell height
 	double MIN_CELL_WIDTH = (MIN_GAP_BET_GATE_POLY + POLY_WIDTH) * 2;  //set real layout cell width
 	if (cell.memCellType == Type::SRAM) {  //if array is SRAM
@@ -109,10 +106,10 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 		} else {  //if not relax the cell height
 			lengthCol = (double)numRow * cell.heightInFeatureSize * tech.featureSize;
 		}
-	
+
 	} else if (cell.memCellType == Type::RRAM ||  cell.memCellType == Type::FeFET) {  //if array is RRAM
-		double cellHeight = cell.heightInFeatureSize; 
-		double cellWidth = cell.widthInFeatureSize;  
+		double cellHeight = cell.heightInFeatureSize;
+		double cellWidth = cell.widthInFeatureSize;
 		if (cell.accessType == CMOS_access) {  // 1T1R
 			if (relaxArrayCellWidth) {
 				lengthRow = (double)numCol * MAX(cellWidth, MIN_CELL_WIDTH*2) * tech.featureSize;	// Width*2 because generally switch matrix has 2 pass gates per column, even the SL/BL driver has 2 pass gates per column in traditional 1T1R memory
@@ -132,22 +129,22 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 			}
 			if (relaxArrayCellHeight) {
 				lengthCol = (double)numRow * MAX(cellHeight*cell.featureSize, MIN_CELL_HEIGHT*tech.featureSize);
-			} else {  
+			} else {
 				lengthCol = (double)numRow * cellHeight * cell.featureSize;
 			}
 		}
 	}      //finish setting array size
-	
+
 	capRow1 = lengthRow * 0.2e-15/1e-6;	// BL for 1T1R, WL for Cross-point and SRAM
 	capRow2 = lengthRow * 0.2e-15/1e-6;	// WL for 1T1R
 	capCol = lengthCol * 0.2e-15/1e-6;
-	
-	resRow = lengthRow * unitWireRes; 
+
+	resRow = lengthRow * unitWireRes;
 	resCol = lengthCol * unitWireRes;
-	
+
 	//start to initializing the subarray modules
 	if (cell.memCellType == Type::SRAM) {  //if array is SRAM
-		
+
 		//firstly calculate the CMOS resistance and capacitance
 		resCellAccess = CalculateOnResistance(cell.widthAccessCMOS * tech.featureSize, NMOS, inputParameter.temperature, tech);
 		capCellAccess = CalculateDrainCap(cell.widthAccessCMOS * tech.featureSize, NMOS, cell.widthInFeatureSize * tech.featureSize, tech);
@@ -156,9 +153,9 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 		if (conventionalSequential) {
 			wlDecoder.Initialize(REGULAR_ROW, (int)ceil(log2(numRow)), false, false);
 			senseAmp.Initialize(numCol, false, cell.minSenseVoltage, lengthRow/numCol, clkFreq, numReadCellPerOperationNeuro);
-			int adderBit = (int)ceil(log2(numRow)) + 1;	
+			int adderBit = (int)ceil(log2(numRow)) + 1;
 			int numAdder = numCol/numCellPerSynapse;
-			dff.Initialize((adderBit+1)*numAdder, clkFreq);	
+			dff.Initialize((adderBit+1)*numAdder, clkFreq);
 			adder.Initialize(adderBit, numAdder);
 			if (numCellPerSynapse > 1) {
 				shiftAddWeight.Initialize(numAdder, adderBit, clkFreq, spikingMode, numCellPerSynapse);
@@ -167,14 +164,13 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 				shiftAddInput.Initialize(numAdder, adderBit+numCellPerSynapse, clkFreq, spikingMode, numReadPulse);
 			}
 
-			// My addition
 			/* Transpose Peripheral for BP */
-			if (trainingEstimation && param->rule == "bp") {
+			if (trainingEstimation) {
 				wlDecoderBP.Initialize(REGULAR_ROW, (int)ceil(log2(numCol)), false, false);
 				senseAmpBP.Initialize(numCol, false, cell.minSenseVoltage, lengthCol/numRow, clkFreq, numReadCellPerOperationNeuro);
-				int adderBit = (int)ceil(log2(numCol)) + 1;	
+				int adderBit = (int)ceil(log2(numCol)) + 1;
 				int numAdder = numRow/numCellPerSynapse;
-				dffBP.Initialize((adderBit+1)*numAdder, clkFreq); 
+				dffBP.Initialize((adderBit+1)*numAdder, clkFreq);
 				adderBP.Initialize(adderBit, numAdder);
 				if (numCellPerSynapse > 1) {
 					shiftAddBPWeight.Initialize(numAdder, adderBit, clkFreq, spikingMode, numCellPerSynapse);
@@ -183,11 +179,11 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 					shiftAddBPInput.Initialize(numAdder, adderBit+numCellPerSynapse, clkFreq, spikingMode, numReadPulseBP);
 				}
 			}
-			
+
 		} else if (conventionalParallel) {
 			wlSwitchMatrix.Initialize(ROW_MODE, numRow, resRow, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, 1, clkFreq);
 			if (numColMuxed>1) {
-				mux.Initialize(ceil(numCol/numColMuxed), numColMuxed, resCellAccess/numRow/2, FPGA);       
+				mux.Initialize(ceil(numCol/numColMuxed), numColMuxed, resCellAccess/numRow/2, FPGA);
 				muxDecoder.Initialize(REGULAR_ROW, (int)ceil(log2(numColMuxed)), true, false);
 			}
 			if (SARADC) {
@@ -202,12 +198,12 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 			if (numReadPulse > 1) {
 				shiftAddInput.Initialize(ceil(numCol/numColMuxed), log2(levelOutput)+numCellPerSynapse, clkFreq, spikingMode, numReadPulse);
 			}
-			// My Addition
-			if (trainingEstimation && param->rule == "bp") {
+
+			if (trainingEstimation) {
 				wlSwitchMatrixBP.Initialize(ROW_MODE, numCol, resCol, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, 1, clkFreq);
 				if (parallelBP) {
 					if (numRowMuxedBP>1) {
-						muxBP.Initialize(ceil(numRow/numRowMuxedBP), numRowMuxedBP, resCellAccess/numCol/2, FPGA);       
+						muxBP.Initialize(ceil(numRow/numRowMuxedBP), numRowMuxedBP, resCellAccess/numCol/2, FPGA);
 						muxDecoderBP.Initialize(REGULAR_ROW, (int)ceil(log2(numRowMuxedBP)), true, false);
 					}
 					if (SARADC) {
@@ -224,9 +220,9 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 					}
 				} else {
 					senseAmpBP.Initialize(numCol, false, cell.minSenseVoltage, lengthCol/numRow, clkFreq, numReadCellPerOperationNeuro);
-					int adderBit = (int)ceil(log2(numCol)) + 1;	
+					int adderBit = (int)ceil(log2(numCol)) + 1;
 					int numAdder = numRow/numCellPerSynapse;
-					dffBP.Initialize((adderBit+1)*numAdder, clkFreq); 
+					dffBP.Initialize((adderBit+1)*numAdder, clkFreq);
 					adderBP.Initialize(adderBit, numAdder);
 					if (numCellPerSynapse > 1) {
 						shiftAddBPWeight.Initialize(numAdder, adderBit, clkFreq, spikingMode, numCellPerSynapse);
@@ -236,13 +232,13 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 					}
 				}
 			}
-			
+
 		} else if (BNNsequentialMode || XNORsequentialMode) {
 			wlDecoder.Initialize(REGULAR_ROW, (int)ceil(log2(numRow)), false, false);
 			senseAmp.Initialize(numCol, false, cell.minSenseVoltage, lengthRow/numCol, clkFreq, numReadCellPerOperationNeuro);
-			int adderBit = (int)ceil(log2(numRow)) + avgWeightBit;	
+			int adderBit = (int)ceil(log2(numRow)) + avgWeightBit;
 			int numAdder = numCol/numCellPerSynapse;
-			dff.Initialize((adderBit+1)*numAdder, clkFreq);	
+			dff.Initialize((adderBit+1)*numAdder, clkFreq);
 			adder.Initialize(adderBit, numAdder);
 		} else if (BNNparallelMode || XNORparallelMode) {
 			wlSwitchMatrix.Initialize(ROW_MODE, numRow, resRow, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, 1, clkFreq);
@@ -271,7 +267,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 		sramWriteDriver.Initialize(numCol, activityColWrite, numWriteCellPerOperationNeuro);
 		prechargerBP.Initialize(numRow, resRow, activityColWrite, numReadCellPerOperationNeuro, numWriteCellPerOperationNeuro);
 		sramWriteDriverBP.Initialize(numRow, activityColWrite, numWriteCellPerOperationNeuro);
-		
+
     } else if (cell.memCellType == Type::RRAM || cell.memCellType == Type::FeFET) {
 		if (cell.accessType == CMOS_access) {	// 1T1R
 			cell.resCellAccess = cell.resistanceOn * IR_DROP_TOLERANCE;    //calculate access CMOS resistance
@@ -311,26 +307,26 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 				cell.resMemCellAvgAtVw = cell.resistanceAvg;
 			}
 		}
-		
-		if (conventionalSequential) {  
+
+		if (conventionalSequential) {
 			double capBL = lengthCol * 0.2e-15/1e-6;
 			int numAdder = (int)ceil(numCol/numColMuxed);   // numCol is divisible by numCellPerSynapse
-			int numInput = numAdder;        //XXX input number of MUX, 
+			int numInput = numAdder;        //XXX input number of MUX,
 			double resTg = cell.resMemCellOn;     //transmission gate resistance
-			int adderBit = (int)ceil(log2(numRow)) + avgWeightBit;  
-			
-			wlDecoder.Initialize(REGULAR_ROW, (int)ceil(log2(numRow)), false, false);          
+			int adderBit = (int)ceil(log2(numRow)) + avgWeightBit;
+
+			wlDecoder.Initialize(REGULAR_ROW, (int)ceil(log2(numRow)), false, false);
 			if (cell.accessType == CMOS_access) {
-				wlNewDecoderDriver.Initialize(numRow);          
+				wlNewDecoderDriver.Initialize(numRow);
 			} else {
 				wlDecoderDriver.Initialize(ROW_MODE, numRow, numCol);
 			}
 			slSwitchMatrix.Initialize(COL_MODE, numCol, resTg, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, numWritePulseAVG, clkFreq);     //SL use switch matrix
 			if (numColMuxed>1) {
-				mux.Initialize(numInput, numColMuxed, resTg, FPGA);     
+				mux.Initialize(numInput, numColMuxed, resTg, FPGA);
 				muxDecoder.Initialize(REGULAR_ROW, (int)ceil(log2(numColMuxed)), true, false);
 			}
-			
+
 			if (SARADC) {
 				sarADC.Initialize(numCol/numColMuxed, pow(2, avgWeightBit), clkFreq, numReadCellPerOperationNeuro);
 			} else {
@@ -340,7 +336,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 				}
 			}
 
-			dff.Initialize((adderBit+1)*numAdder, clkFreq); 
+			dff.Initialize((adderBit+1)*numAdder, clkFreq);
 			adder.Initialize(adderBit, numAdder);
 			if (numCellPerSynapse > 1) {
 				shiftAddWeight.Initialize(numAdder, adderBit, clkFreq, spikingMode, numCellPerSynapse);
@@ -348,12 +344,11 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 			if (numReadPulse > 1) {
 				shiftAddInput.Initialize(numAdder, adderBit+numCellPerSynapse, clkFreq, spikingMode, numReadPulse);
 			}
-			
+
 			/* Transpose Peripheral for BP */
-			// My addition
-			if (trainingEstimation && param->rule == "bp") {
+			if (trainingEstimation) {
 				if (numRowMuxedBP>1) {
-					muxBP.Initialize(ceil(numRow/numRowMuxedBP), numRowMuxedBP, resTg, FPGA);       
+					muxBP.Initialize(ceil(numRow/numRowMuxedBP), numRowMuxedBP, resTg, FPGA);
 					muxDecoderBP.Initialize(REGULAR_ROW, (int)ceil(log2(numRowMuxedBP)), true, false);
 				}
 				if (SARADC) {
@@ -365,7 +360,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 					}
 				}
 
-				dffBP.Initialize((ceil(log2(numCol)) + avgWeightBit+1)*ceil(numRow/numRowMuxedBP), clkFreq); 
+				dffBP.Initialize((ceil(log2(numCol)) + avgWeightBit+1)*ceil(numRow/numRowMuxedBP), clkFreq);
 				adderBP.Initialize(ceil(log2(numCol)) + avgWeightBit, ceil(numRow/numRowMuxedBP));
 				if (numCellPerSynapse > 1) {
 					shiftAddBPWeight.Initialize(ceil(numRow/numRowMuxedBP), ceil(log2(numCol))+avgWeightBit, clkFreq, spikingMode, numCellPerSynapse);
@@ -374,21 +369,21 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 					shiftAddBPInput.Initialize(ceil(numRow/numRowMuxedBP), ceil(log2(numCol))+avgWeightBit+numCellPerSynapse, clkFreq, spikingMode, numReadPulseBP);
 				}
 			}
-			
-		} else if (conventionalParallel) { 
+
+		} else if (conventionalParallel) {
 			double resTg = cell.resMemCellOn / numRow;
-			
+
 			if (cell.accessType == CMOS_access) {
-				wlNewSwitchMatrix.Initialize(numRow, activityRowRead, clkFreq);         
+				wlNewSwitchMatrix.Initialize(numRow, activityRowRead, clkFreq);
 			} else {
 				wlSwitchMatrix.Initialize(ROW_MODE, numRow, resTg*numRow/numCol, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, numWritePulseAVG, clkFreq);
 			}
-			slSwitchMatrix.Initialize(COL_MODE, numCol, resTg*numRow, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, numWritePulseAVG, clkFreq);     
+			slSwitchMatrix.Initialize(COL_MODE, numCol, resTg*numRow, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, numWritePulseAVG, clkFreq);
 			if (numColMuxed>1) {
-				mux.Initialize(ceil(numCol/numColMuxed), numColMuxed, resTg, FPGA);       
+				mux.Initialize(ceil(numCol/numColMuxed), numColMuxed, resTg, FPGA);
 				muxDecoder.Initialize(REGULAR_ROW, (int)ceil(log2(numColMuxed)), true, false);
 			}
-			
+
 			if (SARADC) {
 				sarADC.Initialize(numCol/numColMuxed, levelOutput, clkFreq, numReadCellPerOperationNeuro);
 			} else {
@@ -401,12 +396,11 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 			if (numReadPulse > 1) {
 				shiftAddInput.Initialize(ceil(numCol/numColMuxed), log2(levelOutput)+numCellPerSynapse, clkFreq, spikingMode, numReadPulse);
 			}
-			
+
 			/* Transpose Peripheral for BP */
-			// My addition
-			if (trainingEstimation && param->rule == "bp") {
+			if (trainingEstimation) {
 				if (numRowMuxedBP>1) {
-					muxBP.Initialize(ceil(numRow/numRowMuxedBP), numRowMuxedBP, cell.resMemCellOn/numCol, FPGA);       
+					muxBP.Initialize(ceil(numRow/numRowMuxedBP), numRowMuxedBP, cell.resMemCellOn/numCol, FPGA);
 					muxDecoderBP.Initialize(REGULAR_ROW, (int)ceil(log2(numRowMuxedBP)), true, false);
 				}
 				if (parallelBP) {
@@ -423,7 +417,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 						shiftAddBPInput.Initialize(ceil(numRow/numRowMuxedBP), log2(levelOutputBP)+numCellPerSynapse, clkFreq, spikingMode, numReadPulseBP);
 					}
 				} else {
-					
+
 					if (SARADC) {
 						sarADCBP.Initialize(numRow/numRowMuxedBP, pow(2, avgWeightBit), clkFreq, numReadCellPerOperationNeuro);
 					} else {
@@ -433,7 +427,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 						}
 					}
 
-					dffBP.Initialize((ceil(log2(numCol)) + avgWeightBit+1)*ceil(numRow/numRowMuxedBP), clkFreq); 
+					dffBP.Initialize((ceil(log2(numCol)) + avgWeightBit+1)*ceil(numRow/numRowMuxedBP), clkFreq);
 					adderBP.Initialize(ceil(log2(numCol)) + avgWeightBit, ceil(numRow/numRowMuxedBP));
 					if (numCellPerSynapse > 1) {
 						shiftAddBPWeight.Initialize(ceil(numRow/numRowMuxedBP), ceil(log2(numCol))+avgWeightBit, clkFreq, spikingMode, numCellPerSynapse);
@@ -443,40 +437,40 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 					}
 				}
 			}
-			
-		} else if (BNNsequentialMode || XNORsequentialMode) {       
+
+		} else if (BNNsequentialMode || XNORsequentialMode) {
 			double resTg = cell.resMemCellOn;
-			int numAdder = (int)ceil(numCol/numColMuxed);  
-			int numInput = numAdder;        
-			int adderBit = (int)ceil(log2(numRow)) + 1; 
-			
-			wlDecoder.Initialize(REGULAR_ROW, (int)ceil(log2(numRow)), false, false);           
+			int numAdder = (int)ceil(numCol/numColMuxed);
+			int numInput = numAdder;
+			int adderBit = (int)ceil(log2(numRow)) + 1;
+
+			wlDecoder.Initialize(REGULAR_ROW, (int)ceil(log2(numRow)), false, false);
 			if (cell.accessType == CMOS_access) {
-				wlNewDecoderDriver.Initialize(numRow);          
+				wlNewDecoderDriver.Initialize(numRow);
 			} else {
 				wlDecoderDriver.Initialize(ROW_MODE, numRow, numCol);
 			}
 			slSwitchMatrix.Initialize(COL_MODE, numCol, resTg, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, numWritePulseAVG, clkFreq);     //SL use switch matrix
 			if (numColMuxed>1) {
-				mux.Initialize(numInput, numColMuxed, resTg, FPGA);      
+				mux.Initialize(numInput, numColMuxed, resTg, FPGA);
 				muxDecoder.Initialize(REGULAR_ROW, (int)ceil(log2(numColMuxed)), true, false);
 			}
 			rowCurrentSenseAmp.Initialize(numCol/numColMuxed, true, false, clkFreq, numReadCellPerOperationNeuro);
-			dff.Initialize((adderBit+1)*numAdder, clkFreq); 
+			dff.Initialize((adderBit+1)*numAdder, clkFreq);
 			adder.Initialize(adderBit, numAdder);
-		} else if (BNNparallelMode || XNORparallelMode) {      
+		} else if (BNNparallelMode || XNORparallelMode) {
 			double resTg = cell.resMemCellOn / numRow;
-			
+
 			if (cell.accessType == CMOS_access) {
-				wlNewSwitchMatrix.Initialize(numRow, activityRowRead, clkFreq);         
+				wlNewSwitchMatrix.Initialize(numRow, activityRowRead, clkFreq);
 			} else {
 				wlSwitchMatrix.Initialize(ROW_MODE, numRow, resTg*numRow/numCol, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, numWritePulseAVG, clkFreq);
 			}
-			slSwitchMatrix.Initialize(COL_MODE, numCol, resTg * numRow, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, numWritePulseAVG, clkFreq);     
+			slSwitchMatrix.Initialize(COL_MODE, numCol, resTg * numRow, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, numWritePulseAVG, clkFreq);
 			if (numColMuxed>1) {
-				mux.Initialize(ceil(numCol/numColMuxed), numColMuxed, resTg, FPGA);       
-				muxDecoder.Initialize(REGULAR_ROW, (int)ceil(log2(numColMuxed/2)), true, true);    
-			}  
+				mux.Initialize(ceil(numCol/numColMuxed), numColMuxed, resTg, FPGA);
+				muxDecoder.Initialize(REGULAR_ROW, (int)ceil(log2(numColMuxed/2)), true, true);
+			}
 			if (SARADC) {
 				sarADC.Initialize(numCol/numColMuxed, levelOutput, clkFreq, numReadCellPerOperationNeuro);
 			} else {
@@ -485,15 +479,15 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 			}
 		} else {
 			double resTg = cell.resMemCellOn / numRow;
-			
+
 			if (cell.accessType == CMOS_access) {
-				wlNewSwitchMatrix.Initialize(numRow, activityRowRead, clkFreq);         
+				wlNewSwitchMatrix.Initialize(numRow, activityRowRead, clkFreq);
 			} else {
 				wlSwitchMatrix.Initialize(ROW_MODE, numRow, resTg*numRow/numCol, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, numWritePulseAVG, clkFreq);
 			}
-			slSwitchMatrix.Initialize(COL_MODE, numCol, resTg*numRow, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, numWritePulseAVG, clkFreq);     
+			slSwitchMatrix.Initialize(COL_MODE, numCol, resTg*numRow, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, numWritePulseAVG, clkFreq);
 			if (numColMuxed>1) {
-				mux.Initialize(ceil(numCol/numColMuxed), numColMuxed, resTg, FPGA);      
+				mux.Initialize(ceil(numCol/numColMuxed), numColMuxed, resTg, FPGA);
 				muxDecoder.Initialize(REGULAR_ROW, (int)ceil(log2(numColMuxed)), true, false);
 			}
 			if (SARADC) {
@@ -509,7 +503,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 				shiftAddInput.Initialize(ceil(numCol/numColMuxed), log2(levelOutput)+numCellPerSynapse, clkFreq, spikingMode, numReadPulse);
 			}
 		}
-	} 
+	}
 	initialized = true;  //finish initialization
 }
 
@@ -521,20 +515,20 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 	} else {  //if initialized, start to do calculation
 		area = 0;
 		usedArea = 0;
-		if (cell.memCellType == Type::SRAM) {       
+		if (cell.memCellType == Type::SRAM) {
 			// Array only
 			heightArray = lengthCol;
 			widthArray = lengthRow;
 			areaArray = heightArray * widthArray;
-			
+
 			//precharger and writeDriver are always needed for all different designs
 			precharger.CalculateArea(NULL, widthArray, NONE);
 			sramWriteDriver.CalculateArea(NULL, widthArray, NONE);
 			prechargerBP.CalculateArea(heightArray, NULL, NONE);
 			sramWriteDriverBP.CalculateArea(heightArray, NULL, NONE);
-			
+
 			if (conventionalSequential) {
-				wlDecoder.CalculateArea(heightArray, NULL, NONE);  
+				wlDecoder.CalculateArea(heightArray, NULL, NONE);
 				senseAmp.CalculateArea(NULL, widthArray, MAGIC);
 				adder.CalculateArea(NULL, widthArray, NONE);
 				dff.CalculateArea(NULL, widthArray, NONE);
@@ -547,19 +541,18 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 				height = precharger.height + sramWriteDriver.height + heightArray + senseAmp.height + adder.height + dff.height + shiftAddInput.height + shiftAddWeight.height;
 				width = wlDecoder.width + widthArray;
 				usedArea = areaArray + wlDecoder.area + precharger.area + sramWriteDriver.area + senseAmp.area + adder.area + dff.area + shiftAddInput.area + shiftAddWeight.area;
-				
+
 				areaADC = senseAmp.area + precharger.area;
 				areaAccum = adder.area + dff.area + shiftAddInput.area + shiftAddWeight.area;
 				areaOther = wlDecoder.area + sramWriteDriver.area;
 
 				/* Transpose Peripheral for BP */
-				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					wlDecoderBP.CalculateArea(NULL, widthArray, NONE);
 					senseAmpBP.CalculateArea(heightArray, NULL, NONE);
 					dffBP.CalculateArea(heightArray, NULL, NONE);
 					adderBP.CalculateArea(heightArray, NULL, NONE);
-					
+
 					if (numReadPulseBP > 1) {
 						shiftAddBPInput.CalculateArea(heightArray, NULL, NONE);
 					}
@@ -573,12 +566,12 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 					areaADC += senseAmpBP.area + prechargerBP.area;
 					areaAccum += dffBP.area + adderBP.area + shiftAddBPInput.area + shiftAddBPWeight.area;
 					areaOther += muxBP.area + muxDecoderBP.area + wlDecoderBP.area+ sramWriteDriverBP.area;
-					
+
 				}
 				area = height * width;
 				emptyArea = area - usedArea;
-				
-			} else if (conventionalParallel) { 
+
+			} else if (conventionalParallel) {
 				wlSwitchMatrix.CalculateArea(heightArray, NULL, NONE);
 				if (numColMuxed>1) {
 					mux.CalculateArea(NULL, widthArray, NONE);
@@ -593,7 +586,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 					multilevelSenseAmp.CalculateArea(NULL, widthArray, NONE);
 					multilevelSAEncoder.CalculateArea(NULL, widthArray, NONE);
 				}
-				
+
 				if (numReadPulse > 1) {
 					shiftAddInput.CalculateArea(NULL, widthArray, NONE);
 				}
@@ -603,16 +596,15 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 				height = precharger.height + sramWriteDriver.height + heightArray + multilevelSenseAmp.height + multilevelSAEncoder.height + shiftAddInput.height + shiftAddWeight.height + mux.height + sarADC.height;
 				width = MAX(wlSwitchMatrix.width, muxDecoder.width) + widthArray;
 				usedArea = areaArray + wlSwitchMatrix.area + precharger.area + sramWriteDriver.area + multilevelSenseAmp.area + multilevelSAEncoder.area + shiftAddInput.area + shiftAddWeight.area + mux.area + muxDecoder.area + sarADC.area;
-				
+
 				areaADC = multilevelSenseAmp.area + precharger.area + multilevelSAEncoder.area + sarADC.area;
 				areaAccum = shiftAddInput.area + shiftAddWeight.area;
 				areaOther = wlSwitchMatrix.area + sramWriteDriver.area + mux.area + muxDecoder.area;
-				
+
 				/* Transpose Peripheral for BP */
-				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					wlSwitchMatrixBP.CalculateArea(NULL, widthArray, NONE);
-					
+
 					if (parallelBP) {
 						if (numRowMuxedBP>1) {
 							muxBP.CalculateArea(heightArray, NULL, NONE);
@@ -620,7 +612,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 							double minMuxWidth = MAX(muxDecoderBP.width, muxBP.width);
 							muxBP.CalculateArea(heightArray, minMuxWidth, OVERRIDE);
 						}
-					
+
 						if (SARADC) {
 							sarADCBP.CalculateUnitArea();
 							sarADCBP.CalculateArea(heightArray, NULL, NONE);
@@ -628,7 +620,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 							multilevelSenseAmpBP.CalculateArea(heightArray, NULL, NONE);
 							multilevelSAEncoderBP.CalculateArea(heightArray, NULL, NONE);
 						}
-						
+
 						if (numReadPulseBP > 1) {
 							shiftAddBPInput.CalculateArea(heightArray, NULL, NONE);
 						}
@@ -642,12 +634,12 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 						areaADC += multilevelSenseAmpBP.area + multilevelSAEncoderBP.area + prechargerBP.area + sarADCBP.area;
 						areaAccum += shiftAddBPInput.area + shiftAddBPWeight.area;
 						areaOther += muxBP.area + muxDecoderBP.area + wlSwitchMatrixBP.area + sramWriteDriverBP.area;
-						
+
 					} else {
 						senseAmpBP.CalculateArea(heightArray, NULL, NONE);
 						dffBP.CalculateArea(heightArray, NULL, NONE);
 						adderBP.CalculateArea(heightArray, NULL, NONE);
-						
+
 						if (numReadPulseBP > 1) {
 							shiftAddBPInput.CalculateArea(heightArray, NULL, NONE);
 						}
@@ -663,12 +655,12 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 						areaOther += wlSwitchMatrixBP.area + sramWriteDriverBP.area;
 					}
 				}
-				
+
 				area = height * width;
 				emptyArea = area - usedArea;
-				
+
 			} else if (BNNsequentialMode || XNORsequentialMode) {
-				wlDecoder.CalculateArea(heightArray, NULL, NONE);  
+				wlDecoder.CalculateArea(heightArray, NULL, NONE);
 				senseAmp.CalculateArea(NULL, widthArray, MAGIC);
 				adder.CalculateArea(NULL, widthArray, NONE);
 				dff.CalculateArea(NULL, widthArray, NONE);
@@ -717,8 +709,8 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 			heightArray = lengthCol;
 			widthArray = lengthRow;
 			areaArray = heightArray * widthArray;
-			
-			if (conventionalSequential) {  
+
+			if (conventionalSequential) {
 				wlDecoder.CalculateArea(heightArray, NULL, NONE);
 				if (cell.accessType == CMOS_access) {
 					wlNewDecoderDriver.CalculateArea(heightArray, NULL, NONE);
@@ -726,7 +718,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 					wlDecoderDriver.CalculateArea(heightArray, NULL, NONE);
 				}
 				slSwitchMatrix.CalculateArea(NULL, widthArray, NONE);
-				
+
 				if (numColMuxed > 1) {
 					mux.CalculateArea(NULL, widthArray, NONE);
 					muxDecoder.CalculateArea(NULL, NULL, NONE);
@@ -754,14 +746,13 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 				height = slSwitchMatrix.height + heightArray + mux.height + multilevelSenseAmp.height + multilevelSAEncoder.height + adder.height + dff.height + shiftAddInput.height + shiftAddWeight.height + sarADC.height;
 				width = MAX(wlDecoder.width + wlNewDecoderDriver.width + wlDecoderDriver.width, muxDecoder.width) + widthArray;
 				usedArea = areaArray + wlDecoder.area + wlDecoderDriver.area + wlNewDecoderDriver.area + slSwitchMatrix.area + mux.area + multilevelSenseAmp.area + multilevelSAEncoder.area + muxDecoder.area + adder.area + dff.area + shiftAddInput.area + shiftAddWeight.area + sarADC.area;
-				
+
 				areaADC = multilevelSenseAmp.area + multilevelSAEncoder.area + sarADC.area;
 				areaAccum = adder.area + dff.area + shiftAddInput.area + shiftAddWeight.area;
 				areaOther = wlDecoder.area + wlNewDecoderDriver.area + wlDecoderDriver.area + slSwitchMatrix.area + mux.area + muxDecoder.area;
-				
+
 				/* Transpose Peripheral for BP */
-				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					if (numRowMuxedBP>1) {
 						muxBP.CalculateArea(heightArray, NULL, NONE);
 						muxDecoderBP.CalculateArea(NULL, NULL, NONE);
@@ -792,13 +783,13 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 					areaADC += multilevelSenseAmpBP.area + multilevelSAEncoderBP.area + sarADCBP.area;
 					areaAccum += dffBP.area + adderBP.area + shiftAddBPInput.area + shiftAddBPWeight.area;
 					areaOther += muxBP.area + muxDecoderBP.area;
-					
+
 				}
-				
+
 				area = height * width;
 				emptyArea = area - usedArea;
-				
-			} else if (conventionalParallel) { 
+
+			} else if (conventionalParallel) {
 				if (cell.accessType == CMOS_access) {
 					wlNewSwitchMatrix.CalculateArea(heightArray, NULL, NONE);
 				} else {
@@ -818,32 +809,31 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 					multilevelSenseAmp.CalculateArea(NULL, widthArray, NONE);
 					multilevelSAEncoder.CalculateArea(NULL, widthArray, NONE);
 				}
-				
+
 				if (numReadPulse > 1) {
 					shiftAddInput.CalculateArea(NULL, widthArray, NONE);
 				}
 				if (numCellPerSynapse > 1) {
 					shiftAddWeight.CalculateArea(NULL, widthArray, NONE);
 				}
-				
+
 				height = slSwitchMatrix.height + heightArray + mux.height + multilevelSenseAmp.height + multilevelSAEncoder.height + shiftAddInput.height + shiftAddWeight.height + sarADC.height;
 				width = MAX(wlNewSwitchMatrix.width + wlSwitchMatrix.width, muxDecoder.width) + widthArray;
 				usedArea = areaArray + wlSwitchMatrix.area + wlNewSwitchMatrix.area + slSwitchMatrix.area + mux.area + multilevelSenseAmp.area + muxDecoder.area + multilevelSAEncoder.area + shiftAddInput.area + shiftAddWeight.area + sarADC.area;
-				
+
 				areaADC = multilevelSenseAmp.area + multilevelSAEncoder.area + sarADC.area;
 				areaAccum = shiftAddInput.area + shiftAddWeight.area;
 				areaOther = wlNewSwitchMatrix.area + wlSwitchMatrix.area + slSwitchMatrix.area + mux.area + muxDecoder.area;
-				
+
 				/* Transpose Peripheral for BP */
-				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					if (numRowMuxedBP>1) {
 						muxBP.CalculateArea(heightArray, NULL, NONE);
 						muxDecoderBP.CalculateArea(NULL, NULL, NONE);
 						double minMuxWidth = MAX(muxDecoderBP.width, muxBP.width);
 						muxBP.CalculateArea(heightArray, minMuxWidth, OVERRIDE);
 					}
-					
+
 					if (parallelBP) {
 						if (SARADC) {
 							sarADCBP.CalculateUnitArea();
@@ -878,7 +868,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 
 						dffBP.CalculateArea(heightArray, NULL, NONE);
 						adderBP.CalculateArea(heightArray, NULL, NONE);
-						
+
 						if (numReadPulseBP > 1) {
 							shiftAddBPInput.CalculateArea(heightArray, NULL, NONE);
 						}
@@ -895,7 +885,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 				}
 				area = height * width;
 				emptyArea = area - usedArea;
-			} else if (BNNsequentialMode || XNORsequentialMode) {       
+			} else if (BNNsequentialMode || XNORsequentialMode) {
 				wlDecoder.CalculateArea(heightArray, NULL, NONE);
 				if (cell.accessType == CMOS_access) {
 					wlNewDecoderDriver.CalculateArea(heightArray, NULL, NONE);
@@ -911,16 +901,16 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 				}
 				rowCurrentSenseAmp.CalculateUnitArea();
 				rowCurrentSenseAmp.CalculateArea(widthArray);
-				
+
 				dff.CalculateArea(NULL, widthArray, NONE);
 				adder.CalculateArea(NULL, widthArray, NONE);
-				
+
 				height = slSwitchMatrix.height + heightArray + mux.height + rowCurrentSenseAmp.height + adder.height + dff.height;
 				width = MAX(wlDecoder.width + wlNewDecoderDriver.width + wlDecoderDriver.width, muxDecoder.width) + widthArray;
 				area = height * width;
 				usedArea = areaArray + wlDecoder.area + wlDecoderDriver.area + wlNewDecoderDriver.area + slSwitchMatrix.area + mux.area + rowCurrentSenseAmp.area + muxDecoder.area + adder.area + dff.area;
 				emptyArea = area - usedArea;
-			} else if (BNNparallelMode || XNORparallelMode) {      
+			} else if (BNNparallelMode || XNORparallelMode) {
 				if (cell.accessType == CMOS_access) {
 					wlNewSwitchMatrix.CalculateArea(heightArray, NULL, NONE);
 				} else {
@@ -940,13 +930,13 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 					multilevelSenseAmp.CalculateArea(NULL, widthArray, NONE);
 					multilevelSAEncoder.CalculateArea(NULL, widthArray, NONE);
 				}
-				
+
 				height = slSwitchMatrix.height + heightArray + mux.height + multilevelSenseAmp.height + multilevelSAEncoder.height + sarADC.height;
 				width = MAX(wlNewSwitchMatrix.width + wlSwitchMatrix.width, muxDecoder.width) + widthArray;
 				area = height * width;
 				usedArea = areaArray + wlSwitchMatrix.area + wlNewSwitchMatrix.area + slSwitchMatrix.area + mux.area + multilevelSenseAmp.area + muxDecoder.area + multilevelSAEncoder.area + sarADC.area;
 				emptyArea = area - usedArea;
-			} else {   
+			} else {
 				if (cell.accessType == CMOS_access) {
 					wlNewSwitchMatrix.CalculateArea(heightArray, NULL, NONE);
 				} else {
@@ -966,23 +956,23 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 					multilevelSenseAmp.CalculateArea(NULL, widthArray, NONE);
 					multilevelSAEncoder.CalculateArea(NULL, widthArray, NONE);
 				}
-				
+
 				height = slSwitchMatrix.height + heightArray + mux.height + multilevelSenseAmp.height + multilevelSAEncoder.height + sarADC.height;
 				width = MAX(wlNewSwitchMatrix.width + wlSwitchMatrix.width, muxDecoder.width) + widthArray;
 				area = height * width;
 				usedArea = areaArray + wlSwitchMatrix.area + wlNewSwitchMatrix.area + slSwitchMatrix.area + mux.area + multilevelSenseAmp.area + muxDecoder.area + multilevelSAEncoder.area + sarADC.area;
 				emptyArea = area - usedArea;
 			}
-			
-		} 
+
+		}
 	}
 }
 
-void SubArray::CalculateLatency(double columnRes, const vector<double> &columnResistance, const vector<double> &rowResistance) {   //calculate latency for different mode 
+void SubArray::CalculateLatency(double columnRes, const vector<double> &columnResistance, const vector<double> &rowResistance) {   //calculate latency for different mode
 	if (!initialized) {
 		cout << "[Subarray] Error: Require initialization first!" << endl;
 	} else {
-		
+
 		readLatency = 0;
 		writeLatency = 0;
 
@@ -991,22 +981,22 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				int numReadOperationPerRow = (int)ceil((double)numCol/numReadCellPerOperationNeuro);
 				int numWriteOperationPerRow = (int)ceil((double)numCol*activityColWrite/numWriteCellPerOperationNeuro);
 				wlDecoder.CalculateLatency(1e20, capRow1, NULL, numRow*activityRowRead, numRow*activityRowWrite);
-				
+
 				precharger.CalculateLatency(1e20, capCol, numReadOperationPerRow*numRow*activityRowRead, numWriteOperationPerRow*numRow*activityRowWrite);
 				sramWriteDriver.CalculateLatency(1e20, capCol, resCol, numWriteOperationPerRow*numRow*activityRowWrite);
 				senseAmp.CalculateLatency(numReadOperationPerRow*numRow*activityRowRead);
 				dff.CalculateLatency(1e20, numReadOperationPerRow*numRow*activityRowRead);
 				adder.CalculateLatency(1e20, dff.capTgDrain, numReadOperationPerRow*numRow*activityRowRead);
 				if (numCellPerSynapse > 1) {
-					shiftAddWeight.CalculateLatency(numCellPerSynapse);	
-				}																								  
+					shiftAddWeight.CalculateLatency(numCellPerSynapse);
+				}
 				if (numReadPulse > 1) {
-					shiftAddInput.CalculateLatency(1);					
+					shiftAddInput.CalculateLatency(1);
 				}
 				// Read
 				double resPullDown = CalculateOnResistance(cell.widthSRAMCellNMOS * tech.featureSize, NMOS, inputParameter.temperature, tech);
 				double tau = (resCellAccess + resPullDown) * (capCellAccess + capCol) + resCol * capCol / 2;
-				tau *= log(tech.vdd / (tech.vdd - cell.minSenseVoltage / 2));   
+				tau *= log(tech.vdd / (tech.vdd - cell.minSenseVoltage / 2));
 				double gm = CalculateTransconductance(cell.widthAccessCMOS * tech.featureSize, NMOS, tech);
 				double beta = 1 / (resPullDown * gm);
 				double colRamp = 0;
@@ -1019,11 +1009,11 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				readLatency += adder.readLatency;
 				readLatency += dff.readLatency;
 				readLatency += shiftAddInput.readLatency + shiftAddWeight.readLatency;
-				
+
 				readLatencyADC = precharger.readLatency + colDelay + senseAmp.readLatency;
 				readLatencyAccum = adder.readLatency + dff.readLatency + shiftAddInput.readLatency + shiftAddWeight.readLatency;
 				readLatencyOther = wlDecoder.readLatency;
-				
+
 				// Write (assume the average delay of pullup and pulldown inverter in SRAM cell)
 				writeLatency = 0;
 				double resPull;
@@ -1037,8 +1027,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				writeLatency += sramWriteDriver.writeLatency;
 
 				/* Transpose Peripheral for BP */
-				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						int numReadOperationPerCol = (int)ceil((double)numCol/numReadCellPerOperationNeuro);
@@ -1050,20 +1039,20 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 						dffBP.CalculateLatency(1e20, numReadOperationPerCol*numCol*activityBPColRead);
 						adderBP.CalculateLatency(1e20, dff.capTgDrain, numReadOperationPerCol*numCol*activityBPColRead);
 						if (numCellPerSynapse > 1) {
-							shiftAddBPWeight.CalculateLatency(numCellPerSynapse);	
-						}																								  
-						if (numReadPulseBP > 1) {
-							shiftAddBPInput.CalculateLatency(1);					
+							shiftAddBPWeight.CalculateLatency(numCellPerSynapse);
 						}
-						
+						if (numReadPulseBP > 1) {
+							shiftAddBPInput.CalculateLatency(1);
+						}
+
 						double resPullDown = CalculateOnResistance(cell.widthSRAMCellNMOS * tech.featureSize, NMOS, inputParameter.temperature, tech);
 						double tau = (resCellAccess + resPullDown) * (capCellAccess + capRow1) + resRow * capRow1 / 2;
-						tau *= log(tech.vdd / (tech.vdd - cell.minSenseVoltage / 2));   
+						tau *= log(tech.vdd / (tech.vdd - cell.minSenseVoltage / 2));
 						double gm = CalculateTransconductance(cell.widthAccessCMOS * tech.featureSize, NMOS, tech);
 						double beta = 1 / (resPullDown * gm);
 						double colRamp = 0;
 						colDelay = horowitz(tau, beta, wlDecoderBP.rampOutput, &colRamp) * numReadOperationPerCol * numCol * activityBPColRead;
-						
+
 						readLatencyAG += wlDecoderBP.readLatency;
 						readLatencyAG += prechargerBP.readLatency;
 						readLatencyAG += colDelay;
@@ -1071,17 +1060,17 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 						readLatencyAG += adderBP.readLatency;
 						readLatencyAG += dffBP.readLatency;
 						readLatencyAG += shiftAddBPInput.readLatency + shiftAddBPWeight.readLatency;
-						
+
 						readLatencyADC += prechargerBP.readLatency + colDelay + senseAmpBP.readLatency;
 						readLatencyAccum += adderBP.readLatency + dffBP.readLatency + shiftAddBPInput.readLatency + shiftAddBPWeight.readLatency;
 						readLatencyOther += wlDecoderBP.readLatency;
 					}
 				}
-				
+
 			} else if (conventionalParallel) {
 				int numReadOperationPerRow = (int)ceil((double)numCol/numReadCellPerOperationNeuro);
 				int numWriteOperationPerRow = (int)ceil((double)numCol*activityColWrite/numWriteCellPerOperationNeuro);
-				
+
 				wlSwitchMatrix.CalculateLatency(1e20, capRow1, resRow, numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);
 				precharger.CalculateLatency(1e20, capCol, numColMuxed, numWriteOperationPerRow*numRow*activityRowWrite);
 				sramWriteDriver.CalculateLatency(1e20, capCol, resCol, numWriteOperationPerRow*numRow*activityRowWrite);
@@ -1096,14 +1085,14 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 					multilevelSAEncoder.CalculateLatency(1e20, numColMuxed);
 				}
 				if (numCellPerSynapse > 1) {
-					shiftAddWeight.CalculateLatency(numColMuxed);	
+					shiftAddWeight.CalculateLatency(numColMuxed);
 				}
 				if (numReadPulse > 1) {
-					shiftAddInput.CalculateLatency(ceil(numColMuxed/numCellPerSynapse));	
+					shiftAddInput.CalculateLatency(ceil(numColMuxed/numCellPerSynapse));
 				}
 				double resPullDown = CalculateOnResistance(cell.widthSRAMCellNMOS * tech.featureSize, NMOS, inputParameter.temperature, tech);
 				double tau = (resCellAccess + resPullDown) * (capCellAccess + capCol) + resCol * capCol / 2;
-				tau *= log(tech.vdd / (tech.vdd - cell.minSenseVoltage / 2));   
+				tau *= log(tech.vdd / (tech.vdd - cell.minSenseVoltage / 2));
 				double gm = CalculateTransconductance(cell.widthAccessCMOS * tech.featureSize, NMOS, tech);
 				double beta = 1 / (resPullDown * gm);
 				double colRamp = 0;
@@ -1117,38 +1106,37 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				readLatency += multilevelSAEncoder.readLatency;
 				readLatency += shiftAddInput.readLatency + shiftAddWeight.readLatency;
 				readLatency += sarADC.readLatency;
-				
+
 				readLatencyADC = precharger.readLatency + colDelay + multilevelSenseAmp.readLatency + multilevelSAEncoder.readLatency + sarADC.readLatency;
 				readLatencyAccum = shiftAddInput.readLatency + shiftAddWeight.readLatency;
 				readLatencyOther = MAX(wlSwitchMatrix.readLatency, ( ((numColMuxed > 1)==true? (mux.readLatency+muxDecoder.readLatency):0) )/numReadPulse);
 
 				// Write (assume the average delay of pullup and pulldown inverter in SRAM cell)
-				
+
 				double resPull;
 				resPull = (CalculateOnResistance(cell.widthSRAMCellNMOS * tech.featureSize, NMOS, inputParameter.temperature, tech) + CalculateOnResistance(cell.widthSRAMCellPMOS * tech.featureSize, PMOS, inputParameter.temperature, tech)) / 2;    // take average
 				tau = resPull * cell.capSRAMCell;
 				gm = (CalculateTransconductance(cell.widthSRAMCellNMOS * tech.featureSize, NMOS, tech) + CalculateTransconductance(cell.widthSRAMCellPMOS * tech.featureSize, PMOS, tech)) / 2;   // take average
 				beta = 1 / (resPull * gm);
-				
+
 				writeLatency += horowitz(tau, beta, 1e20, NULL) * numWriteOperationPerRow * numRow * activityRowWrite;
 				writeLatency += wlSwitchMatrix.writeLatency;
 				writeLatency += precharger.writeLatency;
 				writeLatency += sramWriteDriver.writeLatency;
-				
-				
+
+
 				/* Transpose Peripheral for BP */
-				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						int numReadOperationPerCol = (int)ceil((double)numCol/numReadCellPerOperationNeuro);
 						int numWriteOperationPerRow = (int)ceil((double)numCol*activityColWrite/numWriteCellPerOperationNeuro);
-						
+
 						if (parallelBP) {
 							wlSwitchMatrixBP.CalculateLatency(1e20, capCol, resCol, numRowMuxedBP, 2*numWriteOperationPerRow*numRow*activityRowWrite);
 							prechargerBP.CalculateLatency(1e20, capRow1, numRowMuxedBP, numWriteOperationPerRow*numRow*activityRowWrite);
 							sramWriteDriverBP.CalculateLatency(1e20, capRow1, resRow, numWriteOperationPerRow*numRow*activityRowWrite);
-							if (numRowMuxedBP>1) {	
+							if (numRowMuxedBP>1) {
 								muxBP.CalculateLatency(0, 0, numRowMuxedBP);
 								muxDecoderBP.CalculateLatency(1e20, mux.capTgGateN*ceil(numCol/numRowMuxedBP), mux.capTgGateP*ceil(numCol/numRowMuxedBP), numRowMuxedBP, 0);
 							}
@@ -1159,15 +1147,15 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 								multilevelSAEncoderBP.CalculateLatency(1e20, numRowMuxedBP);
 							}
 							if (numCellPerSynapse > 1) {
-								shiftAddBPWeight.CalculateLatency(numRowMuxedBP);	
+								shiftAddBPWeight.CalculateLatency(numRowMuxedBP);
 							}
 							if (numReadPulseBP > 1) {
-								shiftAddBPInput.CalculateLatency(ceil(numRowMuxedBP/numCellPerSynapse));	
+								shiftAddBPInput.CalculateLatency(ceil(numRowMuxedBP/numCellPerSynapse));
 							}
 							// Read
 							double resPullDown = CalculateOnResistance(cell.widthSRAMCellNMOS * tech.featureSize, NMOS, inputParameter.temperature, tech);
 							double tau = (resCellAccess + resPullDown) * (capCellAccess + capRow1) + resRow * capRow1 / 2;
-							tau *= log(tech.vdd / (tech.vdd - cell.minSenseVoltage / 2));   
+							tau *= log(tech.vdd / (tech.vdd - cell.minSenseVoltage / 2));
 							double gm = CalculateTransconductance(cell.widthAccessCMOS * tech.featureSize, NMOS, tech);
 							double beta = 1 / (resPullDown * gm);
 							double colRamp = 0;
@@ -1181,11 +1169,11 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 							readLatencyAG += multilevelSAEncoderBP.readLatency;
 							readLatencyAG += shiftAddBPInput.readLatency + shiftAddBPWeight.readLatency;
 							readLatencyAG += sarADCBP.readLatency;
-							
+
 							readLatencyADC += prechargerBP.readLatency + colDelay + multilevelSenseAmpBP.readLatency + multilevelSAEncoderBP.readLatency + sarADCBP.readLatency;
 							readLatencyAccum += shiftAddBPInput.readLatency + shiftAddBPWeight.readLatency;
 							readLatencyOther += MAX(wlSwitchMatrixBP.readLatency, ( ((numRowMuxedBP > 1)==true? (muxBP.readDynamicEnergy + muxDecoderBP.readDynamicEnergy):0) )/numReadPulseBP);
-							
+
 						} else {
 							wlSwitchMatrixBP.CalculateLatency(1e20, capCol, resCol, numReadOperationPerCol*numCol*activityBPColRead, 2*numWriteOperationPerRow*numRow*activityRowWrite);
 							prechargerBP.CalculateLatency(1e20, capRow1, numReadOperationPerCol*numCol*activityBPColRead, numWriteOperationPerRow*numRow*activityRowWrite);
@@ -1194,20 +1182,20 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 							dffBP.CalculateLatency(1e20, numReadOperationPerCol*numCol*activityBPColRead);
 							adderBP.CalculateLatency(1e20, dffBP.capTgDrain, numReadOperationPerCol*numCol*activityBPColRead);
 							if (numCellPerSynapse > 1) {
-								shiftAddBPWeight.CalculateLatency(numCellPerSynapse);	
-							}																								  
-							if (numReadPulseBP > 1) {
-								shiftAddBPInput.CalculateLatency(1);					
+								shiftAddBPWeight.CalculateLatency(numCellPerSynapse);
 							}
-							
+							if (numReadPulseBP > 1) {
+								shiftAddBPInput.CalculateLatency(1);
+							}
+
 							double resPullDown = CalculateOnResistance(cell.widthSRAMCellNMOS * tech.featureSize, NMOS, inputParameter.temperature, tech);
 							double tau = (resCellAccess + resPullDown) * (capCellAccess + capRow1) + resRow * capRow1 / 2;
-							tau *= log(tech.vdd / (tech.vdd - cell.minSenseVoltage / 2));   
+							tau *= log(tech.vdd / (tech.vdd - cell.minSenseVoltage / 2));
 							double gm = CalculateTransconductance(cell.widthAccessCMOS * tech.featureSize, NMOS, tech);
 							double beta = 1 / (resPullDown * gm);
 							double colRamp = 0;
 							colDelay = horowitz(tau, beta, wlSwitchMatrixBP.rampOutput, &colRamp) * numReadOperationPerCol * numCol * activityBPColRead;
-							
+
 							readLatencyAG += wlSwitchMatrixBP.readLatency;
 							readLatencyAG += prechargerBP.readLatency;
 							readLatencyAG += colDelay;
@@ -1215,29 +1203,29 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 							readLatencyAG += adderBP.readLatency;
 							readLatencyAG += dffBP.readLatency;
 							readLatencyAG += shiftAddBPInput.readLatency + shiftAddBPWeight.readLatency;
-							
+
 							readLatencyADC += prechargerBP.readLatency + colDelay + senseAmpBP.readLatency;
 							readLatencyAccum += adderBP.readLatency + dffBP.readLatency + shiftAddBPInput.readLatency + shiftAddBPWeight.readLatency;
 							readLatencyOther += wlSwitchMatrixBP.readLatency;
 						}
 					}
 				}
-				
+
 			} else if (BNNsequentialMode || XNORsequentialMode) {
 				int numReadOperationPerRow = (int)ceil((double)numCol/numReadCellPerOperationNeuro);
 				int numWriteOperationPerRow = (int)ceil((double)numCol*activityColWrite/numWriteCellPerOperationNeuro);
-				
+
 				wlDecoder.CalculateLatency(1e20, capRow1, NULL, numRow*activityRowRead, numRow*activityRowWrite);
 				precharger.CalculateLatency(1e20, capCol, numReadOperationPerRow*numRow*activityRowRead, numWriteOperationPerRow*numRow*activityRowWrite);
 				sramWriteDriver.CalculateLatency(1e20, capCol, resCol, numWriteOperationPerRow*numRow*activityRowWrite);
 				senseAmp.CalculateLatency(numReadOperationPerRow*numRow*activityRowRead);
 				dff.CalculateLatency(1e20, numReadOperationPerRow*numRow*activityRowRead);
 				adder.CalculateLatency(1e20, dff.capTgDrain, numReadOperationPerRow*numRow*activityRowRead);
-				
+
 				// Read
 				double resPullDown = CalculateOnResistance(cell.widthSRAMCellNMOS * tech.featureSize, NMOS, inputParameter.temperature, tech);
 				double tau = (resCellAccess + resPullDown) * (capCellAccess + capCol) + resCol * capCol / 2;
-				tau *= log(tech.vdd / (tech.vdd - cell.minSenseVoltage / 2));   
+				tau *= log(tech.vdd / (tech.vdd - cell.minSenseVoltage / 2));
 				double gm = CalculateTransconductance(cell.widthAccessCMOS * tech.featureSize, NMOS, tech);
 				double beta = 1 / (resPullDown * gm);
 				double colRamp = 0;
@@ -1249,9 +1237,9 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				readLatency += senseAmp.readLatency;
 				readLatency += adder.readLatency;
 				readLatency += dff.readLatency;
-				
+
 				// Write (assume the average delay of pullup and pulldown inverter in SRAM cell)
-				
+
 				double resPull;
 				resPull = (CalculateOnResistance(cell.widthSRAMCellNMOS * tech.featureSize, NMOS, inputParameter.temperature, tech) + CalculateOnResistance(cell.widthSRAMCellPMOS * tech.featureSize, PMOS, inputParameter.temperature, tech)) / 2;    // take average
 				tau = resPull * cell.capSRAMCell;
@@ -1262,26 +1250,26 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				writeLatency += wlDecoder.writeLatency;
 				writeLatency += precharger.writeLatency;
 				writeLatency += sramWriteDriver.writeLatency;
-				
+
 			} else if (BNNparallelMode || XNORparallelMode) {
 				int numReadOperationPerRow = (int)ceil((double)numCol/numReadCellPerOperationNeuro);
 				int numWriteOperationPerRow = (int)ceil((double)numCol*activityColWrite/numWriteCellPerOperationNeuro);
-				
+
 				wlSwitchMatrix.CalculateLatency(1e20, capRow1, resRow, numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);
 				precharger.CalculateLatency(1e20, capCol, numColMuxed, numWriteOperationPerRow*numRow*activityRowWrite);
 				sramWriteDriver.CalculateLatency(1e20, capCol, resCol, numWriteOperationPerRow*numRow*activityRowWrite);
-				
+
 				if (SARADC) {
 					sarADC.CalculateLatency(numColMuxed);
 				} else {
 					multilevelSenseAmp.CalculateLatency(columnResistance, numColMuxed, 1);
 					multilevelSAEncoder.CalculateLatency(1e20, numColMuxed);
 				}
-				
+
 				// Read
 				double resPullDown = CalculateOnResistance(cell.widthSRAMCellNMOS * tech.featureSize, NMOS, inputParameter.temperature, tech);
 				double tau = (resCellAccess + resPullDown) * (capCellAccess + capCol) + resCol * capCol / 2;
-				tau *= log(tech.vdd / (tech.vdd - cell.minSenseVoltage / 2));   
+				tau *= log(tech.vdd / (tech.vdd - cell.minSenseVoltage / 2));
 				double gm = CalculateTransconductance(cell.widthAccessCMOS * tech.featureSize, NMOS, tech);
 				double beta = 1 / (resPullDown * gm);
 				double colRamp = 0;
@@ -1296,22 +1284,22 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				readLatency += sarADC.readLatency;
 
 				// Write (assume the average delay of pullup and pulldown inverter in SRAM cell)
-				
+
 				double resPull;
 				resPull = (CalculateOnResistance(cell.widthSRAMCellNMOS * tech.featureSize, NMOS, inputParameter.temperature, tech) + CalculateOnResistance(cell.widthSRAMCellPMOS * tech.featureSize, PMOS, inputParameter.temperature, tech)) / 2;    // take average
 				tau = resPull * cell.capSRAMCell;
 				gm = (CalculateTransconductance(cell.widthSRAMCellNMOS * tech.featureSize, NMOS, tech) + CalculateTransconductance(cell.widthSRAMCellPMOS * tech.featureSize, PMOS, tech)) / 2;   // take average
 				beta = 1 / (resPull * gm);
-				
+
 				writeLatency += horowitz(tau, beta, 1e20, NULL) * numWriteOperationPerRow * numRow * activityRowWrite;
 				writeLatency += wlSwitchMatrix.writeLatency;
 				writeLatency += precharger.writeLatency;
 				writeLatency += sramWriteDriver.writeLatency;
-				
+
 			} else {
 				int numReadOperationPerRow = (int)ceil((double)numCol/numReadCellPerOperationNeuro);
 				int numWriteOperationPerRow = (int)ceil((double)numCol*activityColWrite/numWriteCellPerOperationNeuro);
-				
+
 				wlSwitchMatrix.CalculateLatency(1e20, capRow1, resRow, numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);
 				precharger.CalculateLatency(1e20, capCol, numColMuxed, numWriteOperationPerRow*numRow*activityRowWrite);
 				sramWriteDriver.CalculateLatency(1e20, capCol, resCol, numWriteOperationPerRow*numRow*activityRowWrite);
@@ -1322,15 +1310,15 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 					multilevelSAEncoder.CalculateLatency(1e20, numColMuxed);
 				}
 				if (numCellPerSynapse > 1) {
-					shiftAddWeight.CalculateLatency(numCellPerSynapse);	
-				}																								  
+					shiftAddWeight.CalculateLatency(numCellPerSynapse);
+				}
 				if (numReadPulse > 1) {
-					shiftAddInput.CalculateLatency(1);					
+					shiftAddInput.CalculateLatency(1);
 				}
 				// Read
 				double resPullDown = CalculateOnResistance(cell.widthSRAMCellNMOS * tech.featureSize, NMOS, inputParameter.temperature, tech);
 				double tau = (resCellAccess + resPullDown) * (capCellAccess + capCol) + resCol * capCol / 2;
-				tau *= log(tech.vdd / (tech.vdd - cell.minSenseVoltage / 2));   
+				tau *= log(tech.vdd / (tech.vdd - cell.minSenseVoltage / 2));
 				double gm = CalculateTransconductance(cell.widthAccessCMOS * tech.featureSize, NMOS, tech);
 				double beta = 1 / (resPullDown * gm);
 				double colRamp = 0;
@@ -1346,18 +1334,18 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				readLatency += sarADC.readLatency;
 
 				// Write (assume the average delay of pullup and pulldown inverter in SRAM cell)
-				
+
 				double resPull;
 				resPull = (CalculateOnResistance(cell.widthSRAMCellNMOS * tech.featureSize, NMOS, inputParameter.temperature, tech) + CalculateOnResistance(cell.widthSRAMCellPMOS * tech.featureSize, PMOS, inputParameter.temperature, tech)) / 2;    // take average
 				tau = resPull * cell.capSRAMCell;
 				gm = (CalculateTransconductance(cell.widthSRAMCellNMOS * tech.featureSize, NMOS, tech) + CalculateTransconductance(cell.widthSRAMCellPMOS * tech.featureSize, PMOS, tech)) / 2;   // take average
 				beta = 1 / (resPull * gm);
-				
+
 				writeLatency += horowitz(tau, beta, 1e20, NULL) * numWriteOperationPerRow * numRow * activityRowWrite;
 				writeLatency += wlSwitchMatrix.writeLatency;
 				writeLatency += precharger.writeLatency;
 				writeLatency += sramWriteDriver.writeLatency;
-				
+
 			}
 	    } else if (cell.memCellType == Type::RRAM || cell.memCellType == Type::FeFET) {
 			if (conventionalSequential) {
@@ -1367,10 +1355,10 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				colDelay = horowitz(tau, 0, 1e20, &colRamp);	// Just to generate colRamp
 				colDelay = tau * 0.2 * numColMuxed;  // assume the 15~20% voltage drop is enough for sensing
 				int numWriteOperationPerRow = (int)ceil((double)numCol*activityColWrite/numWriteCellPerOperationNeuro);
-				
+
 				wlDecoder.CalculateLatency(1e20, capRow2, NULL, numRow*activityRowRead*numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);
 				if (cell.accessType == CMOS_access) {
-					wlNewDecoderDriver.CalculateLatency(wlDecoder.rampOutput, capRow2, resRow, numRow*activityRowRead*numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);	
+					wlNewDecoderDriver.CalculateLatency(wlDecoder.rampOutput, capRow2, resRow, numRow*activityRowRead*numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);
 				} else {
 					wlDecoderDriver.CalculateLatency(wlDecoder.rampOutput, capRow1, capRow1, resRow, numRow*activityRowRead*numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);
 				}
@@ -1387,16 +1375,16 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 						multilevelSAEncoder.CalculateLatency(1e20, numColMuxed*numRow*activityRowRead);
 					}
 				}
-				
+
 				adder.CalculateLatency(1e20, dff.capTgDrain, numColMuxed*numRow*activityRowRead);
 				dff.CalculateLatency(1e20, numColMuxed*numRow*activityRowRead);
-				if (numCellPerSynapse > 1) {				 
+				if (numCellPerSynapse > 1) {
 					shiftAddWeight.CalculateLatency(numColMuxed);							// There are numReadPulse times of shift-and-add
-				}																								
+				}
 				if (numReadPulse > 1) {
 					shiftAddInput.CalculateLatency(ceil(numColMuxed/numCellPerSynapse));	// There are numReadPulse times of shift-and-add
 				}
-				
+
 				// Read
 				readLatency = 0;
 				readLatency += MAX(wlDecoder.readLatency + wlNewDecoderDriver.readLatency + wlDecoderDriver.readLatency, ( ((numColMuxed > 1)==true? (mux.readLatency+muxDecoder.readLatency):0) )/numReadPulse);
@@ -1407,27 +1395,26 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				readLatency += shiftAddInput.readLatency + shiftAddWeight.readLatency;
 				readLatency += colDelay/numReadPulse;
 				readLatency += sarADC.readLatency;
-				
+
 				readLatencyADC = multilevelSenseAmp.readLatency + multilevelSAEncoder.readLatency + sarADC.readLatency;
 				readLatencyAccum = adder.readLatency + dff.readLatency + shiftAddInput.readLatency + shiftAddWeight.readLatency;
 				readLatencyOther = MAX(wlDecoder.readLatency + wlNewDecoderDriver.readLatency + wlDecoderDriver.readLatency, ( ((numColMuxed > 1)==true? (mux.readLatency+muxDecoder.readLatency):0) )/numReadPulse) + colDelay/numReadPulse;
-				
+
 				// Write
 				writeLatency = 0;
 				writeLatencyArray = 0;
 				writeLatencyArray += totalNumWritePulse * cell.writePulseWidth;
 				writeLatency += MAX(wlDecoder.writeLatency + wlNewDecoderDriver.writeLatency + wlDecoderDriver.writeLatency, slSwitchMatrix.writeLatency);
 				writeLatency += writeLatencyArray;
-				
+
 				/* Transpose Peripheral for BP */
-				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						double capRow = lengthRow * 0.2e-15/1e-6 + CalculateDrainCap(cell.widthAccessCMOS * tech.featureSize, NMOS, cell.widthInFeatureSize * tech.featureSize, tech) * numCol;
 						tau = (capRow)*(cell.resMemCellAvg);
 						double rowDelay = tau * 0.2 * numRowMuxedBP;  // assume the 15~20% voltage drop is enough for sensing
-						
+
 						slSwitchMatrix.CalculateLatency(1e20, capCol, resCol, numRowMuxedBP*numCol*activityBPColRead, 2*numWriteOperationPerRow*numRow*activityRowWrite);
 						if (numRowMuxedBP>1) {
 							muxBP.CalculateLatency(colRamp, 0, numRowMuxedBP);
@@ -1441,13 +1428,13 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 								multilevelSAEncoderBP.CalculateLatency(1e20, numRowMuxedBP*numCol*activityBPColRead);
 							}
 						}
-						
+
 						dffBP.CalculateLatency(1e20, numRowMuxedBP*numCol*activityBPColRead);
 						adderBP.CalculateLatency(1e20, dffBP.capTgDrain, numRowMuxedBP*numCol*activityBPColRead);
-						
-						if (numCellPerSynapse > 1) {				 
+
+						if (numCellPerSynapse > 1) {
 							shiftAddBPWeight.CalculateLatency(numRowMuxedBP);							// There are numReadPulse times of shift-and-add
-						}																								
+						}
 						if (numReadPulseBP > 1) {
 							shiftAddBPInput.CalculateLatency(ceil(numRowMuxedBP/numCellPerSynapse));	// There are numReadPulse times of shift-and-add
 						}
@@ -1460,13 +1447,13 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 						readLatencyAG += shiftAddBPInput.readLatency + shiftAddBPWeight.readLatency;
 						readLatencyAG += rowDelay/numReadPulseBP;
 						readLatencyAG += sarADCBP.readLatency;
-						
+
 						readLatencyADC += multilevelSenseAmpBP.readLatency + multilevelSAEncoderBP.readLatency + sarADCBP.readLatency;
 						readLatencyAccum += adderBP.readLatency + dffBP.readLatency + shiftAddBPInput.readLatency + shiftAddBPWeight.readLatency;
 						readLatencyOther += MAX(slSwitchMatrix.readLatency, ( ((numRowMuxedBP > 1)==true? (muxBP.readDynamicEnergy + muxDecoderBP.readDynamicEnergy):0) )/numReadPulseBP) + rowDelay/numReadPulseBP;
 					}
 				}
-				
+
 			} else if (conventionalParallel) {
 				double capBL = lengthCol * 0.2e-15/1e-6;
 				int numWriteOperationPerRow = (int)ceil((double)numCol*activityColWrite/numWriteCellPerOperationNeuro);
@@ -1474,7 +1461,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				double tau = (capCol)*(cell.resMemCellAvg/(numRow/2));
 				colDelay = horowitz(tau, 0, 1e20, &colRamp);
 				colDelay = tau * 0.2 * numColMuxed;  // assume the 15~20% voltage drop is enough for sensing
-				
+
 				if (cell.accessType == CMOS_access) {
 					wlNewSwitchMatrix.CalculateLatency(1e20, capRow2, resRow, numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);
 				} else {
@@ -1491,14 +1478,14 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 					multilevelSenseAmp.CalculateLatency(columnResistance, numColMuxed, 1);
 					multilevelSAEncoder.CalculateLatency(1e20, numColMuxed);
 				}
-				
+
 				if (numCellPerSynapse > 1) {
-					shiftAddWeight.CalculateLatency(numColMuxed);	
+					shiftAddWeight.CalculateLatency(numColMuxed);
 				}
 				if (numReadPulse > 1) {
-					shiftAddInput.CalculateLatency(ceil(numColMuxed/numCellPerSynapse));		
+					shiftAddInput.CalculateLatency(ceil(numColMuxed/numCellPerSynapse));
 				}
-				
+
 				// Read
 				readLatency = 0;
 				readLatency += MAX(wlNewSwitchMatrix.readLatency + wlSwitchMatrix.readLatency, ( ((numColMuxed > 1)==true? (mux.readLatency+muxDecoder.readLatency):0) )/numReadPulse);
@@ -1507,7 +1494,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				readLatency += shiftAddInput.readLatency + shiftAddWeight.readLatency;
 				readLatency += colDelay/numReadPulse;
 				readLatency += sarADC.readLatency;
-				
+
 				readLatencyADC = multilevelSenseAmp.readLatency + multilevelSAEncoder.readLatency + sarADC.readLatency;
 				readLatencyAccum = shiftAddInput.readLatency + shiftAddWeight.readLatency;
 				readLatencyOther = MAX(wlNewSwitchMatrix.readLatency + wlSwitchMatrix.readLatency, ( ((numColMuxed > 1)==true? (mux.readLatency+muxDecoder.readLatency):0) )/numReadPulse) + colDelay/numReadPulse;
@@ -1518,10 +1505,9 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				writeLatencyArray += totalNumWritePulse * cell.writePulseWidth;
 				writeLatency += MAX(wlNewSwitchMatrix.writeLatency + wlSwitchMatrix.writeLatency, slSwitchMatrix.writeLatency);
 				writeLatency += writeLatencyArray;
-				
+
 				/* Transpose Peripheral for BP */
-				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						double capRow = lengthRow * 0.2e-15/1e-6 + CalculateDrainCap(cell.widthAccessCMOS * tech.featureSize, NMOS, cell.widthInFeatureSize * tech.featureSize, tech) * numCol;
@@ -1539,21 +1525,21 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 								multilevelSenseAmpBP.CalculateLatency(columnResistance, numRowMuxedBP, 1);
 								multilevelSAEncoderBP.CalculateLatency(1e20, numRowMuxedBP);
 							}
-							
+
 							if (numCellPerSynapse > 1) {
-								shiftAddBPWeight.CalculateLatency(numRowMuxedBP);	
+								shiftAddBPWeight.CalculateLatency(numRowMuxedBP);
 							}
 							if (numReadPulseBP > 1) {
-								shiftAddBPInput.CalculateLatency(ceil(numRowMuxedBP/numCellPerSynapse));		
+								shiftAddBPInput.CalculateLatency(ceil(numRowMuxedBP/numCellPerSynapse));
 							}
-							
+
 							readLatencyAG += MAX(slSwitchMatrix.readLatency, ( ((numRowMuxedBP > 1)==true? (muxBP.readDynamicEnergy + muxDecoderBP.readDynamicEnergy):0) )/numReadPulseBP);
 							readLatencyAG += multilevelSenseAmpBP.readLatency;
 							readLatencyAG += multilevelSAEncoderBP.readLatency;
 							readLatencyAG += shiftAddBPInput.readLatency + shiftAddBPWeight.readLatency;
 							readLatencyAG += rowDelay/numReadPulseBP;
 							readLatencyAG += sarADCBP.readLatency;
-							
+
 							readLatencyADC += multilevelSenseAmpBP.readLatency + multilevelSAEncoderBP.readLatency + sarADCBP.readLatency;
 							readLatencyAccum += shiftAddBPInput.readLatency + shiftAddBPWeight.readLatency;
 							readLatencyOther += MAX(slSwitchMatrix.readLatency, ( ((numRowMuxedBP > 1)==true? (muxBP.readDynamicEnergy + muxDecoderBP.readDynamicEnergy):0) )/numReadPulseBP) + rowDelay/numReadPulseBP;
@@ -1574,14 +1560,14 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 
 							dffBP.CalculateLatency(1e20, numRowMuxedBP*numCol*activityBPColRead);
 							adderBP.CalculateLatency(1e20, dffBP.capTgDrain, numRowMuxedBP*numCol*activityBPColRead);
-							
+
 							if (numCellPerSynapse > 1) {
-								shiftAddBPWeight.CalculateLatency(numRowMuxedBP);	
+								shiftAddBPWeight.CalculateLatency(numRowMuxedBP);
 							}
 							if (numReadPulseBP > 1) {
-								shiftAddBPInput.CalculateLatency(ceil(numRowMuxedBP/numCellPerSynapse));		
+								shiftAddBPInput.CalculateLatency(ceil(numRowMuxedBP/numCellPerSynapse));
 							}
-							
+
 							readLatencyAG += MAX(slSwitchMatrix.readLatency, ( ((numRowMuxedBP > 1)==true? (muxBP.readDynamicEnergy + muxDecoderBP.readDynamicEnergy):0) )/numReadPulseBP);
 							readLatencyAG += multilevelSenseAmpBP.readLatency;
 							readLatencyAG += multilevelSAEncoderBP.readLatency;
@@ -1590,14 +1576,14 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 							readLatencyAG += shiftAddBPInput.readLatency + shiftAddBPWeight.readLatency;
 							readLatencyAG += rowDelay/numReadPulseBP;
 							readLatencyAG += sarADCBP.readLatency;
-							
+
 							readLatencyADC += multilevelSenseAmpBP.readLatency + multilevelSAEncoderBP.readLatency + sarADCBP.readLatency;
 							readLatencyAccum += adderBP.readLatency + dffBP.readLatency + shiftAddBPInput.readLatency + shiftAddBPWeight.readLatency;
 							readLatencyOther += MAX(slSwitchMatrix.readLatency, ( ((numRowMuxedBP > 1)==true? (muxBP.readDynamicEnergy + muxDecoderBP.readDynamicEnergy):0) )/numReadPulseBP) + rowDelay/numReadPulseBP;
 						}
 					}
 				}
-				
+
 			} else if (BNNsequentialMode || XNORsequentialMode) {
 				double capBL = lengthCol * 0.2e-15/1e-6;
 				double colRamp = 0;
@@ -1605,10 +1591,10 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				colDelay = horowitz(tau, 0, 1e20, &colRamp);	// Just to generate colRamp
 				colDelay = tau * 0.2 * numColMuxed;  // assume the 15~20% voltage drop is enough for sensing
 				int numWriteOperationPerRow = (int)ceil((double)numCol*activityColWrite/numWriteCellPerOperationNeuro);
-				
+
 				wlDecoder.CalculateLatency(1e20, capRow2, NULL, numRow*activityRowRead*numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);
 				if (cell.accessType == CMOS_access) {
-					wlNewDecoderDriver.CalculateLatency(wlDecoder.rampOutput, capRow2, resRow, numRow*activityRowRead*numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);	
+					wlNewDecoderDriver.CalculateLatency(wlDecoder.rampOutput, capRow2, resRow, numRow*activityRowRead*numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);
 				} else {
 					wlDecoderDriver.CalculateLatency(wlDecoder.rampOutput, capRow1, capRow1, resRow, numRow*activityRowRead*numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);
 				}
@@ -1620,7 +1606,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				rowCurrentSenseAmp.CalculateLatency(columnResistance, numColMuxed, numRow*activityRowRead);
 				adder.CalculateLatency(1e20, dff.capTgDrain, numColMuxed*numRow*activityRowRead);
 				dff.CalculateLatency(1e20, numColMuxed*numRow*activityRowRead);
-				
+
 				// Read
 				readLatency = 0;
 				readLatency += MAX(wlDecoder.readLatency + wlNewDecoderDriver.readLatency + wlDecoderDriver.readLatency, ( ((numColMuxed > 1)==true? (mux.readLatency+muxDecoder.readLatency):0) )/numReadPulse);
@@ -1628,15 +1614,15 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				readLatency += adder.readLatency;
 				readLatency += dff.readLatency;
 				readLatency += colDelay/numReadPulse;
-				
+
 				// Write
-				
+
 				writeLatency = 0;
 				writeLatencyArray = 0;
 				writeLatencyArray += totalNumWritePulse * cell.writePulseWidth;
 				writeLatency += MAX(wlDecoder.writeLatency + wlNewDecoderDriver.writeLatency + wlDecoderDriver.writeLatency, slSwitchMatrix.writeLatency);
 				writeLatency += writeLatencyArray;
-				
+
 			} else if (BNNparallelMode || XNORparallelMode) {
 				double capBL = lengthCol * 0.2e-15/1e-6;
 				int numWriteOperationPerRow = (int)ceil((double)numCol*activityColWrite/numWriteCellPerOperationNeuro);
@@ -1644,7 +1630,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				double tau = (capCol)*(cell.resMemCellAvg/(numRow/2));
 				colDelay = horowitz(tau, 0, 1e20, &colRamp);
 				colDelay = tau * 0.2 * numColMuxed;  // assume the 15~20% voltage drop is enough for sensing
-				
+
 				if (cell.accessType == CMOS_access) {
 					wlNewSwitchMatrix.CalculateLatency(1e20, capRow2, resRow, numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);
 				} else {
@@ -1670,13 +1656,13 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				readLatency += colDelay/numReadPulse;
 				readLatency += sarADC.readLatency;
 				// Write
-				
+
 				writeLatency = 0;
 				writeLatencyArray = 0;
 				writeLatencyArray += totalNumWritePulse * cell.writePulseWidth;
 				writeLatency += MAX(wlNewSwitchMatrix.writeLatency + wlSwitchMatrix.writeLatency, slSwitchMatrix.writeLatency);
 				writeLatency += writeLatencyArray;
-				
+
 			} else {
 				double capBL = lengthCol * 0.2e-15/1e-6;
 				int numWriteOperationPerRow = (int)ceil((double)numCol*activityColWrite/numWriteCellPerOperationNeuro);
@@ -1684,7 +1670,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				double tau = (capCol)*(cell.resMemCellAvg/(numRow/2));
 				colDelay = horowitz(tau, 0, 1e20, &colRamp);
 				colDelay = tau * 0.2 * numColMuxed;  // assume the 15~20% voltage drop is enough for sensing
-				
+
 				if (cell.accessType == CMOS_access) {
 					wlNewSwitchMatrix.CalculateLatency(1e20, capRow2, resRow, numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);
 				} else {
@@ -1702,10 +1688,10 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 					multilevelSAEncoder.CalculateLatency(1e20, numColMuxed);
 				}
 				if (numCellPerSynapse > 1) {
-					shiftAddWeight.CalculateLatency(numColMuxed);	
+					shiftAddWeight.CalculateLatency(numColMuxed);
 				}
 				if (numReadPulse > 1) {
-					shiftAddInput.CalculateLatency(ceil(numColMuxed/numCellPerSynapse));		
+					shiftAddInput.CalculateLatency(ceil(numColMuxed/numCellPerSynapse));
 				}
 
 				// Read
@@ -1717,13 +1703,13 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				readLatency += colDelay/numReadPulse;
 				readLatency += sarADC.readLatency;
 				// Write
-				
+
 				writeLatency = 0;
 				writeLatencyArray = 0;
 				writeLatencyArray += totalNumWritePulse * cell.writePulseWidth;
 				writeLatency += MAX(wlNewSwitchMatrix.writeLatency + wlSwitchMatrix.writeLatency, slSwitchMatrix.writeLatency);
 				writeLatency += writeLatencyArray;
-				
+
 			}
 		}
 	}
@@ -1736,7 +1722,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 		readDynamicEnergy = 0;
 		writeDynamicEnergy = 0;
 		readDynamicEnergyArray = 0;
-		
+
 		double numReadOperationPerRow;   // average value (can be non-integer for energy calculation)
 		if (numCol > numReadCellPerOperationNeuro)
 			numReadOperationPerRow = numCol / numReadCellPerOperationNeuro;
@@ -1750,7 +1736,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 			numWriteOperationPerRow = 1;
 
 		if (cell.memCellType == Type::SRAM) {
-			
+
 			// Array leakage (assume 2 INV)
 			leakage = 0;
 			leakage += CalculateGateLeakage(INV, 1, cell.widthSRAMCellNMOS * tech.featureSize,
@@ -1761,14 +1747,14 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				wlDecoder.CalculatePower(numRow*activityRowRead, numRow*activityRowWrite);
 				precharger.CalculatePower(numReadOperationPerRow*numRow*activityRowRead, numWriteOperationPerRow*numRow*activityRowWrite);
 				sramWriteDriver.CalculatePower(numWriteOperationPerRow*numRow*activityRowWrite);
-				adder.CalculatePower(numReadOperationPerRow*numRow*activityRowRead, numReadCellPerOperationNeuro/numCellPerSynapse);				
+				adder.CalculatePower(numReadOperationPerRow*numRow*activityRowRead, numReadCellPerOperationNeuro/numCellPerSynapse);
 				dff.CalculatePower(numReadOperationPerRow*numRow*activityRowRead, numReadCellPerOperationNeuro/numCellPerSynapse*(adder.numBit+1));
 				senseAmp.CalculatePower(numReadOperationPerRow*numRow*activityRowRead);
 				if (numCellPerSynapse > 1) {
-					shiftAddWeight.CalculatePower(numCellPerSynapse);	
+					shiftAddWeight.CalculatePower(numCellPerSynapse);
 				}
 				if (numReadPulse > 1) {
-					shiftAddInput.CalculatePower(1);					
+					shiftAddInput.CalculatePower(1);
 				}
 				// Array
 				readDynamicEnergyArray = 0; // Just BL discharging
@@ -1782,35 +1768,34 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				readDynamicEnergy += dff.readDynamicEnergy;
 				readDynamicEnergy += senseAmp.readDynamicEnergy;
 				readDynamicEnergy += shiftAddWeight.readDynamicEnergy + shiftAddInput.readDynamicEnergy;
-				
+
 				readDynamicEnergyADC = precharger.readDynamicEnergy + readDynamicEnergyArray + senseAmp.readDynamicEnergy;
 				readDynamicEnergyAccum = adder.readDynamicEnergy + dff.readDynamicEnergy + shiftAddWeight.readDynamicEnergy + shiftAddInput.readDynamicEnergy;
 				readDynamicEnergyOther = wlDecoder.readDynamicEnergy;
-				
-				
+
+
 				/* Transpose Peripheral for BP */
-				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
 						int numReadOperationPerCol = numRow / numReadCellPerOperationNeuro;
-						
+
 						wlDecoderBP.CalculatePower(numCol*activityBPColRead, numRow*activityRowWrite);
 						prechargerBP.CalculatePower(numReadOperationPerCol*numCol*activityBPColRead, numWriteOperationPerRow*numRow*activityRowWrite);
 						sramWriteDriverBP.CalculatePower(numWriteOperationPerRow*numCol*activityBPColRead);
-						adderBP.CalculatePower(numReadOperationPerCol*numCol*activityBPColRead, numReadCellPerOperationNeuro/numCellPerSynapse);				
+						adderBP.CalculatePower(numReadOperationPerCol*numCol*activityBPColRead, numReadCellPerOperationNeuro/numCellPerSynapse);
 						dffBP.CalculatePower(numReadOperationPerCol*numCol*activityBPColRead, numReadCellPerOperationNeuro/numCellPerSynapse*(adder.numBit+1));
 						senseAmpBP.CalculatePower(numReadOperationPerCol*numCol*activityBPColRead);
 						if (numCellPerSynapse > 1) {
-							shiftAddBPWeight.CalculatePower(numCellPerSynapse);	
+							shiftAddBPWeight.CalculatePower(numCellPerSynapse);
 						}
 						if (numReadPulseBP > 1) {
-							shiftAddBPInput.CalculatePower(1);					
+							shiftAddBPInput.CalculatePower(1);
 						}
 
 						// Array
 						readDynamicEnergyArray = 0; // Just BL discharging
-						
+
 						// Read
 						readDynamicEnergyAG += wlDecoderBP.readDynamicEnergy;
 						readDynamicEnergyAG += prechargerBP.readDynamicEnergy;
@@ -1819,11 +1804,11 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 						readDynamicEnergyAG += dffBP.readDynamicEnergy;
 						readDynamicEnergyAG += senseAmpBP.readDynamicEnergy;
 						readDynamicEnergyAG += shiftAddBPInput.readDynamicEnergy + shiftAddBPWeight.readDynamicEnergy;
-						
+
 						readDynamicEnergyADC += prechargerBP.readDynamicEnergy + readDynamicEnergyArray + senseAmpBP.readDynamicEnergy;
 						readDynamicEnergyAccum += adderBP.readDynamicEnergy + dffBP.readDynamicEnergy + shiftAddBPInput.readDynamicEnergy + shiftAddBPWeight.readDynamicEnergy;
 						readDynamicEnergyOther += wlDecoderBP.readDynamicEnergy;
-						
+
 						leakage += wlDecoderBP.leakage;
 						leakage += prechargerBP.leakage;
 						leakage += adderBP.leakage;
@@ -1832,13 +1817,13 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 						leakage += shiftAddBPInput.leakage + shiftAddBPWeight.leakage;
 					}
 				}
-				
+
 				// Write
 				writeDynamicEnergy += wlDecoder.writeDynamicEnergy;
 				writeDynamicEnergy += precharger.writeDynamicEnergy;
 				writeDynamicEnergy += sramWriteDriver.writeDynamicEnergy;
 				writeDynamicEnergy += writeDynamicEnergyArray;
-				
+
 				// Leakage
 				leakage += wlDecoder.leakage;
 				leakage += wlSwitchMatrix.leakage;
@@ -1863,10 +1848,10 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 					multilevelSAEncoder.CalculatePower(numColMuxed);
 				}
 				if (numCellPerSynapse > 1) {
-					shiftAddWeight.CalculatePower(numColMuxed);	
-				}	
+					shiftAddWeight.CalculatePower(numColMuxed);
+				}
 				if (numReadPulse > 1) {
-					shiftAddInput.CalculatePower(ceil(numColMuxed/numCellPerSynapse));		
+					shiftAddInput.CalculatePower(ceil(numColMuxed/numCellPerSynapse));
 				}
 				// Array
 				readDynamicEnergyArray = 0; // Just BL discharging
@@ -1881,14 +1866,13 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				readDynamicEnergy += ((numColMuxed > 1)==true? (muxDecoder.readDynamicEnergy/numReadPulse):0);
 				readDynamicEnergy += shiftAddWeight.readDynamicEnergy + shiftAddInput.readDynamicEnergy;
 				readDynamicEnergy += sarADC.readDynamicEnergy;
- 
+
 				readDynamicEnergyADC = precharger.readDynamicEnergy + readDynamicEnergyArray + multilevelSenseAmp.readDynamicEnergy + multilevelSAEncoder.readDynamicEnergy + sarADC.readDynamicEnergy;
 				readDynamicEnergyAccum = shiftAddWeight.readDynamicEnergy + shiftAddInput.readDynamicEnergy;
 				readDynamicEnergyOther = wlSwitchMatrix.readDynamicEnergy + ( ((numColMuxed > 1)==true? (mux.readDynamicEnergy + muxDecoder.readDynamicEnergy):0) )/numReadPulse;
-				
+
 				/* Transpose Peripheral for BP */
-				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
 						if (parallelBP) {
@@ -1906,14 +1890,14 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 								multilevelSAEncoderBP.CalculatePower(numRowMuxedBP);
 							}
 							if (numCellPerSynapse > 1) {
-								shiftAddBPWeight.CalculatePower(numRowMuxedBP);	
-							}	
+								shiftAddBPWeight.CalculatePower(numRowMuxedBP);
+							}
 							if (numReadPulseBP > 1) {
-								shiftAddBPInput.CalculatePower(ceil(numRowMuxedBP/numCellPerSynapse));		
+								shiftAddBPInput.CalculatePower(ceil(numRowMuxedBP/numCellPerSynapse));
 							}
 							// Array
 							readDynamicEnergyArray = 0; // Just BL discharging
-							
+
 							// Read
 							readDynamicEnergyAG += wlSwitchMatrixBP.readDynamicEnergy;
 							readDynamicEnergyAG += prechargerBP.readDynamicEnergy;
@@ -1928,7 +1912,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 							readDynamicEnergyADC += prechargerBP.readDynamicEnergy + readDynamicEnergyArray + multilevelSenseAmpBP.readDynamicEnergy + multilevelSAEncoderBP.readDynamicEnergy + sarADCBP.readDynamicEnergy;
 							readDynamicEnergyAccum += shiftAddBPInput.readDynamicEnergy + shiftAddBPWeight.readDynamicEnergy;
 							readDynamicEnergyOther += wlSwitchMatrixBP.readDynamicEnergy + ( ((numRowMuxedBP > 1)==true? (muxBP.readDynamicEnergy + muxDecoderBP.readDynamicEnergy):0) )/numReadPulseBP;
-							
+
 							leakage += wlSwitchMatrixBP.leakage;
 							leakage += prechargerBP.leakage;
 							leakage += multilevelSenseAmpBP.leakage;
@@ -1938,22 +1922,22 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 							leakage += shiftAddBPInput.leakage + shiftAddBPWeight.leakage;
 						} else {
 							int numReadOperationPerCol = numRow / numReadCellPerOperationNeuro;
-							
+
 							wlSwitchMatrixBP.CalculatePower(numReadOperationPerCol*numCol*activityBPColRead, 2*numWriteOperationPerRow*numRow*activityRowWrite, activityRowRead, activityColWrite);
 							prechargerBP.CalculatePower(numReadOperationPerCol*numCol*activityBPColRead, numWriteOperationPerRow*numRow*activityRowWrite);
 							sramWriteDriverBP.CalculatePower(numWriteOperationPerRow*numCol*activityBPColRead);
-							adderBP.CalculatePower(numReadOperationPerCol*numCol*activityBPColRead, numReadCellPerOperationNeuro/numCellPerSynapse);				
+							adderBP.CalculatePower(numReadOperationPerCol*numCol*activityBPColRead, numReadCellPerOperationNeuro/numCellPerSynapse);
 							dffBP.CalculatePower(numReadOperationPerCol*numCol*activityBPColRead, numReadCellPerOperationNeuro/numCellPerSynapse*(adder.numBit+1));
 							senseAmpBP.CalculatePower(numReadOperationPerCol*numCol*activityBPColRead);
 							if (numCellPerSynapse > 1) {
-								shiftAddBPWeight.CalculatePower(numCellPerSynapse);	
+								shiftAddBPWeight.CalculatePower(numCellPerSynapse);
 							}
 							if (numReadPulseBP > 1) {
-								shiftAddBPInput.CalculatePower(1);					
+								shiftAddBPInput.CalculatePower(1);
 							}
 							// Array
 							readDynamicEnergyArray = 0; // Just BL discharging
-							
+
 							// Read
 							readDynamicEnergyAG += wlSwitchMatrixBP.readDynamicEnergy;
 							readDynamicEnergyAG += prechargerBP.readDynamicEnergy;
@@ -1962,11 +1946,11 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 							readDynamicEnergyAG += dffBP.readDynamicEnergy;
 							readDynamicEnergyAG += senseAmpBP.readDynamicEnergy;
 							readDynamicEnergyAG += shiftAddBPInput.readDynamicEnergy + shiftAddBPWeight.readDynamicEnergy;
-							
+
 							readDynamicEnergyADC += prechargerBP.readDynamicEnergy + readDynamicEnergyArray + senseAmpBP.readDynamicEnergy;
 							readDynamicEnergyAccum += adderBP.readDynamicEnergy + dffBP.readDynamicEnergy + shiftAddBPInput.readDynamicEnergy + shiftAddBPWeight.readDynamicEnergy;
 							readDynamicEnergyOther += wlSwitchMatrixBP.readDynamicEnergy;
-							
+
 							leakage += wlSwitchMatrixBP.leakage;
 							leakage += prechargerBP.leakage;
 							leakage += adderBP.leakage;
@@ -1976,14 +1960,14 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 						}
 					}
 				}
-				
+
 				// Write
 				writeDynamicEnergy += wlSwitchMatrix.writeDynamicEnergy;
 				writeDynamicEnergy += precharger.writeDynamicEnergy;
 				writeDynamicEnergy += sramWriteDriver.writeDynamicEnergy;
 				writeDynamicEnergy += writeDynamicEnergyArray;
-				
-				
+
+
 				// Leakage
 				leakage += wlSwitchMatrix.leakage;
 				leakage += precharger.leakage;
@@ -1991,15 +1975,15 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				leakage += multilevelSenseAmp.leakage;
 				leakage += multilevelSAEncoder.leakage;
 				leakage += shiftAddInput.leakage + shiftAddWeight.leakage;
-			
+
 			} else if (BNNsequentialMode || XNORsequentialMode) {
 				wlDecoder.CalculatePower(numRow*activityRowRead, numRow*activityRowWrite);
 				precharger.CalculatePower(numReadOperationPerRow*numRow*activityRowRead, numWriteOperationPerRow*numRow*activityRowWrite);
 				sramWriteDriver.CalculatePower(numWriteOperationPerRow*numRow*activityRowWrite);
-				adder.CalculatePower(numReadOperationPerRow*numRow*activityRowRead, numReadCellPerOperationNeuro/numCellPerSynapse);				
+				adder.CalculatePower(numReadOperationPerRow*numRow*activityRowRead, numReadCellPerOperationNeuro/numCellPerSynapse);
 				dff.CalculatePower(numReadOperationPerRow*numRow*activityRowRead, numReadCellPerOperationNeuro/numCellPerSynapse*(adder.numBit+1));
 				senseAmp.CalculatePower(numReadOperationPerRow*numRow*activityRowRead);
-				
+
 				// Array
 				readDynamicEnergyArray = 0; // Just BL discharging
 				writeDynamicEnergyArray = cell.capSRAMCell * tech.vdd * tech.vdd * 2 * numCol * activityColWrite * numRow * activityRowWrite;    // flip Q and Q_bar
@@ -2011,15 +1995,15 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				readDynamicEnergy += adder.readDynamicEnergy;
 				readDynamicEnergy += dff.readDynamicEnergy;
 				readDynamicEnergy += senseAmp.readDynamicEnergy;
-				
+
 				// Write
-				
+
 				writeDynamicEnergy += wlDecoder.writeDynamicEnergy;
 				writeDynamicEnergy += precharger.writeDynamicEnergy;
 				writeDynamicEnergy += sramWriteDriver.writeDynamicEnergy;
 				writeDynamicEnergy += writeDynamicEnergyArray;
-				
-				
+
+
 				// Leakage
 				leakage += wlDecoder.leakage;
 				leakage += precharger.leakage;
@@ -2027,7 +2011,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				leakage += senseAmp.leakage;
 				leakage += dff.leakage;
 				leakage += adder.leakage;
-				
+
 			} else if (BNNparallelMode || XNORparallelMode) {
 				wlSwitchMatrix.CalculatePower(numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite, activityRowRead, activityColWrite);
 				precharger.CalculatePower(numColMuxed, numWriteOperationPerRow*numRow*activityRowWrite);
@@ -2038,7 +2022,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 					multilevelSenseAmp.CalculatePower(columnResistance, 1);
 					multilevelSAEncoder.CalculatePower(numColMuxed);
 				}
-				
+
 				// Array
 				readDynamicEnergyArray = 0; // Just BL discharging
 				writeDynamicEnergyArray = cell.capSRAMCell * tech.vdd * tech.vdd * 2 * numCol * activityColWrite * numRow * activityRowWrite;    // flip Q and Q_bar
@@ -2049,21 +2033,21 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				readDynamicEnergy += multilevelSenseAmp.readDynamicEnergy;
 				readDynamicEnergy += multilevelSAEncoder.readDynamicEnergy;
 				readDynamicEnergy += sarADC.readDynamicEnergy;
-				
-				// Write				
+
+				// Write
 				writeDynamicEnergy += wlSwitchMatrix.writeDynamicEnergy;
 				writeDynamicEnergy += precharger.writeDynamicEnergy;
 				writeDynamicEnergy += sramWriteDriver.writeDynamicEnergy;
 				writeDynamicEnergy += writeDynamicEnergyArray;
-				
-				
+
+
 				// Leakage
 				leakage += wlSwitchMatrix.leakage;
 				leakage += precharger.leakage;
 				leakage += sramWriteDriver.leakage;
 				leakage += multilevelSenseAmp.leakage;
 				leakage += multilevelSAEncoder.leakage;
-				
+
 			} else {
 				wlSwitchMatrix.CalculatePower(numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite, activityRowRead, activityColWrite);
 				precharger.CalculatePower(numColMuxed, numWriteOperationPerRow*numRow*activityRowWrite);
@@ -2075,10 +2059,10 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 					multilevelSAEncoder.CalculatePower(numColMuxed);
 				}
 				if (numCellPerSynapse > 1) {
-					shiftAddWeight.CalculatePower(numColMuxed);	
-				}	
+					shiftAddWeight.CalculatePower(numColMuxed);
+				}
 				if (numReadPulse > 1) {
-					shiftAddInput.CalculatePower(ceil(numColMuxed/numCellPerSynapse));		
+					shiftAddInput.CalculatePower(ceil(numColMuxed/numCellPerSynapse));
 				}
 				// Array
 				readDynamicEnergyArray = 0; // Just BL discharging
@@ -2097,8 +2081,8 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				writeDynamicEnergy += precharger.writeDynamicEnergy;
 				writeDynamicEnergy += sramWriteDriver.writeDynamicEnergy;
 				writeDynamicEnergy += writeDynamicEnergyArray;
-				
-				
+
+
 				// Leakage
 				leakage += wlSwitchMatrix.leakage;
 				leakage += precharger.leakage;
@@ -2106,17 +2090,17 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				leakage += multilevelSenseAmp.leakage;
 				leakage += multilevelSAEncoder.leakage;
 				leakage += shiftAddInput.leakage + shiftAddWeight.leakage;
-			
+
 			}
-			
+
 	    } else if (cell.memCellType == Type::RRAM || cell.memCellType == Type::FeFET) {
 			leakage = 0;
 			if (conventionalSequential) {
 				double numReadCells = (int)ceil((double)numCol/numColMuxed);    // similar parameter as numReadCellPerOperationNeuro, which is for SRAM
-				double numWriteCells = (int)ceil((double)numCol/*numWriteColMuxed*/); 
+				double numWriteCells = (int)ceil((double)numCol/*numWriteColMuxed*/);
 				int numWriteOperationPerRow = (int)ceil((double)numCol*activityColWrite/numWriteCellPerOperationNeuro);
 				double capBL = lengthCol * 0.2e-15/1e-6;
-				
+
 				wlDecoder.CalculatePower(numRow*activityRowRead*numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);
 				if (cell.accessType == CMOS_access) {
 					wlNewDecoderDriver.CalculatePower(numRow*activityRowRead*numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);
@@ -2128,7 +2112,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 					mux.CalculatePower(numColMuxed);	// Mux still consumes energy during row-by-row read
 					muxDecoder.CalculatePower(numColMuxed, 1);
 				}
-				
+
 				if (SARADC) {
 					sarADC.CalculatePower(columnResistance, numRow*activityRowRead);
 				} else {
@@ -2139,12 +2123,12 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				}
 
 				adder.CalculatePower(numColMuxed*numRow*activityRowRead, numReadCells);
-				dff.CalculatePower(numColMuxed*numRow*activityRowRead, numReadCells*(adder.numBit+1)); 
+				dff.CalculatePower(numColMuxed*numRow*activityRowRead, numReadCells*(adder.numBit+1));
 				if (numCellPerSynapse > 1) {
-					shiftAddWeight.CalculatePower(numColMuxed);	
+					shiftAddWeight.CalculatePower(numColMuxed);
 				}
 				if (numReadPulse > 1) {
-					shiftAddInput.CalculatePower(ceil(numColMuxed/numCellPerSynapse));		
+					shiftAddInput.CalculatePower(ceil(numColMuxed/numCellPerSynapse));
 				}
 				// Read
 				readDynamicEnergyArray = 0;
@@ -2162,27 +2146,26 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				readDynamicEnergy += shiftAddWeight.readDynamicEnergy + shiftAddInput.readDynamicEnergy;
 				readDynamicEnergy += readDynamicEnergyArray;
 				readDynamicEnergy += sarADC.readDynamicEnergy;
-				
+
 				readDynamicEnergyADC = readDynamicEnergyArray + multilevelSenseAmp.readDynamicEnergy + multilevelSAEncoder.readDynamicEnergy + sarADC.readDynamicEnergy;
 				readDynamicEnergyAccum = adder.readDynamicEnergy + dff.readDynamicEnergy + shiftAddWeight.readDynamicEnergy + shiftAddInput.readDynamicEnergy;
 				readDynamicEnergyOther = wlDecoder.readDynamicEnergy + wlNewDecoderDriver.readDynamicEnergy + wlDecoderDriver.readDynamicEnergy + ( ((numColMuxed > 1)==true? (mux.readDynamicEnergy + muxDecoder.readDynamicEnergy):0) )/numReadPulse;
 
 				/* Transpose Peripheral for BP */
-				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
 						readDynamicEnergyArray = 0;
 						readDynamicEnergyArray += capBL * cell.readVoltage * cell.readVoltage * numReadCells; // Selected BLs activityColWrite
 						readDynamicEnergyArray += capRow2 * tech.vdd * tech.vdd; // Selected WL
 						readDynamicEnergyArray *= numRow * activityBPColRead * numRowMuxedBP;
-						
+
 						slSwitchMatrix.CalculatePower(numRowMuxedBP*numCol*activityBPColRead, 2*numWriteOperationPerRow*numRow*activityRowWrite, activityRowRead, activityColWrite);
 						if (numRowMuxedBP>1) {
 							muxBP.CalculatePower(numRowMuxedBP);	// Mux still consumes energy during row-by-row read
 							muxDecoderBP.CalculatePower(numRowMuxedBP, 1);
 						}
-						
+
 						if (SARADC) {
 							sarADCBP.CalculatePower(columnResistance, numCol*activityBPColRead);
 						} else {
@@ -2191,17 +2174,17 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 								multilevelSAEncoderBP.CalculatePower(numRowMuxedBP*numCol*activityBPColRead);
 							}
 						}
-						
-						dffBP.CalculatePower(numRowMuxedBP*numCol*activityBPColRead, ceil(numRow/numRowMuxedBP)*(adderBP.numBit+1)); 
+
+						dffBP.CalculatePower(numRowMuxedBP*numCol*activityBPColRead, ceil(numRow/numRowMuxedBP)*(adderBP.numBit+1));
 						adderBP.CalculatePower(numRowMuxedBP*numCol*activityBPColRead, ceil(numRow/numRowMuxedBP));
-						
+
 						if (numCellPerSynapse > 1) {
-							shiftAddBPWeight.CalculatePower(numRowMuxedBP);	
+							shiftAddBPWeight.CalculatePower(numRowMuxedBP);
 						}
 						if (numReadPulseBP > 1) {
-							shiftAddBPInput.CalculatePower(ceil(numRowMuxedBP/numCellPerSynapse));		
+							shiftAddBPInput.CalculatePower(ceil(numRowMuxedBP/numCellPerSynapse));
 						}
-						
+
 						readDynamicEnergyAG += slSwitchMatrix.readDynamicEnergy;
 						readDynamicEnergyAG += ( ((numRowMuxedBP > 1)==true? (muxBP.readDynamicEnergy + muxDecoderBP.readDynamicEnergy):0) )/numReadPulseBP;
 						readDynamicEnergyAG += multilevelSenseAmpBP.readDynamicEnergy;
@@ -2211,11 +2194,11 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 						readDynamicEnergyAG += shiftAddBPInput.readDynamicEnergy + shiftAddBPWeight.readDynamicEnergy;
 						readDynamicEnergyAG += readDynamicEnergyArray;
 						readDynamicEnergyAG += sarADCBP.readDynamicEnergy;
-						
+
 						readDynamicEnergyADC += multilevelSenseAmpBP.readDynamicEnergy + multilevelSAEncoderBP.readDynamicEnergy + readDynamicEnergyArray + sarADCBP.readDynamicEnergy;
 						readDynamicEnergyAccum += dffBP.readDynamicEnergy + adderBP.readDynamicEnergy + shiftAddBPInput.readDynamicEnergy + shiftAddBPWeight.readDynamicEnergy;
 						readDynamicEnergyOther += slSwitchMatrix.readDynamicEnergy + ( ((numRowMuxedBP > 1)==true? (muxBP.readDynamicEnergy + muxDecoderBP.readDynamicEnergy):0) )/numReadPulseBP;
-						
+
 						leakage += slSwitchMatrix.leakage;
 						leakage += (muxBP.leakage+muxDecoderBP.leakage);
 						leakage += multilevelSenseAmpBP.leakage;
@@ -2225,7 +2208,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 						leakage += shiftAddBPInput.leakage + shiftAddBPWeight.leakage;
 					}
 				}
-				
+
 				// Write
 				writeDynamicEnergyArray = writeDynamicEnergyArray;
 				writeDynamicEnergy = 0;
@@ -2234,9 +2217,9 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				writeDynamicEnergy += wlDecoderDriver.writeDynamicEnergy;
 				writeDynamicEnergy += slSwitchMatrix.writeDynamicEnergy;
 				writeDynamicEnergy += writeDynamicEnergyArray;
-				
+
 				// Leakage
-				
+
 				leakage += wlDecoder.leakage;
 				leakage += wlDecoderDriver.leakage;
 				leakage += wlNewDecoderDriver.leakage;
@@ -2248,12 +2231,12 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				leakage += dff.leakage;
 				leakage += adder.leakage;
 				leakage += shiftAddInput.leakage + shiftAddWeight.leakage;
-					
+
 			} else if (conventionalParallel) {
 				double numReadCells = (int)ceil((double)numCol/numColMuxed);    // similar parameter as numReadCellPerOperationNeuro, which is for SRAM
 				int numWriteOperationPerRow = (int)ceil((double)numCol*activityColWrite/numWriteCellPerOperationNeuro);
 				double capBL = lengthCol * 0.2e-15/1e-6;
-			
+
 				if (cell.accessType == CMOS_access) {
 					wlNewSwitchMatrix.CalculatePower(numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite, activityRowRead);
 				} else {
@@ -2264,7 +2247,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 					mux.CalculatePower(numColMuxed);	// Mux still consumes energy during row-by-row read
 					muxDecoder.CalculatePower(numColMuxed, 1);
 				}
-				
+
 				if (SARADC) {
 					sarADC.CalculatePower(columnResistance, 1);
 				} else {
@@ -2272,10 +2255,10 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 					multilevelSAEncoder.CalculatePower(numColMuxed);
 				}
 				if (numCellPerSynapse > 1) {
-					shiftAddWeight.CalculatePower(numColMuxed);	
+					shiftAddWeight.CalculatePower(numColMuxed);
 				}
 				if (numReadPulse > 1) {
-					shiftAddInput.CalculatePower(ceil(numColMuxed/numCellPerSynapse));		
+					shiftAddInput.CalculatePower(ceil(numColMuxed/numCellPerSynapse));
 				}
 
 				// Read
@@ -2283,7 +2266,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				readDynamicEnergyArray += capBL * cell.readVoltage * cell.readVoltage * numReadCells; // Selected BLs activityColWrite
 				readDynamicEnergyArray += capRow2 * tech.vdd * tech.vdd * numRow * activityRowRead; // Selected WL
 				readDynamicEnergyArray *= numColMuxed;
-				
+
 				readDynamicEnergy = 0;
 				readDynamicEnergy += wlNewSwitchMatrix.readDynamicEnergy;
 				readDynamicEnergy += wlSwitchMatrix.readDynamicEnergy;
@@ -2293,14 +2276,13 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				readDynamicEnergy += shiftAddWeight.readDynamicEnergy + shiftAddInput.readDynamicEnergy;
 				readDynamicEnergy += readDynamicEnergyArray;
 				readDynamicEnergy += sarADC.readDynamicEnergy;
-				
+
 				readDynamicEnergyADC = readDynamicEnergyArray + multilevelSenseAmp.readDynamicEnergy + multilevelSAEncoder.readDynamicEnergy + sarADC.readDynamicEnergy;
 				readDynamicEnergyAccum = shiftAddWeight.readDynamicEnergy + shiftAddInput.readDynamicEnergy;
 				readDynamicEnergyOther = wlNewSwitchMatrix.readDynamicEnergy + wlSwitchMatrix.readDynamicEnergy + ( ((numColMuxed > 1)==true? (mux.readDynamicEnergy + muxDecoder.readDynamicEnergy):0) )/numReadPulse;
-				
+
 				/* Transpose Peripheral for BP */
-				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
 						if (parallelBP) {
@@ -2308,28 +2290,28 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 							readDynamicEnergyArray += capBL * cell.readVoltage * cell.readVoltage * numReadCells; // Selected BLs activityColWrite
 							readDynamicEnergyArray += capRow2 * tech.vdd * tech.vdd * numRow * activityBPColRead; // Selected WL
 							readDynamicEnergyArray *= numRowMuxedBP;
-							
+
 							slSwitchMatrix.CalculatePower(numRowMuxedBP, 2*numWriteOperationPerRow*numRow*activityRowWrite, activityRowRead, activityColWrite);
-							
+
 							if (numRowMuxedBP>1) {
 								muxBP.CalculatePower(numRowMuxedBP);	// Mux still consumes energy during row-by-row read
 								muxDecoderBP.CalculatePower(numRowMuxedBP, 1);
 							}
-							
+
 							if (SARADC) {
 								sarADCBP.CalculatePower(columnResistance, 1);
 							} else {
 								multilevelSenseAmpBP.CalculatePower(columnResistance, 1);
 								multilevelSAEncoderBP.CalculatePower(numRowMuxedBP);
 							}
-							
+
 							if (numCellPerSynapse > 1) {
-								shiftAddBPWeight.CalculatePower(numRowMuxedBP);	
+								shiftAddBPWeight.CalculatePower(numRowMuxedBP);
 							}
 							if (numReadPulseBP > 1) {
-								shiftAddBPInput.CalculatePower(ceil(numRowMuxedBP/numCellPerSynapse));		
+								shiftAddBPInput.CalculatePower(ceil(numRowMuxedBP/numCellPerSynapse));
 							}
-							
+
 							readDynamicEnergyAG += slSwitchMatrix.readDynamicEnergy;
 							readDynamicEnergyAG +=( ((numRowMuxedBP > 1)==true? (muxBP.readDynamicEnergy + muxDecoderBP.readDynamicEnergy):0) )/numReadPulseBP;
 							readDynamicEnergyAG += multilevelSenseAmpBP.readDynamicEnergy;
@@ -2337,11 +2319,11 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 							readDynamicEnergyAG += shiftAddBPInput.readDynamicEnergy + shiftAddBPWeight.readDynamicEnergy;
 							readDynamicEnergyAG += readDynamicEnergyArray;
 							readDynamicEnergyAG += sarADCBP.readDynamicEnergy;
-							
+
 							readDynamicEnergyADC += multilevelSenseAmpBP.readDynamicEnergy + multilevelSAEncoderBP.readDynamicEnergy + readDynamicEnergyArray + sarADCBP.readDynamicEnergy;
 							readDynamicEnergyAccum += shiftAddBPInput.readDynamicEnergy + shiftAddBPWeight.readDynamicEnergy;
 							readDynamicEnergyOther += slSwitchMatrix.readDynamicEnergy + ( ((numRowMuxedBP > 1)==true? (muxBP.readDynamicEnergy + muxDecoderBP.readDynamicEnergy):0) )/numReadPulseBP;
-							
+
 							leakage += slSwitchMatrix.leakage;
 							leakage += (muxBP.leakage+muxDecoderBP.leakage);
 							leakage += multilevelSenseAmpBP.leakage;
@@ -2352,14 +2334,14 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 							readDynamicEnergyArray += capBL * cell.readVoltage * cell.readVoltage * numReadCells; // Selected BLs activityColWrite
 							readDynamicEnergyArray += capRow2 * tech.vdd * tech.vdd; // Selected WL
 							readDynamicEnergyArray *= numRow * activityBPColRead * numRowMuxedBP;
-							
+
 							slSwitchMatrix.CalculatePower(numRowMuxedBP*numCol*activityBPColRead, 2*numWriteOperationPerRow*numRow*activityRowWrite, activityRowRead, activityColWrite);
-							
+
 							if (numRowMuxedBP>1) {
 								muxBP.CalculatePower(numRowMuxedBP);	// Mux still consumes energy during row-by-row read
 								muxDecoderBP.CalculatePower(numRowMuxedBP, 1);
 							}
-							
+
 							if (SARADC) {
 								sarADCBP.CalculatePower(columnResistance, numCol*activityBPColRead);
 							} else {
@@ -2369,16 +2351,16 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 								}
 							}
 
-							dffBP.CalculatePower(numRowMuxedBP*numCol*activityBPColRead, ceil(numRow/numRowMuxedBP)*(adderBP.numBit+1)); 
+							dffBP.CalculatePower(numRowMuxedBP*numCol*activityBPColRead, ceil(numRow/numRowMuxedBP)*(adderBP.numBit+1));
 							adderBP.CalculatePower(numRowMuxedBP*numCol*activityBPColRead, ceil(numRow/numRowMuxedBP));
-							
+
 							if (numCellPerSynapse > 1) {
-								shiftAddBPWeight.CalculatePower(numRowMuxedBP);	
+								shiftAddBPWeight.CalculatePower(numRowMuxedBP);
 							}
 							if (numReadPulseBP > 1) {
-								shiftAddBPInput.CalculatePower(ceil(numRowMuxedBP/numCellPerSynapse));		
+								shiftAddBPInput.CalculatePower(ceil(numRowMuxedBP/numCellPerSynapse));
 							}
-							
+
 							readDynamicEnergyAG += slSwitchMatrix.readDynamicEnergy;
 							readDynamicEnergyAG += ( ((numRowMuxedBP > 1)==true? (muxBP.readDynamicEnergy + muxDecoderBP.readDynamicEnergy):0) )/numReadPulseBP;
 							readDynamicEnergyAG += multilevelSenseAmpBP.readDynamicEnergy;
@@ -2388,11 +2370,11 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 							readDynamicEnergyAG += shiftAddBPInput.readDynamicEnergy + shiftAddBPWeight.readDynamicEnergy;
 							readDynamicEnergyAG += readDynamicEnergyArray;
 							readDynamicEnergyAG += sarADCBP.readDynamicEnergy;
-							
+
 							readDynamicEnergyADC += multilevelSenseAmpBP.readDynamicEnergy + multilevelSAEncoderBP.readDynamicEnergy + readDynamicEnergyArray + sarADCBP.readDynamicEnergy;
 							readDynamicEnergyAccum += dffBP.readDynamicEnergy + adderBP.readDynamicEnergy + shiftAddBPInput.readDynamicEnergy + shiftAddBPWeight.readDynamicEnergy;
 							readDynamicEnergyOther += slSwitchMatrix.readDynamicEnergy + ( ((numRowMuxedBP > 1)==true? (muxBP.readDynamicEnergy + muxDecoderBP.readDynamicEnergy):0) )/numReadPulseBP;
-							
+
 							leakage += slSwitchMatrix.leakage;
 							leakage += (muxBP.leakage+muxDecoderBP.leakage);
 							leakage += multilevelSenseAmpBP.leakage;
@@ -2403,7 +2385,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 						}
 					}
 				}
-				
+
 				// Write
 				writeDynamicEnergyArray = writeDynamicEnergyArray;
 				writeDynamicEnergy = 0;
@@ -2411,7 +2393,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				writeDynamicEnergy += wlSwitchMatrix.writeDynamicEnergy;
 				writeDynamicEnergy += slSwitchMatrix.writeDynamicEnergy;
 				writeDynamicEnergy += writeDynamicEnergyArray;
-				
+
 				// Leakage
 				leakage += wlSwitchMatrix.leakage;
 				leakage += wlNewSwitchMatrix.leakage;
@@ -2423,10 +2405,10 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				leakage += shiftAddWeight.leakage + shiftAddInput.leakage;
 			} else if (BNNsequentialMode || XNORsequentialMode) {
 				double numReadCells = (int)ceil((double)numCol/numColMuxed);    // similar parameter as numReadCellPerOperationNeuro, which is for SRAM
-				double numWriteCells = (int)ceil((double)numCol/*numWriteColMuxed*/); 
+				double numWriteCells = (int)ceil((double)numCol/*numWriteColMuxed*/);
 				int numWriteOperationPerRow = (int)ceil((double)numCol*activityColWrite/numWriteCellPerOperationNeuro);
 				double capBL = lengthCol * 0.2e-15/1e-6;
-			
+
 				wlDecoder.CalculatePower(numRow*activityRowRead*numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);
 				if (cell.accessType == CMOS_access) {
 					wlNewDecoderDriver.CalculatePower(numRow*activityRowRead*numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite);
@@ -2440,8 +2422,8 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				}
 				rowCurrentSenseAmp.CalculatePower(columnResistance, numRow*activityRowRead);
 				adder.CalculatePower(numColMuxed*numRow*activityRowRead, numReadCells);
-				dff.CalculatePower(numColMuxed*numRow*activityRowRead, numReadCells*(adder.numBit+1)); 
-				
+				dff.CalculatePower(numColMuxed*numRow*activityRowRead, numReadCells*(adder.numBit+1));
+
 				// Read
 				readDynamicEnergyArray = 0;
 				readDynamicEnergyArray += capBL * cell.readVoltage * cell.readVoltage * numReadCells; // Selected BLs activityColWrite
@@ -2459,7 +2441,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				readDynamicEnergy += readDynamicEnergyArray;
 
 				// Write
-				
+
 				writeDynamicEnergyArray = writeDynamicEnergyArray;
 				writeDynamicEnergy = 0;
 				writeDynamicEnergy += wlDecoder.writeDynamicEnergy;
@@ -2467,8 +2449,8 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				writeDynamicEnergy += wlDecoderDriver.writeDynamicEnergy;
 				writeDynamicEnergy += slSwitchMatrix.writeDynamicEnergy;
 				writeDynamicEnergy += writeDynamicEnergyArray;
-				
-				
+
+
 				// Leakage
 				leakage = 0;
 				leakage += wlDecoder.leakage;
@@ -2480,12 +2462,12 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				leakage += rowCurrentSenseAmp.leakage;
 				leakage += dff.leakage;
 				leakage += adder.leakage;
-				
+
 			} else if (BNNparallelMode || XNORparallelMode) {
 				double numReadCells = (int)ceil((double)numCol/numColMuxed);    // similar parameter as numReadCellPerOperationNeuro, which is for SRAM
 				int numWriteOperationPerRow = (int)ceil((double)numCol*activityColWrite/numWriteCellPerOperationNeuro);
 				double capBL = lengthCol * 0.2e-15/1e-6;
-			
+
 				if (cell.accessType == CMOS_access) {
 					wlNewSwitchMatrix.CalculatePower(numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite, activityRowRead);
 				} else {
@@ -2502,7 +2484,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 					multilevelSenseAmp.CalculatePower(columnResistance, 1);
 					multilevelSAEncoder.CalculatePower(numColMuxed);
 				}
-				
+
 				// Read
 				readDynamicEnergyArray = 0;
 				readDynamicEnergyArray += capBL * cell.readVoltage * cell.readVoltage * numReadCells; // Selected BLs activityColWrite
@@ -2519,15 +2501,15 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				readDynamicEnergy += sarADC.readDynamicEnergy;
 
 				// Write
-				
+
 				writeDynamicEnergyArray = writeDynamicEnergyArray;
 				writeDynamicEnergy = 0;
 				writeDynamicEnergy += wlNewSwitchMatrix.writeDynamicEnergy;
 				writeDynamicEnergy += wlSwitchMatrix.writeDynamicEnergy;
 				writeDynamicEnergy += slSwitchMatrix.writeDynamicEnergy;
 				writeDynamicEnergy += writeDynamicEnergyArray;
-				
-				
+
+
 				// Leakage
 				leakage = 0;
 				leakage += wlSwitchMatrix.leakage;
@@ -2542,7 +2524,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				double numReadCells = (int)ceil((double)numCol/numColMuxed);    // similar parameter as numReadCellPerOperationNeuro, which is for SRAM
 				int numWriteOperationPerRow = (int)ceil((double)numCol*activityColWrite/numWriteCellPerOperationNeuro);
 				double capBL = lengthCol * 0.2e-15/1e-6;
-			
+
 				if (cell.accessType == CMOS_access) {
 					wlNewSwitchMatrix.CalculatePower(numColMuxed, 2*numWriteOperationPerRow*numRow*activityRowWrite, activityRowRead);
 				} else {
@@ -2560,17 +2542,17 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 					multilevelSAEncoder.CalculatePower(numColMuxed);
 				}
 				if (numCellPerSynapse > 1) {
-					shiftAddWeight.CalculatePower(numColMuxed);	
+					shiftAddWeight.CalculatePower(numColMuxed);
 				}
 				if (numReadPulse > 1) {
-					shiftAddInput.CalculatePower(ceil(numColMuxed/numCellPerSynapse));		
+					shiftAddInput.CalculatePower(ceil(numColMuxed/numCellPerSynapse));
 				}
 				// Read
 				readDynamicEnergyArray = 0;
 				readDynamicEnergyArray += capBL * cell.readVoltage * cell.readVoltage * numReadCells; // Selected BLs activityColWrite
 				readDynamicEnergyArray += capRow2 * tech.vdd * tech.vdd * numRow * activityRowRead; // Selected WL
 				readDynamicEnergyArray *= numReadPulse * numColMuxed;
-				
+
 				readDynamicEnergy = 0;
 				readDynamicEnergy += wlNewSwitchMatrix.readDynamicEnergy;
 				readDynamicEnergy += wlSwitchMatrix.readDynamicEnergy;
@@ -2580,17 +2562,17 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				readDynamicEnergy += shiftAddInput.readDynamicEnergy + shiftAddWeight.readDynamicEnergy;
 				readDynamicEnergy += readDynamicEnergyArray;
 				readDynamicEnergy += sarADC.readDynamicEnergy;
-				
+
 				// Write
-				
+
 				writeDynamicEnergyArray = writeDynamicEnergyArray;
 				writeDynamicEnergy = 0;
 				writeDynamicEnergy += wlNewSwitchMatrix.writeDynamicEnergy;
 				writeDynamicEnergy += wlSwitchMatrix.writeDynamicEnergy;
 				writeDynamicEnergy += slSwitchMatrix.writeDynamicEnergy;
 				writeDynamicEnergy += writeDynamicEnergyArray;
-				
-				
+
+
 				// Leakage
 				leakage = 0;
 				leakage += wlSwitchMatrix.leakage;
@@ -2602,31 +2584,31 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				leakage += multilevelSAEncoder.leakage;
 				leakage += shiftAddInput.leakage + shiftAddWeight.leakage;
 			}
-		} 
+		}
 	}
 }
 
 void SubArray::PrintProperty() {
 
 	if (cell.memCellType == Type::SRAM) {
-		
+
 		cout << endl << endl;
 	    cout << "Array:" << endl;
 	    cout << "Area = " << heightArray*1e6 << "um x " << widthArray*1e6 << "um = " << areaArray*1e12 << "um^2" << endl;
 	    cout << "Read Dynamic Energy = " << readDynamicEnergyArray*1e12 << "pJ" << endl;
 	    //cout << "Write Dynamic Energy = " << writeDynamicEnergyArray*1e12 << "pJ" << endl;
-		
+
 		precharger.PrintProperty("precharger");
 		sramWriteDriver.PrintProperty("sramWriteDriver");
-		
+
 		if (conventionalSequential) {
-			wlDecoder.PrintProperty("wlDecoder");			
+			wlDecoder.PrintProperty("wlDecoder");
 			senseAmp.PrintProperty("senseAmp");
-			dff.PrintProperty("dff"); 
+			dff.PrintProperty("dff");
 			adder.PrintProperty("adder");
 			if (numReadPulse > 1) {
 				shiftAddWeight.PrintProperty("shiftAddWeight");
-				shiftAddInput.PrintProperty("shiftAddInput");		
+				shiftAddInput.PrintProperty("shiftAddInput");
 			}
 		} else if (conventionalParallel) {
 			wlSwitchMatrix.PrintProperty("wlSwitchMatrix");
@@ -2637,9 +2619,9 @@ void SubArray::PrintProperty() {
 				shiftAddInput.PrintProperty("shiftAddInput");
 			}
 		} else if (BNNsequentialMode || XNORsequentialMode) {
-			wlDecoder.PrintProperty("wlDecoder");			
+			wlDecoder.PrintProperty("wlDecoder");
 			senseAmp.PrintProperty("senseAmp");
-			dff.PrintProperty("dff"); 
+			dff.PrintProperty("dff");
 			adder.PrintProperty("adder");
 		} else if (BNNparallelMode || XNORparallelMode) {
 			wlSwitchMatrix.PrintProperty("wlSwitchMatrix");
@@ -2654,9 +2636,9 @@ void SubArray::PrintProperty() {
 				shiftAddInput.PrintProperty("shiftAddInput");
 			}
 		}
-		
+
 	} else if (cell.memCellType == Type::RRAM || cell.memCellType == Type::FeFET) {
-		
+
 		cout << endl << endl;
 	    cout << "Array:" << endl;
 	    cout << "Area = " << heightArray*1e6 << "um x " << widthArray*1e6 << "um = " << areaArray*1e12 << "um^2" << endl;
@@ -2670,7 +2652,7 @@ void SubArray::PrintProperty() {
 				wlNewDecoderDriver.PrintProperty("wlNewDecoderDriver");
 			} else {
 				wlDecoderDriver.PrintProperty("wlDecoderDriver");
-			} 
+			}
 			slSwitchMatrix.PrintProperty("slSwitchMatrix");
 			mux.PrintProperty("mux");
 			muxDecoder.PrintProperty("muxDecoder");
@@ -2680,7 +2662,7 @@ void SubArray::PrintProperty() {
 			dff.PrintProperty("dff");
 			if (numReadPulse > 1) {
 				shiftAddWeight.PrintProperty("shiftAddWeight");
-				shiftAddInput.PrintProperty("shiftAddInput"); 
+				shiftAddInput.PrintProperty("shiftAddInput");
 			}
 		} else if (conventionalParallel) {
 			if (cell.accessType == CMOS_access) {
@@ -2703,7 +2685,7 @@ void SubArray::PrintProperty() {
 				wlNewDecoderDriver.PrintProperty("wlNewDecoderDriver");
 			} else {
 				wlDecoderDriver.PrintProperty("wlDecoderDriver");
-			} 
+			}
 			slSwitchMatrix.PrintProperty("slSwitchMatrix");
 			mux.PrintProperty("mux");
 			muxDecoder.PrintProperty("muxDecoder");
@@ -2734,12 +2716,11 @@ void SubArray::PrintProperty() {
 			multilevelSAEncoder.PrintProperty("multilevelSAEncoder");
 			if (numReadPulse > 1) {
 				shiftAddWeight.PrintProperty("shiftAddWeight");
-				shiftAddInput.PrintProperty("shiftAddInput");																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																					   
+				shiftAddInput.PrintProperty("shiftAddInput");
 			}
 		}
-	} 
+	}
 	FunctionUnit::PrintProperty("SubArray");
 	cout << "Used Area = " << usedArea*1e12 << "um^2" << endl;
 	cout << "Empty Area = " << emptyArea*1e12 << "um^2" << endl;
 }
-
