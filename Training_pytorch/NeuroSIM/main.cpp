@@ -262,12 +262,13 @@ int main(int argc, char * argv[]) {
 
 	double scalingFactor_Total = 1;
 	double scalingFactor_WG = 1;
+	// ToDo: Chane back to DFA
 	if (param->rule == "bp") {
 	    scalingFactor_Total = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_Forward + numComputation_BP);
 	    scalingFactor_WG = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_BP);
 	}
-
-    if (param->rule == "bp") {
+    // To: Change back to param->rule == "bp"
+    if (false) {
         numComputation = numComputation_Forward + numComputation_BP;
     }
     else {
@@ -405,7 +406,6 @@ int main(int argc, char * argv[]) {
 					numTileOtherLayer += numTileEachLayer[0][j] * numTileEachLayer[1][j];
 				}
 			}
-			// My addition
 			layerLeakageEnergy = numTileOtherLayer*tileLeakage*(layerReadLatency+layerReadLatencyAG);
 
             layerfile << numTileEachLayer[0][i] * numTileEachLayer[1][i] << ", ";
