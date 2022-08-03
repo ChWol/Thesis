@@ -273,6 +273,8 @@ int main(int argc, char * argv[]) {
     }
 	numComputation *= param->batchSize * param->numIteration;
 
+	cout << "Num computation: " << numComputation;
+
 	ChipInitialize(inputParameter, tech, cell, netStructure, markNM, numTileEachLayer,
 					numPENM, desiredNumTileNM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow, numTileCol, &numArrayWriteParallel);
 
