@@ -512,7 +512,6 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 				*coreEnergyOther += subArray->readDynamicEnergyOther;
 			}
 			*writeLatencyWU += subArray->writeLatency*((param->trainingEstimation)==true? 1:0);
-			cout << layerNumber << ": " << subArray->writeDynamicEnergy << ", " << arrayDupRow << ", " << arrayDupCol << endl;
 			*writeDynamicEnergyWU += subArray->writeDynamicEnergy*(arrayDupRow*arrayDupCol)*((param->trainingEstimation)==true? 1:0);
 			// do not pass adderTree 
 			*readLatency = subArrayReadLatency/(arrayDupRow*arrayDupCol);
@@ -601,6 +600,7 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 					// accumulate write latency as array need to be write sequentially (worst case)
 					// limitation by on-chip buffer, write latency will be divided by numArrayWriteParallel (real case)
 					*writeLatencyWU += subArray->writeLatency*((param->trainingEstimation)==true? 1:0);
+					cout << layerNumber << ": " << subArray->writeDynamicEnergy << ", " << arrayDupRow << ", " << arrayDupCol << endl;
 					*writeDynamicEnergyWU += subArray->writeDynamicEnergy*((param->trainingEstimation)==true? 1:0);
 					*readLatency = MAX(subArrayReadLatency, (*readLatency));
 					*readLatencyAG = MAX(subArrayReadLatencyAG, (*readLatencyAG));
