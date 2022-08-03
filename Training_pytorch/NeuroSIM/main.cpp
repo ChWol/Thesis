@@ -277,7 +277,6 @@ int main(int argc, char * argv[]) {
 	// End of my addition
 
 	// Alternative approach
-	// BP
 	double flopsBP = 0;
 	for (int i=0; i<netStructure.size(); i++) {
 	    if (i == netStructure.size() - 1) {
@@ -287,7 +286,7 @@ int main(int argc, char * argv[]) {
 	        flopsBP += num_classes * 2 * (param->batchSize-1) * netStructure[i][2] + numComputation_Forward;
 	    }
 	}
-	// DFA
+
 	double flopsDFA = 0;
 	for (int i=0; i<netStructure.size(); i++) {
 	    if (i == netStructure.size() - 1) {
@@ -298,10 +297,12 @@ int main(int argc, char * argv[]) {
 	    }
 	}
 
+    cout << "Approximation via forward pass" << endl;
 	cout << "BP: " << numComputation_BP << endl;
 	cout << "DFA: " << numComputation_DFA << endl;
-	cout << "Scaling factor" << scalingFactor_Total << endl;
-
+	cout << "Scaling factor: " << scalingFactor_Total << endl;
+	cout << endl;
+    cout << "FLOPs approach" << endl;
 	cout << "BP: " << flopsBP << endl;
 	cout << "DFA: " << flopsDFA << endl;
 	cout << "Scaling factor: " << 1- (flopsBP - flopsDFA) / (numComputation_Forward + flopsBP) << endl;
