@@ -256,22 +256,16 @@ int main(int argc, char * argv[]) {
 		// numComputation *= param->batchSize * param->numIteration;  // count for one epoch
 	}
 
-    double  numComputation_DFA = 0;
-	if (param->trainingEstimation) {
-	    numComputation_DFA += numComputation_Forward;
-	    for (int i=0; i<netStructure.size(); i++) {
-		    numComputation_DFA += 2*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
-	    }
-	    numComputation_DFA -= 2*(netStructure[0][0] * netStructure[0][1] * num_classes * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
+    double numComputation = 0;
+	for (int i=0; i<netStructure.size(); i++) {
+		numComputation += 2*(netStructure[i][0] * netStructure[i][1] * netStructure[i][2] * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	}
 
-    if (param->rule == "bp") {
-        numComputation = numComputation_Forward + numComputation_BP;
-    }
-    else {
-        numComputation = numComputation_Forward + numComputation_DFA;
-    }
-	numComputation *= param->batchSize * param->numIteration;
+	if (param->trainingEstimation) {
+		numComputation *= 3;  // forward, computation of activation gradient, weight gradient
+		numComputation -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);  //L-1 does not need AG
+		numComputation *= param->batchSize * param->numIteration;  // count for one epoch
+	}
 
 	cout << "Num computation: " << numComputation;
 
