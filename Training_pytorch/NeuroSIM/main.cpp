@@ -313,18 +313,6 @@ int main(int argc, char * argv[]) {
 	numComputation *= param->batchSize * param->numIteration * scalingFactor_Total;
 	// End of my addition
 
-    cout << "Approximation via forward pass" << endl;
-	cout << "BP: " << numComputation_BP << endl;
-	cout << "DFA: " << numComputation_DFA << endl;
-	cout << "Scaling factor WG: " << scalingFactor_WG << endl;
-	cout << "Scaling factor Total: " << scalingFactor_Total << endl;
-	cout << endl;
-    cout << "FLOPs approach" << endl;
-	cout << "BP: " << flopsBP << endl;
-	cout << "DFA: " << flopsDFA << endl;
-	cout << "Scaling factor WG: " << 1 - (flopsBP - flopsDFA) / (flopsBP) << endl;
-	cout << "Scaling factor Total: " << 1 - scalingFLOPs*(numComputation_Forward) / (numComputation_BP + numComputation_Forward) << endl;
-
 	ChipInitialize(inputParameter, tech, cell, netStructure, markNM, numTileEachLayer,
 					numPENM, desiredNumTileNM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow, numTileCol, &numArrayWriteParallel);
 
