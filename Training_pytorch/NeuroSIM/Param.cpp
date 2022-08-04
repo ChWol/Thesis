@@ -57,7 +57,7 @@ Param::Param() {
 	operationmode = 2;     		// 1: conventionalSequential (Use several multi-bit RRAM as one synapse)
 								// 2: conventionalParallel (Use several multi-bit RRAM as one synapse)
 
-	memcelltype = 3;        	// 1: cell.memCellType = Type::SRAM
+	//memcelltype = 3;        	// 1: cell.memCellType = Type::SRAM
 								// 2: cell.memCellType = Type::RRAM
 								// 3: cell.memCellType = Type::FeFET
 
@@ -87,10 +87,7 @@ Param::Param() {
 	chipActivation = true;      // false: activation (reLu/sigmoid) inside Tile
 								// true: activation outside Tile
 
-	reLu = true;                // false: sigmoid
-								// true: reLu
-
-	novelMapping = true;        // false: conventional mapping
+	novelMapping = false;        // false: conventional mapping
 								// true: novel mapping
 
 	SARADC = false;              // false: MLSA
@@ -112,16 +109,7 @@ Param::Param() {
 	/*** conventional hardware design options ***/
 	clkFreq = 1e9;                      // Clock frequency
 	temp = 300;                         // Temperature (K)
-	// technode: 130, 90 --> wireWidth: 200
-	// technode: 65      --> wireWidth: 100
-	// technode: 45      --> wireWidth: 50
-	// technode: 32      --> wireWidth: 40
-	// technode: 22      --> wireWidth: 32
-	// technode: 14      --> wireWidth: 22
-	// technode: 10, 7   --> wireWidth: 14
-	technode = 32;                      // Technology
 	featuresize = 40e-9;                // Wire width for subArray simulation
-	wireWidth = 40;                     // wireWidth of the cell for Accuracy calculation
 	globalBusDelayTolerance = 0.1;      // to relax bus delay for global H-Tree (chip level: communication among tiles), if tolerance is 0.1, the latency will be relax to (1+0.1)*optimalLatency (trade-off with energy)
 	localBusDelayTolerance = 0.1;       // to relax bus delay for global H-Tree (tile level: communication among PEs), if tolerance is 0.1, the latency will be relax to (1+0.1)*optimalLatency (trade-off with energy)
 	treeFoldedRatio = 4;                // the H-Tree is assumed to be able to folding in layout (save area)
@@ -135,8 +123,6 @@ Param::Param() {
 	relaxArrayCellWidth = 0;            // relax ArrayCellWidth or not
 
 	numColMuxed = 8;                    // How many columns share 1 ADC (for eNVM and FeFET) or parallel SRAM
-	levelOutput = 64;                  // # of levels of the multilevelSenseAmp output, should be in 2^N forms; e.g. 32 levels --> 5-bit ADC
-	cellBit = 5;                        // precision of memory device
 
 	/*** parameters for SRAM ***/
 	// due the scaling, suggested SRAM cell size above 22nm: 160F^2
@@ -157,9 +143,8 @@ Param::Param() {
 	widthInFeatureSizeCrossbar = 2;     // Crossbar Cell width in feature size
 
 	resistanceOn = 240e3;               // Ron resistance at Vr in the reported measurement data (need to recalculate below if considering the nonlinearity)
-	resistanceOff = 240e3*100;           // Roff resistance at Vr in the reported measurement dat (need to recalculate below if considering the nonlinearity)
 	maxConductance = (double) 1/resistanceOn;
-	minConductance = (double) 1/resistanceOff;
+
 	gateCapFeFET = 2.1717e-18;	        // Gate capacitance of FeFET (F)
 	polarization = 20;                  // polarization of FeFET (uC/cm^2)
 	maxNumLevelLTP = 60;	            // Maximum number of conductance states during LTP or weight increase
@@ -185,7 +170,6 @@ Param::Param() {
 	parallelBP = true;          		// false: conventionalSequential (Use several multi-bit RRAM as one synapse)
 										// true: conventionalParallel (Use several multi-bit RRAM as one synapse)
 
-	batchSize = 200;                    // batchSize in training
 	numIteration = 250;                 // num of iteration for one epoch
 
 	bufferOverHeadConstraint = 1;       // N times of overhead of the original buffer designed for inference only
@@ -207,10 +191,6 @@ Param::Param() {
 
 
 	/***************************************** Initialization of parameters NO need to modify *****************************************/
-
-	if (memcelltype == 1) {
-		cellBit = 1;             // force cellBit = 1 for all SRAM cases
-	}
 
 	/*** initialize operationMode as default ***/
 	conventionalParallel = 0;
@@ -237,9 +217,14 @@ Param::Param() {
 	} else {
 		parallelRead = 0;
 	}
+	/***************************************** Initialization of parameters NO need to modify *****************************************/
+}
 
-	/*** Initialize interconnect wires ***/
-	switch(wireWidth) {
+void Param::recalculate_Params(int wireWidth, int memcelltype, int resistanceOff) {
+	minConductance = (double) 1/resistanceOff;
+
+    /*** Initialize interconnect wires ***/
+    switch(wireWidth) {
 		case 200: 	AR = 2.10; Rho = 2.42e-8; break;  // for technode: 130, 90
 		case 100:	AR = 2.30; Rho = 2.73e-8; break;  // for technode: 65
 		case 50:	AR = 2.34; Rho = 3.91e-8; break;  // for technode: 45
@@ -269,9 +254,10 @@ Param::Param() {
 		wireResistanceRow = 0;
 		wireResistanceCol = 0;
 	} else {
+
 		unitLengthWireResistance =  Rho / ( wireWidth*1e-9 * wireWidth*1e-9 * AR );
 		wireResistanceRow = unitLengthWireResistance * wireLengthRow;
 		wireResistanceCol = unitLengthWireResistance * wireLengthCol;
 	}
-	/***************************************** Initialization of parameters NO need to modify *****************************************/
 }
+

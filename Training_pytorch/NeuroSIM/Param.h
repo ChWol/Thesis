@@ -38,10 +38,13 @@
 
 #ifndef PARAM_H_
 #define PARAM_H_
+#include <string>
 
 class Param {
 public:
 	Param();
+
+	void recalculate_Params(int wireWidth, int memcelltype, int resistanceOff);
 
 	int operationmode, operationmodeBack, memcelltype, accesstype, transistortype, deviceroadmap;
 
@@ -75,6 +78,8 @@ public:
 	int XNORparallelMode, XNORsequentialMode, BNNparallelMode, BNNsequentialMode, conventionalParallel, conventionalSequential;
 	int numRowPerSynapse, numColPerSynapse;
 	double AR, Rho, wireLengthRow, wireLengthCol, unitLengthWireResistance, wireResistanceRow, wireResistanceCol;
+
+	std::string rule;
 };
 
 #endif

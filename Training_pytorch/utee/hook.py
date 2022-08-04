@@ -120,7 +120,8 @@ def hardware_evaluation(model, wl_weight, wl_activation, numEpoch, batchSize, ce
         os.remove('./layer_record/trace_command.sh')
     f = open('./layer_record/trace_command.sh', "w")
     f.write('./NeuroSIM/main ' + str(numEpoch) + ' ./NeuroSIM/NetWork.csv ' + str(wl_weight) + ' ' + str(wl_activation)
-            + ' ' + str(batchSize) + ' ' )
+            + ' ' + str(batchSize) + ' ' + str(cellBit) + ' ' + str(technode) + ' ' + str(wireWidth) + ' ' + str(relu)
+            + ' ' + str(memcelltype) + ' ' + str(levelOutput) + ' ' + str(onoffratio) + ' ' + str(rule) + ' ')
     for i, layer in enumerate(model.features.modules()):
         if isinstance(layer, QConv2d) or isinstance(layer, QLinear):
             hook_handle_list.append(layer.register_forward_hook(Neural_Sim))
