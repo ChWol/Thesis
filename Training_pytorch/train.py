@@ -240,7 +240,7 @@ try:
         k = 0
 
         for name, param in list(model.named_parameters()):
-            oldWeight[k] = param.data + param.grad.data / args.learning_rate
+            oldWeight[k] = param.data + param.grad.data
             k = k + 1
 
         h = 0
