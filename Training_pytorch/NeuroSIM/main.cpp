@@ -295,22 +295,21 @@ int main(int argc, char * argv[]) {
 	double scalingFactor_Total = 1;
 	double scalingFactor_WG = 1;
 	if (param->rule == "dfa") {
-	    scalingFactor_Total = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_Forward + numComputation_BP);
-	    scalingFactor_WG = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_Forward);
+	    // Approximation approach
+	    // scalingFactor_Total = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_Forward + numComputation_BP);
+	    // scalingFactor_WG = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_Forward);
+
+	    // FLOPs approach
+	    scalingFactor_WG = (flopsBP - flopsDFA) / (flopsBP);
+	    scalingFactor_Total = 1 - scalingFLOPs*numComputation_Forward / (numComputation_Forward + numComputation_BP)
 	}
 
-    if (param->rule == "bp") {
-        numComputation = numComputation_Forward + numComputation_BP;
-    }
-    else {
-        numComputation = numComputation_Forward + numComputation_DFA;
-    }
-	numComputation *= param->batchSize * param->numIteration;
+    numComputation = numComputation_Forward + numComputation_BP;
+    cout << numComputation << endl;
+    cout << numComputation_Forward << endl;
+    cout << (numComputation_Forward + numComputation_BP)*scalingFactor_Total;
+	numComputation *= param->batchSize * param->numIteration * scalingFactor_Total;
 	// End of my addition
-
-
-
-	double scalingFLOPs = (flopsBP - flopsDFA) / (flopsBP);
 
     cout << "Approximation via forward pass" << endl;
 	cout << "BP: " << numComputation_BP << endl;
