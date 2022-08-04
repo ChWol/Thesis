@@ -276,7 +276,7 @@ int main(int argc, char * argv[]) {
 	double scalingFactor_WG = 1;
 	if (param->rule == "dfa") {
 	    scalingFactor_Total = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_Forward + numComputation_BP);
-	    scalingFactor_WG = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_BP);
+	    scalingFactor_WG = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_Forward);
 	}
 
     if (param->rule == "bp") {
