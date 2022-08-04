@@ -152,105 +152,17 @@ def make_classifiers(classifiers, args, logger, in_dimension, num_classes):
     return nn.Sequential(*layers)
 
 
-def get_model(num_classes, network):
-    networks = {
-        'one': {
-            'features': [],
-            'classifier': [('L', num_classes, 1, 'same', 1)]
-        },
-        'two': {
-            'features': [],
-            'classifier': [('L', 800, 1, 'same', 1),
-                           ('L', num_classes, 1, 'same', 1)]
-        },
-        'three': {
-            'features': [],
-            'classifier': [('L', 1024, 1, 'same', 1),
-                           ('L', 1024, 1, 'same', 1),
-                           ('L', num_classes, 1, 'same', 1)]
-        },
-        'four': {
-            'features': [],
-            'classifier': [('L', 512, 1, 'same', 1),
-                           ('L', 512, 1, 'same', 1),
-                           ('L', 512, 1, 'same', 1),
-                           ('L', num_classes, 1, 'same', 1)]
-        },
-        'five': {
-            'features': [],
-            'classifier': [('L', 512, 1, 'same', 1),
-                           ('L', 512, 1, 'same', 1),
-                           ('L', 512, 1, 'same', 1),
-                           ('L', 512, 1, 'same', 1),
-                           ('L', num_classes, 1, 'same', 1)]
-        },
-        'six': {
-            'features': [],
-            'classifier': [('L', 1024, 1, 'same', 1),
-                           ('L', 1024, 1, 'same', 1),
-                           ('L', 1024, 1, 'same', 1),
-                           ('L', 1024, 1, 'same', 1),
-                           ('L', 1024, 1, 'same', 1),
-                           ('L', num_classes, 1, 'same', 1)]
-        },
-        'ten': {
-            'features': [],
-            'classifier': [('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', num_classes, 1, 'same', 1)]
-        },
-        'twenty': {
-            'features': [],
-            'classifier': [('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', num_classes, 1, 'same', 1)]
-        },
-        'vgg8': {
-            'features': [('C', 128, 3, 'same', 32),
-                         ('C', 128, 3, 'same', 32),
-                         ('M', 2, 2),
-                         ('C', 256, 3, 'same', 16),
-                         ('C', 256, 3, 'same', 16),
-                         ('M', 2, 2),
-                         ('C', 512, 3, 'same', 8),
-                         ('C', 512, 3, 'same', 8),
-                         ('M', 2, 2)],
-            'classifier': [('L', 1024, 1, 'same', 1),
-                           ('L', num_classes, 1, 'same', 1)]
-        },
-        'cnn': {
-            'features': [
-                         ('C', 1, 3, 'same', 28),
-                         ('M', 1, 1)],
-            'classifier': [('L', 1024, 1, 'same', 1),
-                           ('L', num_classes, 1, 'same', 1)]
-        }
+def get_model(num_classes, depth, hidden):
+    network = {
+        'features': [],
+        'classifier': []
     }
-    return networks[network]
+    for i in range(depth):
+        if i == depth - 1:
+            network['classifier'].append(('L', num_classes, 1, 'same', 1))
+        else:
+            network['classifier'].append(('L', hidden, 1, 'same', 1))
+    return network
 
 
 def cifar(args, logger, num_classes, pretrained=None):
@@ -275,7 +187,7 @@ def cifar(args, logger, num_classes, pretrained=None):
 
 
 def mnist(args, logger, num_classes, pretrained=None):
-    model = get_model(num_classes, args.network)
+    model = get_model(num_classes, args.network, args.hidden)
     features = model["features"]
     classifiers = model["classifier"]
 
