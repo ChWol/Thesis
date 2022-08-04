@@ -229,8 +229,6 @@ class QLinear(nn.Linear):
             B = B.to(device='cuda')
             if initial == 'xavier':
                 torch.nn.init.xavier_uniform_(B)
-                # ToDo: Won't work for deep networks
-                # torch.nn.init.xavier_uniform_(self.weight)
             else:
                 stdv = 1. / math.sqrt(self.weight.size(1))
                 B.data.uniform_(-stdv, stdv)

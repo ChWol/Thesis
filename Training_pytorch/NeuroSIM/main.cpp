@@ -444,8 +444,6 @@ int main(int argc, char * argv[]) {
 
 			double numTileOtherLayer = 0;
 			double layerLeakageEnergy = 0;
-			// ToDo: Why not use the desiredNumTile?
-			// ToDo: Add DFA tiles here, too
 			for (int j=0; j<netStructure.size(); j++) {
 				if (j != i) {
 					numTileOtherLayer += numTileEachLayer[0][j] * numTileEachLayer[1][j];
@@ -917,8 +915,9 @@ int main(int argc, char * argv[]) {
 	cout << endl;
 	cout << "----------- ADC (or S/As and precharger for SRAM) readLatency is : " << chipLatencyADC*1e9 << "ns" << endl;
 	summaryfile << chipLatencyADC*1e9 << ",";
-	cout << "----------- Accumulation Circuits (subarray level: adders, shiftAdds; PE/Tile/Global level: accumulation units) readLatency is : " << chipLatencyAccum*1e9 << "ns" << endl;
-	summaryfile << chipLatencyAccum*1e9 << ",";
+	// My addition
+	cout << "----------- Accumulation Circuits (subarray level: adders, shiftAdds; PE/Tile/Global level: accumulation units) readLatency is : " << chipLatencyAccum*scalingFactor_Total*1e9 << "ns" << endl;
+	summaryfile << chipLatencyAccum*scalingFactor_Total*1e9 << ",";
 	cout << "----------- Synaptic Array w/o ADC (Forward + Activate Gradient) readLatency is : " << chipLatencyOther*1e9 << "ns" << endl;
 	summaryfile << chipLatencyOther*1e9 << ",";
 	cout << "----------- Buffer readLatency is: " << chipbufferLatency*1e9 << "ns" << endl;

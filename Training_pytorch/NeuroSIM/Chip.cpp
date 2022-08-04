@@ -74,8 +74,10 @@ BitShifter *GreLu;
 MaxPooling *maxPool;
 DRAM *dRAM;
 // ToDo: Liste davon anlegen für jedes Layer eines
-WeightGradientUnit *weightGradientUnit;
-Adder *gradientAccum;
+vector<WeightGradientUnit> weightGradientUnits;
+// WeightGradientUnit *weightGradientUnit;
+vector<GradientAccum> gradientAccums;
+// Adder *gradientAccum;
 
 vector<int> ChipDesignInitialize(InputParameter& inputParameter, Technology& tech, MemCell& cell, bool pip, const vector<vector<double> > &netStructure,
 					double *maxPESizeNM, double *maxTileSizeCM, double *numPENM){
@@ -87,8 +89,12 @@ vector<int> ChipDesignInitialize(InputParameter& inputParameter, Technology& tec
 	GreLu = new BitShifter(inputParameter, tech, cell);
 	maxPool = new MaxPooling(inputParameter, tech, cell);
 	dRAM = new DRAM(inputParameter, tech, cell);
-	weightGradientUnit = new WeightGradientUnit(inputParameter, tech, cell);
-	gradientAccum = new Adder(inputParameter, tech, cell);
+	for (int i = 0; i < netStructure.size(); i++) {
+	    weightGradientUnits.push_back(new WeightGradientUnit(inputParameter, tech, cell));
+	    gradientAccums.push_back(new Adder(inputParameter, tech, cell));
+	}
+	// weightGradientUnit = new WeightGradientUnit(inputParameter, tech, cell);
+	// gradientAccum = new Adder(inputParameter, tech, cell);
 
 	int numRowPerSynapse, numColPerSynapse;
 	numRowPerSynapse = param->numRowPerSynapse;
@@ -416,10 +422,14 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 	dRAM->Initialize(param->dramType);
 	if (param->trainingEstimation) {
 	    // ToDo: No calculation of maxIFMLayer, but for loop
-		int numMemInRow = (netStructure[maxIFMLayer][0]-netStructure[maxIFMLayer][3]+1)*(netStructure[maxIFMLayer][1]-netStructure[maxIFMLayer][4]+1);
-		int numMemInCol = netStructure[maxIFMLayer][2]*param->numBitInput;
-		// ToDo: Might need this for each layer to perform gradient updates in parallel
-		weightGradientUnit->Initialize(numMemInRow, numMemInCol);
+	    for (int i = 0; i < netStructure.size(); i++) {
+	        int numMemInRow = (netStructure[i][0]-netStructure[i][3]+1)*(netStructure[i][1]-netStructure[i][4]+1);
+		    int numMemInCol = netStructure[i][2]*param->numBitInput;
+		    weightGradientUnits[i]->Initialize(numMemInRow, numMemInCol);
+	    }
+		// int numMemInRow = (netStructure[maxIFMLayer][0]-netStructure[maxIFMLayer][3]+1)*(netStructure[maxIFMLayer][1]-netStructure[maxIFMLayer][4]+1);
+		// int numMemInCol = netStructure[maxIFMLayer][2]*param->numBitInput;
+		// weightGradientUnit->Initialize(numMemInRow, numMemInCol);
 		int maxWeight = 0;
 		for (int i=0; i<netStructure.size(); i++) {
 			double weight = netStructure[i][2]*netStructure[i][3]*netStructure[i][4]*netStructure[i][5];  // IFM_Row * IFM_Column * IFM_depth
@@ -437,7 +447,10 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 		// update the buffer size to save weight gradient
 		bufferSize += bufferOverHead;
 		// ToDo: Same here
-		gradientAccum->Initialize(weightGradientUnit->outPrecision+ceil(log2(param->batchSize)), (*numArrayWriteParallel)*param->numRowSubArray*param->numColSubArray);
+		for (int i = 0; i < netStructure.size(); i++) {
+		    gradientAccums[i]->Initialize(weightGradientUnits[i]->outPrecision+ceil(log2(param->batchSize)), (*numArrayWriteParallel)*param->numRowSubArray*param->numColSubArray);
+	    }
+		// gradientAccum->Initialize(weightGradientUnit->outPrecision+ceil(log2(param->batchSize)), (*numArrayWriteParallel)*param->numRowSubArray*param->numColSubArray);
 	}
 
 	//globalBuffer->Initialize(param->numBitInput*maxLayerInput, globalBusWidth, 1, param->unitLengthWireResistance, param->clkFreq, param->globalBufferType);
@@ -616,10 +629,16 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 
 	if (param->trainingEstimation) {
 	    // ToDo: For each layer again
-		weightGradientUnit->CalculateArea();
-		gradientAccum->CalculateArea(globalBufferHeight, NULL, NONE);
-		area += weightGradientUnit->area + gradientAccum->area;
-		areaWG = weightGradientUnit->area + gradientAccum->area;
+	    for (int i = 0; i < netStructure.size(); i++) {
+	        weightGradientUnits[i]->CalculateArea();
+		    gradientAccums[i]->CalculateArea(globalBufferHeight, NULL, NONE);
+		    area += weightGradientUnit[i]->area + gradientAccums[i]->area;
+		    areaWG += weightGradientUnit[i]->area + gradientAccums[i]->area;
+	    }
+		// weightGradientUnit->CalculateArea();
+		// gradientAccum->CalculateArea(globalBufferHeight, NULL, NONE);
+		// area += weightGradientUnit->area + gradientAccum->area;
+		// areaWG = weightGradientUnit->area + gradientAccum->area;
 	}
 
 	area += globalBufferArea + GhTree->area + maxPool->area + Gaccumulation->area;
@@ -1004,7 +1023,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		// After all the image in the batch is done with the gradient of activation, the activation and gradient of activation will be sent back to the chip, to get the gradient of weight
 		// Limited by global buffer, the weight gradient will be sent to DRAM and then grab back to be accumulated across batch
 		int dataLoadIn = (netStructure[l][0])*(netStructure[l][1])*param->numBitInput;
-		int dataLoadWeight = netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]*weightGradientUnit->outPrecision;
+		int dataLoadWeight = netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]*weightGradientUnits[layerNumber]->outPrecision;
 
 		// For activation and activation gradient transfer
 		dRAM->CalculateLatency(dataLoadIn);
@@ -1053,8 +1072,8 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 
 		// calculation of weight gradient
 		// ToDo: Do this for corresponding l'th weightGradientUnit
-		weightGradientUnit->CalculateLatency(netStructure[l][5], (netStructure[l][0]-netStructure[l][3]+1)*(netStructure[l][1]-netStructure[l][4]+1)*param->numBitInput);
-		weightGradientUnit->CalculatePower(netStructure[l][5], (netStructure[l][0]-netStructure[l][3]+1)*(netStructure[l][1]-netStructure[l][4]+1)*param->numBitInput);
+		weightGradientUnits[l]->CalculateLatency(netStructure[l][5], (netStructure[l][0]-netStructure[l][3]+1)*(netStructure[l][1]-netStructure[l][4]+1)*param->numBitInput);
+		weightGradientUnits[l]->CalculatePower(netStructure[l][5], (netStructure[l][0]-netStructure[l][3]+1)*(netStructure[l][1]-netStructure[l][4]+1)*param->numBitInput);
 		// here consider speed up
 		double thisMatrixRow = (netStructure[l][0]-netStructure[l][3]+1)*(netStructure[l][1]-netStructure[l][4]+1);
 		double thisMatrixCol = netStructure[l][2]*param->numBitInput;
@@ -1062,16 +1081,16 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		double arrayNeedCol = ceil(thisMatrixCol/param->numColSubArrayWG)==0? 1:ceil(thisMatrixCol/param->numColSubArrayWG);
 		double speedUpRow, speedUpCol;
 		if (thisMatrixRow != 1) {
-			speedUpRow = floor(weightGradientUnit->numArrayInRow/arrayNeedRow)==0? 1:floor(weightGradientUnit->numArrayInRow/arrayNeedRow);
-			speedUpCol = floor(weightGradientUnit->numArrayInCol/arrayNeedCol)==0? 1:floor(weightGradientUnit->numArrayInCol/arrayNeedCol);
+			speedUpRow = floor(weightGradientUnits[l]->numArrayInRow/arrayNeedRow)==0? 1:floor(weightGradientUnit[l]->numArrayInRow/arrayNeedRow);
+			speedUpCol = floor(weightGradientUnits[l]->numArrayInCol/arrayNeedCol)==0? 1:floor(weightGradientUnit[l]->numArrayInCol/arrayNeedCol);
 		} else{
-			speedUpRow = weightGradientUnit->numArrayInRow;
+			speedUpRow = weightGradientUnits[l]->numArrayInRow;
 			speedUpCol = floor(thisMatrixCol/param->numColSubArrayWG)==0? 1:floor(thisMatrixCol/param->numColSubArrayWG);
 		}
-		double actualUsedArray = thisMatrixRow*thisMatrixCol/(weightGradientUnit->numArrayInRow*weightGradientUnit->numArrayInCol*param->numRowSubArrayWG*param->numColSubArrayWG);
+		double actualUsedArray = thisMatrixRow*thisMatrixCol/(weightGradientUnits[l]->numArrayInRow*weightGradientUnits[l]->numArrayInCol*param->numRowSubArrayWG*param->numColSubArrayWG);
 
-		*readLatencyPeakWG = (weightGradientUnit->readLatencyPeak/(speedUpRow*speedUpCol) + weightGradientUnit->writeLatencyPeak)*(netStructure[l][3]*netStructure[l][4]);
-		*readDynamicEnergyPeakWG = (weightGradientUnit->readDynamicEnergyPeak + weightGradientUnit->writeDynamicEnergyPeak)*actualUsedArray*(netStructure[l][3]*netStructure[l][4]);
+		*readLatencyPeakWG = (weightGradientUnits[l]->readLatencyPeak/(speedUpRow*speedUpCol) + weightGradientUnits[l]->writeLatencyPeak)*(netStructure[l][3]*netStructure[l][4]);
+		*readDynamicEnergyPeakWG = (weightGradientUnits[l]->readDynamicEnergyPeak + weightGradientUnits[l]->writeDynamicEnergyPeak)*actualUsedArray*(netStructure[l][3]*netStructure[l][4]);
 		*readLatencyWG += (*readLatencyPeakWG);
 		*readDynamicEnergyWG += (*readDynamicEnergyPeakWG);
 
@@ -1094,13 +1113,13 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		*dramLatency += dRAM->readLatency;
 		*dramDynamicEnergy += dRAM->readDynamicEnergy;
 
-		gradientAccum->CalculateLatency(1e20, 0, ceil(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]/gradientAccum->numAdder));
-		gradientAccum->CalculatePower(ceil(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]/gradientAccum->numAdder),
-						MIN(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5], gradientAccum->numAdder));
-		*readLatencyWG += gradientAccum->readLatency;
-		*readDynamicEnergyWG += gradientAccum->readDynamicEnergy;
-		*readLatencyPeakWG += gradientAccum->readLatency;
-		*readDynamicEnergyPeakWG += gradientAccum->readDynamicEnergy;
+		gradientAccums[l]->CalculateLatency(1e20, 0, ceil(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]/gradientAccums[l]->numAdder));
+		gradientAccums[l]->CalculatePower(ceil(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]/gradientAccums[l]->numAdder),
+						MIN(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5], gradientAccums[l]->numAdder));
+		*readLatencyWG += gradientAccums[l]->readLatency;
+		*readDynamicEnergyWG += gradientAccums[l]->readDynamicEnergy;
+		*readLatencyPeakWG += gradientAccums[l]->readLatency;
+		*readDynamicEnergyPeakWG += gradientAccums[l]->readDynamicEnergy;
 
 		// weight gradient also need *batchSize computation
 		*readLatencyWG *= param->batchSize;
