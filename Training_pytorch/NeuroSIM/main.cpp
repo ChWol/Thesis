@@ -686,23 +686,6 @@ int main(int argc, char * argv[]) {
 	cout << "Total Run-time of NeuroSim: " << duration.count() << " seconds" << endl;
 	cout << "------------------------------ Simulation Performance --------------------------------" <<  endl;
 
-	// save results to top level csv file (only total results)
-	ofstream outfile;
-	outfile.open ("NeuroSim_Output.csv", ios::app);
-	if (outfile.is_open()) {
-		outfile << chipReadLatency << "," << chipReadLatencyAG << "," << chipReadLatencyWG << "," << chipWriteLatencyWU << ",";
-		outfile << chipReadDynamicEnergy << "," << chipReadDynamicEnergyAG << "," << chipReadDynamicEnergyWG << "," << chipWriteDynamicEnergyWU << ",";
-		outfile << chipReadLatencyPeakFW << "," << chipReadLatencyPeakAG << "," << chipReadLatencyPeakWG << "," << chipWriteLatencyPeakWU << ",";
-		outfile << chipReadDynamicEnergyPeakFW << "," << chipReadDynamicEnergyPeakAG << "," << chipReadDynamicEnergyPeakWG << "," << chipWriteDynamicEnergyPeakWU << ",";
-		outfile << numComputation/((chipReadDynamicEnergy+chipLeakageEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*1e12) << ",";
-		outfile << numComputation/(chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU)*1e-12 << ",";
-		outfile << numComputation/((chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*1e12) << ",";
-		outfile << numComputation/(chipReadLatencyPeakFW+chipReadLatencyPeakAG+chipReadLatencyPeakWG+chipWriteLatencyPeakWU)*1e-12 << endl;
-	} else {
-		cout << "Error: the output file cannot be opened!" << endl;
-	}
-	outfile.close();
-
 
 	return 0;
 }
