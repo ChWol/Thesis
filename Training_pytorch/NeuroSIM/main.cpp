@@ -260,13 +260,13 @@ int main(int argc, char * argv[]) {
     double numComputation_BP = 0;
 	if (param->trainingEstimation) {
 		numComputation_BP = 2 * numComputation_Forward;
-		numComputation_BP -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
+		// numComputation_BP -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
 	}
 
     double  numComputation_DFA = 0;
 	if (param->trainingEstimation) {
 	    numComputation_DFA = 1 * numComputation_Forward;
-	    numComputation_DFA -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
+	    // numComputation_DFA -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
 	    for (int i=0; i<netStructure.size(); i++) {
 		    numComputation_DFA += 2*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	    }
@@ -280,7 +280,7 @@ int main(int argc, char * argv[]) {
 	}
 
     if (param->rule == "bp") {
-        numComputation = numComputation_BP;
+        numComputation = numComputation_Forward + numComputation_BP;
     }
     else {
         numComputation = numComputation_Forward + numComputation_DFA;
