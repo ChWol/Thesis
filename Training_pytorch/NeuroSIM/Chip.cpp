@@ -614,7 +614,7 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 		weightGradientUnit->CalculateArea();
 		gradientAccum->CalculateArea(globalBufferHeight, NULL, NONE);
 		area += (weightGradientUnit->area + gradientAccum->area) * (param->rule=="dfa"? numLayers:1);
-		areaWG = (weightGradientUnit->area + gradientAccum->area) * * (param->rule=="dfa"? numLayers:1);
+		areaWG = (weightGradientUnit->area + gradientAccum->area) * (param->rule=="dfa"? numLayers:1);
 	}
 
 	area += globalBufferArea + GhTree->area + maxPool->area + Gaccumulation->area;
