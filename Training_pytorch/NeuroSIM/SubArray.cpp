@@ -1870,7 +1870,6 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				}
 				// Array
 				readDynamicEnergyArray = 0; // Just BL discharging
-				cout << "here" << endl;
 				writeDynamicEnergyArray = cell.capSRAMCell * tech.vdd * tech.vdd * 2 * numCol * activityColWrite * numRow * activityRowWrite;    // flip Q and Q_bar
 				// Read
 				readDynamicEnergy += wlSwitchMatrix.readDynamicEnergy;
@@ -2083,6 +2082,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 				}
 				// Array
 				readDynamicEnergyArray = 0; // Just BL discharging
+				cout << "one" << endl;
 				writeDynamicEnergyArray = cell.capSRAMCell * tech.vdd * tech.vdd * 2 * numCol * activityColWrite * numRow * activityRowWrite;    // flip Q and Q_bar
 				// Read
 				readDynamicEnergy += wlSwitchMatrix.readDynamicEnergy;
