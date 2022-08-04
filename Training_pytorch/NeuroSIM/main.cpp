@@ -310,9 +310,11 @@ int main(int argc, char * argv[]) {
 	}
 
     cout << "Approximation via forward pass" << endl;
+    cout << "Forward: " << numComputation_Forward << endl;
 	cout << "BP: " << numComputation_BP << endl;
 	cout << "DFA: " << numComputation_DFA << endl;
-	cout << "Scaling factor: " << scalingFactor_WG << endl;
+	cout << "Scaling factor WG: " << scalingFactor_WG << endl;
+	cout << "Scaling factor Total: " << scalingFactor_Total << endl;
 	cout << endl;
     cout << "FLOPs approach" << endl;
 	cout << "BP: " << flopsBP << endl;
