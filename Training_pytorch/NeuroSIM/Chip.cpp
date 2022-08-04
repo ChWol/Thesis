@@ -76,7 +76,7 @@ DRAM *dRAM;
 // ToDo: Liste davon anlegen für jedes Layer eines
 vector<WeightGradientUnit> weightGradientUnits;
 // WeightGradientUnit *weightGradientUnit;
-vector<GradientAccum> gradientAccums;
+vector<Adder> gradientAccums;
 // Adder *gradientAccum;
 
 vector<int> ChipDesignInitialize(InputParameter& inputParameter, Technology& tech, MemCell& cell, bool pip, const vector<vector<double> > &netStructure,
