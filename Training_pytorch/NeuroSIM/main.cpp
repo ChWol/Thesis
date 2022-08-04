@@ -301,10 +301,12 @@ int main(int argc, char * argv[]) {
 
 	    // FLOPs approach
 	    scalingFactor_WG = (flopsBP - flopsDFA) / (flopsBP);
-	    scalingFactor_Total = 1 - scalingFLOPs*numComputation_Forward / (numComputation_Forward + numComputation_BP)
+	    scalingFactor_Total = 1 - scalingFactor_WG * numComputation_Forward / (numComputation_Forward + numComputation_BP);
 	}
 
     numComputation = numComputation_Forward + numComputation_BP;
+    cout << scalingFactor_WG << endl;
+    cout << scalingFactor_Total << endl;
     cout << numComputation << endl;
     cout << numComputation_Forward << endl;
     cout << (numComputation_Forward + numComputation_BP)*scalingFactor_Total;
