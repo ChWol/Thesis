@@ -250,25 +250,45 @@ int main(int argc, char * argv[]) {
 	cout << endl;
 	cout << endl;
 
-    // My addition
+    // Forward pass
 	double numComputation = 0;
 	double numComputation_Forward = 0;
 	for (int i=0; i<netStructure.size(); i++) {
 		numComputation_Forward += 2*(netStructure[i][0] * netStructure[i][1] * netStructure[i][2] * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	}
 
+    // Approximation approach
     double numComputation_BP = 0;
 	if (param->trainingEstimation) {
 		numComputation_BP = 2 * numComputation_Forward;
 		numComputation_BP -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
 	}
-
     double  numComputation_DFA = 0;
 	if (param->trainingEstimation) {
 	    numComputation_DFA = 1 * numComputation_Forward;
 	    numComputation_DFA -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
 	    for (int i=0; i<netStructure.size(); i++) {
 		    numComputation_DFA += 2*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
+	    }
+	}
+
+	// FLOPs approach
+	double flopsBP = 0;
+	for (int i=0; i<netStructure.size(); i++) {
+	    if (i == netStructure.size() - 1) {
+	        flopsBP += netStructure[i][5]*(netStructure[i][2]-1)*2*param->batchSize + netStructure[i][5] * param->batchSize + netStructure[i][5]*2*(param->batchSize-1)*netStructure[i][2] + netStructure[i][5] * param->batchSize;
+	    }
+	    else {
+	        flopsBP += num_classes * 2 * (param->batchSize-1) * netStructure[i][2];
+	    }
+	}
+	double flopsDFA = 0;
+	for (int i=0; i<netStructure.size(); i++) {
+	    if (i == netStructure.size() - 1) {
+	        flopsDFA += netStructure[i][5]*2*(num_classes-1)*param->batchSize + netStructure[i][5] * param->batchSize + netStructure[i][5]*2*(param->batchSize-1)*netStructure[i][2] + netStructure[i][5] * param->batchSize;
+	    }
+	    else {
+	        flopsBP += num_classes * 2 * (param->batchSize-1) * netStructure[i][2];
 	    }
 	}
 
@@ -288,26 +308,7 @@ int main(int argc, char * argv[]) {
 	numComputation *= param->batchSize * param->numIteration;
 	// End of my addition
 
-	// Alternative approach
-	double flopsBP = 0;
-	for (int i=0; i<netStructure.size(); i++) {
-	    if (i == netStructure.size() - 1) {
-	        flopsBP += netStructure[i][5]*(netStructure[i][2]-1)*2*param->batchSize + netStructure[i][5] * param->batchSize + netStructure[i][5]*2*(param->batchSize-1)*netStructure[i][2] + netStructure[i][5] * param->batchSize;
-	    }
-	    else {
-	        flopsBP += num_classes * 2 * (param->batchSize-1) * netStructure[i][2] + numComputation_Forward;
-	    }
-	}
 
-	double flopsDFA = 0;
-	for (int i=0; i<netStructure.size(); i++) {
-	    if (i == netStructure.size() - 1) {
-	        flopsDFA += netStructure[i][5]*2*(num_classes-1)*param->batchSize + netStructure[i][5] * param->batchSize + netStructure[i][5]*2*(param->batchSize-1)*netStructure[i][2] + netStructure[i][5] * param->batchSize;
-	    }
-	    else {
-	        flopsBP += num_classes * 2 * (param->batchSize-1) * netStructure[i][2] + numComputation_Forward;
-	    }
-	}
 
 	double scalingFLOPs = (flopsBP - flopsDFA) / (flopsBP);
 
