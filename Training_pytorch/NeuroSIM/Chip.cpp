@@ -512,7 +512,7 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 
 
 
-vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tech, MemCell& cell, double dfaRows, double dfaColumns, double desiredNumTileNM, double numPENM, double desiredPESizeNM, double desiredNumTileCM, double desiredTileSizeCM,
+vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tech, MemCell& cell, double dfaRows, double dfaColumns, double numLayers, double desiredNumTileNM, double numPENM, double desiredPESizeNM, double desiredNumTileCM, double desiredTileSizeCM,
 						double desiredPESizeCM, int numTileRow, double *height, double *width, double *CMTileheight, double *CMTilewidth, double *NMTileheight, double *NMTilewidth) {
 
 	vector<double> areaResults;
@@ -613,8 +613,8 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 	if (param->trainingEstimation) {
 		weightGradientUnit->CalculateArea();
 		gradientAccum->CalculateArea(globalBufferHeight, NULL, NONE);
-		area += (weightGradientUnit->area + gradientAccum->area) * (param->rule=="dfa"? netStructure.size():1);
-		areaWG = (weightGradientUnit->area + gradientAccum->area) * * (param->rule=="dfa"? netStructure.size():1);
+		area += (weightGradientUnit->area + gradientAccum->area) * (param->rule=="dfa"? numLayers:1);
+		areaWG = (weightGradientUnit->area + gradientAccum->area) * * (param->rule=="dfa"? numLayers:1);
 	}
 
 	area += globalBufferArea + GhTree->area + maxPool->area + Gaccumulation->area;
