@@ -57,39 +57,42 @@ Param::Param() {
 	operationmode = 2;     		// 1: conventionalSequential (Use several multi-bit RRAM as one synapse)
 								// 2: conventionalParallel (Use several multi-bit RRAM as one synapse)
 
-	//memcelltype = 3;        	// 1: cell.memCellType = Type::SRAM
+	memcelltype = 3;        	// 1: cell.memCellType = Type::SRAM
 								// 2: cell.memCellType = Type::RRAM
 								// 3: cell.memCellType = Type::FeFET
-	
+
 	accesstype = 1;         	// 1: cell.accessType = CMOS_access
 								// 2: cell.accessType = BJT_access
 								// 3: cell.accessType = diode_access
 								// 4: cell.accessType = none_access (Crossbar Array)
-	
+
 	transistortype = 1;     	// 1: inputParameter.transistorType = conventional
-	
+
 	deviceroadmap = 2;      	// 1: inputParameter.deviceRoadmap = HP
 								// 2: inputParameter.deviceRoadmap = LSTP
-								
+
 	globalBufferType = false;    // false: register file
 								// true: SRAM
 	globalBufferCoreSizeRow = 128;
 	globalBufferCoreSizeCol = 128;
-	
+
 	tileBufferType = false;      // false: register file
 								// true: SRAM
 	tileBufferCoreSizeRow = 32;
 	tileBufferCoreSizeCol = 32;
-	
+
 	peBufferType = false;        // false: register file
 								// true: SRAM
-	
+
 	chipActivation = true;      // false: activation (reLu/sigmoid) inside Tile
 								// true: activation outside Tile
-								
-	novelMapping = false;        // false: conventional mapping
+
+	reLu = true;                // false: sigmoid
+								// true: reLu
+
+	novelMapping = true;        // false: conventional mapping
 								// true: novel mapping
-	
+
 	SARADC = false;              // false: MLSA
 	                            // true: sar ADC
 	currentMode = true;         // false: MLSA use VSA
@@ -105,11 +108,20 @@ Param::Param() {
 	/*** algorithm weight range, the default wrapper (based on WAGE) has fixed weight range of (-1, 1) ***/
 	algoWeightMax = 1;
 	algoWeightMin = -1;
-	
+
 	/*** conventional hardware design options ***/
 	clkFreq = 1e9;                      // Clock frequency
 	temp = 300;                         // Temperature (K)
+	// technode: 130, 90 --> wireWidth: 200
+	// technode: 65      --> wireWidth: 100
+	// technode: 45      --> wireWidth: 50
+	// technode: 32      --> wireWidth: 40
+	// technode: 22      --> wireWidth: 32
+	// technode: 14      --> wireWidth: 22
+	// technode: 10, 7   --> wireWidth: 14
+	technode = 32;                      // Technology
 	featuresize = 40e-9;                // Wire width for subArray simulation
+	wireWidth = 40;                     // wireWidth of the cell for Accuracy calculation
 	globalBusDelayTolerance = 0.1;      // to relax bus delay for global H-Tree (chip level: communication among tiles), if tolerance is 0.1, the latency will be relax to (1+0.1)*optimalLatency (trade-off with energy)
 	localBusDelayTolerance = 0.1;       // to relax bus delay for global H-Tree (tile level: communication among PEs), if tolerance is 0.1, the latency will be relax to (1+0.1)*optimalLatency (trade-off with energy)
 	treeFoldedRatio = 4;                // the H-Tree is assumed to be able to folding in layout (save area)
@@ -117,13 +129,15 @@ Param::Param() {
 
 	numRowSubArray = 128;               // # of rows in single subArray
 	numColSubArray = 128;               // # of columns in single subArray
-	
+
 	/*** option to relax subArray layout ***/
 	relaxArrayCellHeight = 0;           // relax ArrayCellHeight or not
 	relaxArrayCellWidth = 0;            // relax ArrayCellWidth or not
-	
+
 	numColMuxed = 8;                    // How many columns share 1 ADC (for eNVM and FeFET) or parallel SRAM
-	
+	levelOutput = 64;                  // # of levels of the multilevelSenseAmp output, should be in 2^N forms; e.g. 32 levels --> 5-bit ADC
+	cellBit = 5;                        // precision of memory device
+
 	/*** parameters for SRAM ***/
 	// due the scaling, suggested SRAM cell size above 22nm: 160F^2
 	// SRAM cell size at 14nm: 300F^2
@@ -131,20 +145,21 @@ Param::Param() {
 	// SRAM cell size at 7nm: 600F^2
 	heightInFeatureSizeSRAM = 8;        // SRAM Cell height in feature size
 	widthInFeatureSizeSRAM = 20;        // SRAM Cell width in feature size
-	widthSRAMCellNMOS = 2.08;                              
+	widthSRAMCellNMOS = 2.08;
 	widthSRAMCellPMOS = 1.23;
 	widthAccessCMOS = 1.31;
 	minSenseVoltage = 0.1;
-	
+
 	/*** parameters for analog synaptic devices ***/
 	heightInFeatureSize1T1R = 4;        // 1T1R Cell height in feature size
 	widthInFeatureSize1T1R = 4;       // 1T1R Cell width in feature size
 	heightInFeatureSizeCrossbar = 2;    // Crossbar Cell height in feature size
 	widthInFeatureSizeCrossbar = 2;     // Crossbar Cell width in feature size
-	
-	resistanceOn = 240e3;               // Ron resistance at Vr in the reported measurement data (need to recalculate below if considering the nonlinearity)
-	maxConductance = (double) 1/resistanceOn;
 
+	resistanceOn = 240e3;               // Ron resistance at Vr in the reported measurement data (need to recalculate below if considering the nonlinearity)
+	resistanceOff = 240e3*100;           // Roff resistance at Vr in the reported measurement dat (need to recalculate below if considering the nonlinearity)
+	maxConductance = (double) 1/resistanceOn;
+	minConductance = (double) 1/resistanceOff;
 	gateCapFeFET = 2.1717e-18;	        // Gate capacitance of FeFET (F)
 	polarization = 20;                  // polarization of FeFET (uC/cm^2)
 	maxNumLevelLTP = 60;	            // Maximum number of conductance states during LTP or weight increase
@@ -153,31 +168,32 @@ Param::Param() {
 	writePulseWidth = 50e-9;
 	nonlinearIV = false; 				// This option is to consider I-V nonlinearity in cross-point array or not
 	nonlinearity = 10; 					// This is the nonlinearity for the current ratio at Vw and Vw/2
-	
+
 	readVoltage = 0.5;	                // On-chip read voltage for memory cell
 	readPulseWidth = 10e-9;             // read pulse width in sec
 	accessVoltage = 1.1;                // Gate voltage for the transistor in 1T1R
 	resistanceAccess = 15e3;            // resistance of access CMOS in 1T1R
-	
-	
+
+
 	/****** design options for on-chip training ******/
 	/****** in training: we initialize bi-direction subArray to calculate forward and gradient calculation of activation ******/
 	/****** the gradient calculation of weight is processed in seperate hardware (SRAM array: since need frequent write and erase) ******/
-	
+
 	trainingEstimation = true; 		// false: only run estimation for inference chip
 										// true: run estimation for both inference and training on-chip
-	
+
 	parallelBP = true;          		// false: conventionalSequential (Use several multi-bit RRAM as one synapse)
 										// true: conventionalParallel (Use several multi-bit RRAM as one synapse)
-	
+
+	batchSize = 200;                    // batchSize in training
 	numIteration = 250;                 // num of iteration for one epoch
-	
+
 	bufferOverHeadConstraint = 1;       // N times of overhead of the original buffer designed for inference only
 										// For example: if N=3, the buffer size will be at most 4*original buffer size
-	
+
 	numRowSubArrayWG = 128;             // # of rows of single SRAM subArray in "gradient calculation of weight"
 	numColSubArrayWG = 128;             // # of columns of single SRAM subArray in "gradient calculation of weight"
-	
+
 	numRowMuxedAG = 8;                  // How many columns share 1 ADC (for Transpose array) in transpose subarray (gradient calculation of activation)
 	levelOutputAG = 64;                 // # of levels of the multilevelSenseAmp output, in transpose subarray (gradient calculation of activation)
 	numRowMuxedWG = 8;                  // How many columns share 1 ADC (for Transpose array) in gradient calculation of weight
@@ -185,31 +201,35 @@ Param::Param() {
 
 	dramType = 2;                       // 1: GDDR5
 										// 2: HBM2
-	
+
 	/***************************************** user defined design options and parameters *****************************************/
-	
-	
-	
+
+
+
 	/***************************************** Initialization of parameters NO need to modify *****************************************/
-	
+
+	if (memcelltype == 1) {
+		cellBit = 1;             // force cellBit = 1 for all SRAM cases
+	}
+
 	/*** initialize operationMode as default ***/
 	conventionalParallel = 0;
 	conventionalSequential = 0;
-	BNNparallelMode = 0;                
-	BNNsequentialMode = 0;              
-	XNORsequentialMode = 0;          
-	XNORparallelMode = 0;         
+	BNNparallelMode = 0;
+	BNNsequentialMode = 0;
+	XNORsequentialMode = 0;
+	XNORparallelMode = 0;
 	switch(operationmode) {
-		case 6:	    XNORparallelMode = 1;               break;     
-		case 5:	    XNORsequentialMode = 1;             break;     
-		case 4:	    BNNparallelMode = 1;                break;     
-		case 3:	    BNNsequentialMode = 1;              break;     
-		case 2:	    conventionalParallel = 1;           break;     
-		case 1:	    conventionalSequential = 1;         break;     
+		case 6:	    XNORparallelMode = 1;               break;
+		case 5:	    XNORsequentialMode = 1;             break;
+		case 4:	    BNNparallelMode = 1;                break;
+		case 3:	    BNNsequentialMode = 1;              break;
+		case 2:	    conventionalParallel = 1;           break;
+		case 1:	    conventionalSequential = 1;         break;
 		case -1:	break;
 		default:	exit(-1);
 	}
-	
+
 	/*** parallel read ***/
 	parallelRead = 0;
 	if(conventionalParallel || BNNparallelMode || XNORparallelMode) {
@@ -217,14 +237,9 @@ Param::Param() {
 	} else {
 		parallelRead = 0;
 	}
-	/***************************************** Initialization of parameters NO need to modify *****************************************/
-}
 
-void Param::recalculate_Params(int wireWidth, int memcelltype, int resistanceOff) {
-	minConductance = (double) 1/resistanceOff;
-
-    /*** Initialize interconnect wires ***/
-    switch(wireWidth) {
+	/*** Initialize interconnect wires ***/
+	switch(wireWidth) {
 		case 200: 	AR = 2.10; Rho = 2.42e-8; break;  // for technode: 130, 90
 		case 100:	AR = 2.30; Rho = 2.73e-8; break;  // for technode: 65
 		case 50:	AR = 2.34; Rho = 3.91e-8; break;  // for technode: 45
@@ -254,10 +269,9 @@ void Param::recalculate_Params(int wireWidth, int memcelltype, int resistanceOff
 		wireResistanceRow = 0;
 		wireResistanceCol = 0;
 	} else {
-
 		unitLengthWireResistance =  Rho / ( wireWidth*1e-9 * wireWidth*1e-9 * AR );
 		wireResistanceRow = unitLengthWireResistance * wireLengthRow;
 		wireResistanceCol = unitLengthWireResistance * wireLengthCol;
 	}
+	/***************************************** Initialization of parameters NO need to modify *****************************************/
 }
-

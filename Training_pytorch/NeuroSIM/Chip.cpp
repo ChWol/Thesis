@@ -73,7 +73,6 @@ Sigmoid *Gsigmoid;
 BitShifter *GreLu;
 MaxPooling *maxPool;
 DRAM *dRAM;
-// ToDo: Liste davon anlegen für jedes Layer eines
 WeightGradientUnit *weightGradientUnit;
 Adder *gradientAccum;
 
@@ -375,6 +374,7 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 	// find max # tiles needed to be added at the same time
 	double maxTileAdded = 0;
 	int maxIFMLayer = 0;
+
 	for (int i=0; i<netStructure.size(); i++) {
 		double input = netStructure[i][0]*netStructure[i][1]*netStructure[i][2];  // IFM_Row * IFM_Column * IFM_depth
 		if (! param->pipeline) {
@@ -415,10 +415,8 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 
 	dRAM->Initialize(param->dramType);
 	if (param->trainingEstimation) {
-	    // ToDo: No calculation of maxIFMLayer, but for loop
 		int numMemInRow = (netStructure[maxIFMLayer][0]-netStructure[maxIFMLayer][3]+1)*(netStructure[maxIFMLayer][1]-netStructure[maxIFMLayer][4]+1);
 		int numMemInCol = netStructure[maxIFMLayer][2]*param->numBitInput;
-		// ToDo: Might need this for each layer to perform gradient updates in parallel
 		weightGradientUnit->Initialize(numMemInRow, numMemInCol);
 		int maxWeight = 0;
 		for (int i=0; i<netStructure.size(); i++) {
@@ -436,7 +434,6 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 		}
 		// update the buffer size to save weight gradient
 		bufferSize += bufferOverHead;
-		// ToDo: Same here
 		gradientAccum->Initialize(weightGradientUnit->outPrecision+ceil(log2(param->batchSize)), (*numArrayWriteParallel)*param->numRowSubArray*param->numColSubArray);
 	}
 
@@ -516,7 +513,7 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 
 
 
-vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tech, MemCell& cell, double dfaRows, double dfaColumns, double desiredNumTileNM, double numPENM, double desiredPESizeNM, double desiredNumTileCM, double desiredTileSizeCM,
+vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tech, MemCell& cell, double desiredNumTileNM, double numPENM, double desiredPESizeNM, double desiredNumTileCM, double desiredTileSizeCM,
 						double desiredPESizeCM, int numTileRow, double *height, double *width, double *CMTileheight, double *CMTilewidth, double *NMTileheight, double *NMTilewidth) {
 
 	vector<double> areaResults;
@@ -570,20 +567,12 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 	double CMTileAreaOther = areaCMTile[4];
 	double CMTileAreaArray = areaCMTile[5];
 
-    // My addition
-	double dfaTiles = 0;
-	if (param->rule == "dfa") {
-	    double dfaTileRows = ceil(dfaRows*(double) param->numRowPerSynapse/(double) desiredTileSizeCM);
-        double dfaTileColumns = ceil(dfaColumns*(double) param->numColPerSynapse/(double) desiredTileSizeCM);
-        dfaTiles = dfaTileRows*dfaTileColumns;
-    }
-
-	area += CMTileArea*(desiredNumTileCM+dfaTiles);
-	areaIC += CMTileAreaIC*(desiredNumTileCM+dfaTiles);
-	areaADC += CMTileAreaADC*(desiredNumTileCM+dfaTiles);
-	areaAccum += CMTileAreaAccum*(desiredNumTileCM+dfaTiles);
-	areaOther += CMTileAreaOther*(desiredNumTileCM+dfaTiles);
-	areaArray += CMTileAreaArray*(desiredNumTileCM+dfaTiles);
+	area += CMTileArea*desiredNumTileCM;
+	areaIC += CMTileAreaIC*desiredNumTileCM;
+	areaADC += CMTileAreaADC*desiredNumTileCM;
+	areaAccum += CMTileAreaAccum*desiredNumTileCM;
+	areaOther += CMTileAreaOther*desiredNumTileCM;
+	areaArray += CMTileAreaArray*desiredNumTileCM;
 	*CMTileheight = CMheight;
 	*CMTilewidth = CMwidth;
 
@@ -615,7 +604,6 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 	}
 
 	if (param->trainingEstimation) {
-	    // ToDo: For each layer again
 		weightGradientUnit->CalculateArea();
 		gradientAccum->CalculateArea(globalBufferHeight, NULL, NONE);
 		area += weightGradientUnit->area + gradientAccum->area;
@@ -741,7 +729,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 				*readDynamicEnergy += tileReadDynamicEnergy;
 				*readLatencyPeakFW = MAX(tileReadLatencyPeakFW, (*readLatencyPeakFW));
 				*readDynamicEnergyPeakFW += tileReadDynamicEnergyPeakFW;
-
 				if (param->trainingEstimation) {
 					*readLatencyAG = MAX(tileReadLatencyAG, (*readLatencyAG));
 					*readDynamicEnergyAG += tileReadDynamicEnergyAG;
@@ -800,7 +787,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 			*readDynamicEnergy += Gaccumulation->readDynamicEnergy;
 			*readLatencyPeakFW += Gaccumulation->readLatency;
 			*readDynamicEnergyPeakFW += Gaccumulation->readDynamicEnergy;
-
 			if ((param->trainingEstimation) && (layerNumber!=0)) {
 				*readLatencyAG += Gaccumulation->readLatency;
 				*readDynamicEnergyAG += Gaccumulation->readDynamicEnergy;
@@ -811,6 +797,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 			*coreEnergyAccum += Gaccumulation->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 		}
 
+		// if this layer is followed by Max Pool
 		if (followedByMaxPool) {
 			maxPool->CalculateLatency(1e20, 0, ceil((double) (numInVector/(double) maxPool->window)/(double) desiredTileSizeCM));
 			maxPool->CalculatePower(ceil((double) (numInVector/maxPool->window)/(double) desiredTileSizeCM));
@@ -848,6 +835,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 
 				int numRowMatrix = min(desiredPESizeNM*numPENM, weightMatrixRow-i*desiredPESizeNM*numPENM);
 				int numColMatrix = min(desiredPESizeNM, weightMatrixCol-j*desiredPESizeNM);
+
 				// assign weight and input to specific tile
 				vector<vector<double> > tileMemoryOld;
 				tileMemoryOld = ReshapeArray(oldMemory, i*desiredPESizeNM, j*desiredPESizeNM, (int) netStructure[l][2]*numRowPerSynapse/numtileEachLayerRow,
@@ -868,6 +856,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 									&tileLatencyADC, &tileLatencyAccum, &tileLatencyOther, &tileEnergyADC, &tileEnergyAccum, &tileEnergyOther,
 									&tileReadLatencyPeakFW, &tileReadDynamicEnergyPeakFW, &tileReadLatencyPeakAG, &tileReadDynamicEnergyPeakAG,
 									&tileWriteLatencyPeakWU, &tileWriteDynamicEnergyPeakWU);
+
 				*readLatency = MAX(tileReadLatency, (*readLatency));
 				*readDynamicEnergy += tileReadDynamicEnergy;
 				*readLatencyPeakFW = MAX(tileReadLatencyPeakFW, (*readLatencyPeakFW));
@@ -941,6 +930,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 			*coreEnergyAccum += Gaccumulation->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 		}
 
+		// if this layer is followed by Max Pool
 		if (followedByMaxPool) {
 			maxPool->CalculateLatency(1e20, 0, ceil((double) (numInVector/(double) maxPool->window)/(double) desiredPESizeNM*sqrt((double) numPENM)));
 			maxPool->CalculatePower(ceil((double) (numInVector/maxPool->window)/(double) desiredPESizeNM*sqrt((double) numPENM)));
@@ -1052,7 +1042,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		globalBuffer->writeLatency /= MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width));
 
 		// calculation of weight gradient
-		// ToDo: Do this for corresponding l'th weightGradientUnit
 		weightGradientUnit->CalculateLatency(netStructure[l][5], (netStructure[l][0]-netStructure[l][3]+1)*(netStructure[l][1]-netStructure[l][4]+1)*param->numBitInput);
 		weightGradientUnit->CalculatePower(netStructure[l][5], (netStructure[l][0]-netStructure[l][3]+1)*(netStructure[l][1]-netStructure[l][4]+1)*param->numBitInput);
 		// here consider speed up
