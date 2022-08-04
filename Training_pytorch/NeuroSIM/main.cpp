@@ -251,7 +251,7 @@ int main(int argc, char * argv[]) {
 		numComputation_BP -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
 	}
 
-    double numComputation_DFA = 0;
+    double  numComputation_DFA = 0;
 	if (param->trainingEstimation) {
 	    numComputation_DFA = 1 * numComputation_Forward;
 	    numComputation_DFA -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
