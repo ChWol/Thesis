@@ -2406,6 +2406,10 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 
 				// Write
 				// here
+				if (layerNumber == 1 ) {
+				    cout << subArray->writeDynamicEnergyArray << endl;
+				}
+
 				writeDynamicEnergyArray = writeDynamicEnergyArray;
 				writeDynamicEnergy = 0;
 				writeDynamicEnergy += wlNewSwitchMatrix.writeDynamicEnergy;
