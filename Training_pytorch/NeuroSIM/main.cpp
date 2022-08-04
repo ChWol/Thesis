@@ -433,7 +433,7 @@ int main(int argc, char * argv[]) {
             param->activityRowWriteWG = atof(argv[4*i+17]);
             param->activityColWriteWG = atof(argv[4*i+17]);
 
-			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[4*i+14], argv[4*i+16], argv[4*i+16], netStructure[i][6],
+			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[4*i+14], argv[4*i+15], argv[4*i+16], netStructure[i][6],
 						netStructure, markNM, numTileEachLayer, utilizationEachLayer, speedUpEachLayer, tileLocaEachLayer,
 						numPENM, desiredPESizeNM, desiredTileSizeCM, desiredPESizeCM, CMTileheight, CMTilewidth, NMTileheight, NMTilewidth, numArrayWriteParallel,
 						&layerReadLatency, &layerReadDynamicEnergy, &tileLeakage, &layerReadLatencyAG, &layerReadDynamicEnergyAG, &layerReadLatencyWG, &layerReadDynamicEnergyWG,
