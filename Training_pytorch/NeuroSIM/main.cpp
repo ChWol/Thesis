@@ -530,7 +530,7 @@ int main(int argc, char * argv[]) {
                 chipReadLatencyPeakWG = layerReadLatencyPeakWG;
                 chipWriteLatencyPeakWU = layerWriteLatencyPeakWU;
             }
-            else {
+            else if (param->rule == "bp") {
 			    chipReadLatencyAG += layerReadLatencyAG;
                 chipReadLatencyWG += layerReadLatencyWG;
                 chipWriteLatencyWU += layerWriteLatencyWU;
