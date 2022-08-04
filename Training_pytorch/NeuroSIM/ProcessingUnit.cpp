@@ -601,6 +601,7 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 					// limitation by on-chip buffer, write latency will be divided by numArrayWriteParallel (real case)
 					*writeLatencyWU += subArray->writeLatency*((param->trainingEstimation)==true? 1:0);
 					*writeDynamicEnergyWU += subArray->writeDynamicEnergy*((param->trainingEstimation)==true? 1:0);
+					cout << subArray->writeDynamicEnergy << endl;
 					*readLatency = MAX(subArrayReadLatency, (*readLatency));
 					*readLatencyAG = MAX(subArrayReadLatencyAG, (*readLatencyAG));
 					*coreLatencyADC = MAX(subArrayLatencyADC, (*coreLatencyADC));
