@@ -304,26 +304,6 @@ int main(int argc, char * argv[]) {
 
 	cout << "-------------------------------------- Hardware Performance --------------------------------------" <<  endl;
 
-	// save breakdown results of each layer to csv files
-	ofstream breakdownfile;
-	string breakdownfile_name = "./NeuroSim_Results_Each_Epoch/NeuroSim_Breakdown_Epock_";
-	breakdownfile_name.append(argv[1]);
-	breakdownfile_name.append(".csv");
-	breakdownfile.open (breakdownfile_name, ios::app);
-	if (breakdownfile.is_open()) {
-		// firstly save the area results to file
-		breakdownfile << "Total Area(m^2), Total CIM (FW+AG) Area (m^2), Routing Area(m^2), ADC Area(m^2), Accumulation Area(m^2), Other Logic&Storage Area(m^2), Weight Gradient Area(m^2),"<< endl;
-		breakdownfile << chipArea << "," << chipAreaArray << "," << chipAreaIC << "," << chipAreaADC << "," << chipAreaAccum << "," << chipAreaOther << "," << chipAreaWG << endl;
-		breakdownfile << endl;
-		breakdownfile << endl;
-		breakdownfile << "layer_number, latency_FW(s), latency_AG(s), latency_WG(s), latency_WU(s), energy_FW(J), energy_AG(J), energy_WG(J), energy_WU(J),";
-		breakdownfile << "Peak_latency_FW(s), Peak_latency_AG(s), Peak_latency_WG(s), Peak_latency_WU(s), Peak_energy_FW(J), Peak_energy_AG(J), Peak_energy_WG(J), Peak_energy_WU(J),";
-		breakdownfile << ", , ADC_latency(s), Accumulation_latency(s), Synaptic Array w/o ADC_latency(s), Buffer_latency(s), IC_latency(s), Weight_gradient_latency(s), Weight_update(s), DRAM_latency(s), ";
-		breakdownfile << "ADC_energy(J), Accumulation_energy(J), Synaptic Array w/o ADC_energy(J), Buffer_energy(J), IC_energy(J), Weight_gradient_energy(J), Weight_update_energy(J), DRAM_energy(J)" << endl;
-	} else {
-		cout << "Error: the breakdown file cannot be opened!" << endl;
-	}
-
 	if (! param->pipeline) {
 		// layer-by-layer process
 		// show the detailed hardware performance for each layer
@@ -399,16 +379,7 @@ int main(int argc, char * argv[]) {
 			cout << endl;
 
 
-			if (breakdownfile.is_open()) {
-				breakdownfile << i+1 << "," << layerReadLatency << "," << layerReadLatencyAG << "," << layerReadLatencyWG << "," << layerWriteLatencyWU << ",";
-				breakdownfile << layerReadDynamicEnergy << "," << layerReadDynamicEnergyAG << "," << layerReadDynamicEnergyWG << "," << layerWriteDynamicEnergyWU << ",";
-				breakdownfile << layerReadLatencyPeakFW << "," << layerReadLatencyPeakAG << "," << layerReadLatencyPeakWG << "," << layerWriteLatencyPeakWU << ",";
-				breakdownfile << layerReadDynamicEnergyPeakFW << "," << layerReadDynamicEnergyPeakAG << "," << layerReadDynamicEnergyPeakWG << "," << layerWriteDynamicEnergyPeakWU <<",";
-				breakdownfile << ", , " << coreLatencyADC << "," << coreLatencyAccum << "," << coreLatencyOther << "," <<layerbufferLatency << "," << layericLatency << "," << layerReadLatencyPeakWG << "," << layerWriteLatencyPeakWU << "," << layerDRAMLatency << ",";
-				breakdownfile << coreEnergyADC << "," << coreEnergyAccum << "," << coreEnergyOther << "," << layerbufferDynamicEnergy << "," << layericDynamicEnergy << "," << layerReadDynamicEnergyPeakWG << "," << layerWriteDynamicEnergyPeakWU << "," << layerDRAMDynamicEnergy << endl;
-			} else {
-				cout << "Error: the breakdown file cannot be opened!" << endl;
-			}
+
 
 			chipReadLatency += layerReadLatency;
 			chipReadDynamicEnergy += layerReadDynamicEnergy;
@@ -623,40 +594,10 @@ int main(int argc, char * argv[]) {
 
 			chipLeakageEnergy += leakagePowerPerLayer[i] * ((systemClock-readLatencyPerLayer[i]) + (systemClockAG-readLatencyPerLayerAG[i]));
 
-			if (breakdownfile.is_open()) {
-				breakdownfile << i+1 << "," << readLatencyPerLayer[i] << "," << readLatencyPerLayerAG[i] << "," << readLatencyPerLayerWG[i] << "," << writeLatencyPerLayerWU[i] << ",";
-				breakdownfile << readDynamicEnergyPerLayer[i] << "," << readDynamicEnergyPerLayerAG[i] << "," << readDynamicEnergyPerLayerWG[i] << "," << writeDynamicEnergyPerLayerWU[i] << ",";
-				breakdownfile << readLatencyPerLayerPeakFW[i] << "," << readLatencyPerLayerPeakAG[i] << "," << readLatencyPerLayerPeakWG[i] << "," << writeLatencyPerLayerPeakWU[i] << ",";
-				breakdownfile << readDynamicEnergyPerLayerPeakFW[i] << "," << readDynamicEnergyPerLayerPeakAG[i] << "," << readDynamicEnergyPerLayerPeakWG[i] << "," << writeDynamicEnergyPerLayerPeakWU[i] << ",";
-				breakdownfile << ", , " << coreLatencyADCPerLayer[i] << "," << coreLatencyAccumPerLayer[i] << "," << coreLatencyOtherPerLayer[i] << "," << bufferLatencyPerLayer[i] << "," << icLatencyPerLayer[i] << "," << readLatencyPerLayerPeakWG[i] << "," << writeLatencyPerLayerPeakWU[i] << "," << dramLatencyPerLayer[i] <<",";
-				breakdownfile << coreEnergyADCPerLayer[i] << "," << coreEnergyAccumPerLayer[i] << "," << coreEnergyOtherPerLayer[i] << "," << bufferEnergyPerLayer[i] << "," << icEnergyPerLayer[i] << "," << readDynamicEnergyPerLayerPeakWG[i] << "," << writeDynamicEnergyPerLayerPeakWU[i] << "," << dramDynamicEnergyPerLayer[i] << endl;
-			} else {
-				cout << "Error: the breakdown file cannot be opened!" << endl;
-			}
+
 		}
 	}
 
-	if (breakdownfile.is_open()) {
-		breakdownfile << "Total" << "," << chipReadLatency << "," << chipReadLatencyAG << "," << chipReadLatencyWG << "," << chipWriteLatencyWU << ",";
-		breakdownfile << chipReadDynamicEnergy << "," << chipReadDynamicEnergyAG << "," << chipReadDynamicEnergyWG << "," << chipWriteDynamicEnergyWU << ",";
-		breakdownfile << chipReadLatencyPeakFW << "," << chipReadLatencyPeakAG << "," << chipReadLatencyPeakWG << "," << chipWriteLatencyPeakWU << ",";
-		breakdownfile << chipReadDynamicEnergyPeakFW << "," << chipReadDynamicEnergyPeakAG << "," << chipReadDynamicEnergyPeakWG << "," << chipWriteDynamicEnergyPeakWU << ",";
-		breakdownfile << ", , " << chipLatencyADC << "," << chipLatencyAccum << "," << chipLatencyOther << "," << chipbufferLatency << "," << chipicLatency << "," << chipReadLatencyPeakWG <<"," << chipWriteLatencyPeakWU <<"," << chipDRAMLatency <<",";
-		breakdownfile << chipEnergyADC << "," << chipEnergyAccum << "," << chipEnergyOther << "," << chipbufferReadDynamicEnergy << "," << chipicReadDynamicEnergy << "," << chipReadDynamicEnergyPeakWG << "," << chipWriteDynamicEnergyPeakWU << "," << chipDRAMDynamicEnergy << endl;
-		breakdownfile << endl;
-		breakdownfile << endl;
-		breakdownfile << "TOPS/W,FPS,TOPS,Peak TOPS/W,Peak FPS,Peak TOPS," << endl;
-		breakdownfile << numComputation/((chipReadDynamicEnergy+chipLeakageEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*1e12) << ",";
-		breakdownfile <<  1/(chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU) << ",";
-		breakdownfile <<  numComputation/(chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU)*1e-12 << ",";
-		breakdownfile <<  numComputation/((chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*1e12) << ",";
-		breakdownfile <<  1/(chipReadLatencyPeakFW+chipReadLatencyPeakAG+chipReadLatencyPeakWG+chipWriteLatencyPeakWU) << ",";
-		breakdownfile <<  numComputation/(chipReadLatencyPeakFW+chipReadLatencyPeakAG+chipReadLatencyPeakWG+chipWriteLatencyPeakWU)*1e-12 << endl;
-	} else {
-		cout << "Error: the breakdown file cannot be opened!" << endl;
-	}
-
-	breakdownfile.close();
 
 	cout << "------------------------------ Summary --------------------------------" <<  endl;
 	cout << endl;
