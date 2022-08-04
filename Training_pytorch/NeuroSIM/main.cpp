@@ -309,11 +309,9 @@ int main(int argc, char * argv[]) {
 	    }
 	}
 
-	double scalingFLOPs = 1 - (flopsBP - flopsDFA) / (flopsBP);
+	double scalingFLOPs = (flopsBP - flopsDFA) / (flopsBP);
 
     cout << "Approximation via forward pass" << endl;
-    cout << "Forward: " << numComputation_Forward << endl;
-    cout << "DFA adjusted Forward: " << numComputation_DFA - numComputation_Forward << endl;
 	cout << "BP: " << numComputation_BP << endl;
 	cout << "DFA: " << numComputation_DFA << endl;
 	cout << "Scaling factor WG: " << scalingFactor_WG << endl;
