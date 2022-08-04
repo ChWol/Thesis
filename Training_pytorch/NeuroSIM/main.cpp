@@ -83,6 +83,18 @@ int main(int argc, char * argv[]) {
 
 	param->recalculate_Params(param->wireWidth, param->memcelltype, param->resistanceOff);
 
+	cout << param->synapseBit << endl;
+	cout << param->numBitInput << endl;
+	cout << param->batchSize << endl;
+	cout << param->cellBit << endl;
+	cout << param->technode << endl;
+	cout << param->wireWidth << endl;
+	cout << param->reLu << endl;
+	cout << param->memcelltype << endl;
+	cout << param->levelOutput << endl;
+	cout << param->resistanceOff << endl;
+	cout << param->unitLengthWireResistance << endl;
+
 	if (param->cellBit > param->synapseBit) {
 		cout << "ERROR!: Memory precision is even higher than synapse precision, please modify 'cellBit' in Param.cpp!" << endl;
 		param->cellBit = param->synapseBit;
