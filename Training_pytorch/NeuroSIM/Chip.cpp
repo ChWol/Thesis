@@ -90,7 +90,7 @@ vector<int> ChipDesignInitialize(InputParameter& inputParameter, Technology& tec
 	maxPool = new MaxPooling(inputParameter, tech, cell);
 	dRAM = new DRAM(inputParameter, tech, cell);
 	for (int i = 0; i < netStructure.size(); i++) {
-	    WeightGradientUnit weightGradientUnit = new WeightGradientUnit(inputParameter, tech, cell);
+	    WeightGradientUnit *weightGradientUnit = new WeightGradientUnit(inputParameter, tech, cell);
 	    weightGradientUnits.push_back(weightGradientUnit);
 	    gradientAccums.push_back(new Adder(inputParameter, tech, cell));
 	}
