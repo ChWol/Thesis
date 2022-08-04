@@ -494,6 +494,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 				*bufferLatency /= (speedUpRow*speedUpCol);
 				*icLatency /= (speedUpRow*speedUpCol);
 
+				// whether go through accumulation?
 				if (ceil((double)weightMatrixRow/(double)peSize) > 1) {
 					accumulationCM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), ceil((double)weightMatrixRow/(double)peSize), 0);
 					accumulationCM->CalculatePower((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), ceil((double)weightMatrixRow/(double)peSize));
@@ -568,7 +569,6 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 					*coreEnergyOther += peEnergyOther;
 				}
 			}
-
 			accumulationCM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), numPE, 0);
 			accumulationCM->CalculatePower((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), numPE);
 			*readLatency += accumulationCM->readLatency;
@@ -758,7 +758,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 		inputBufferNM->CalculateLatency(inputBufferNM->interface_width, numBitToLoadOut/inputBufferNM->interface_width, inputBufferNM->interface_width, numBitToLoadOut/inputBufferNM->interface_width);
 		inputBufferNM->CalculatePower(inputBufferNM->interface_width, numBitToLoadOut/inputBufferNM->interface_width, inputBufferNM->interface_width, numBitToLoadOut/inputBufferNM->interface_width);
 
- 		if (!param->chipActivation) {
+		if (!param->chipActivation) {
 			if (param->reLu) {
 				reLuNM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse)/reLuNM->numUnit);
 				reLuNM->CalculatePower((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse)/reLuNM->numUnit);
@@ -850,6 +850,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 
 
 vector<vector<double> > CopyPEArray(const vector<vector<double> > &orginal, int positionRow, int positionCol, int numRow, int numCol) {
+
 	vector<vector<double> > copy;
 	for (int i=0; i<numRow; i++) {
 		vector<double> copyRow;
@@ -877,4 +878,3 @@ vector<vector<double> > CopyPEInput(const vector<vector<double> > &orginal, int 
 	return copy;
 	copy.clear();
 }
-

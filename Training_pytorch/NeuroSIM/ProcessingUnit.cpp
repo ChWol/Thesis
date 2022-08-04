@@ -79,7 +79,6 @@ void ProcessingUnitInitialize(SubArray *& subArray, InputParameter& inputParamet
 		case -1:	break;
 		default:	exit(-1);
 	}
-
 	switch(param->accesstype) {
 		case 4:	    cell.accessType = none_access;  break;
 		case 3:	    cell.accessType = diode_access; break;
@@ -87,8 +86,8 @@ void ProcessingUnitInitialize(SubArray *& subArray, InputParameter& inputParamet
 		case 1:	    cell.accessType = CMOS_access;  break;
 		case -1:	break;
 		default:	exit(-1);
-	}				
-					
+	}
+
 	switch(param->transistortype) {
 		case 3:	    inputParameter.transistorType = TFET;          break;
 		case 2:	    inputParameter.transistorType = FET_2D;        break;
@@ -96,14 +95,14 @@ void ProcessingUnitInitialize(SubArray *& subArray, InputParameter& inputParamet
 		case -1:	break;
 		default:	exit(-1);
 	}
-	
+
 	switch(param->deviceroadmap) {
 		case 2:	    inputParameter.deviceRoadmap = LSTP;  break;
 		case 1:	    inputParameter.deviceRoadmap = HP;    break;
 		case -1:	break;
 		default:	exit(-1);
 	}
-	
+
 	subArray = new SubArray(inputParameter, tech, cell);
 	adderTreeNM = new AdderTree(inputParameter, tech, cell);
 	busInputNM = new Bus(inputParameter, tech, cell);
@@ -115,7 +114,7 @@ void ProcessingUnitInitialize(SubArray *& subArray, InputParameter& inputParamet
 	busOutputCM = new Bus(inputParameter, tech, cell);
 	bufferInputCM = new DFF(inputParameter, tech, cell);
 	bufferOutputCM = new DFF(inputParameter, tech, cell);
-	
+
 	cell.resistanceOn = param->resistanceOn;	                                // Ron resistance at Vr in the reported measurement data (need to recalculate below if considering the nonlinearity)
 	cell.resistanceOff = param->resistanceOff;	                                // Roff resistance at Vr in the reported measurement dat (need to recalculate below if considering the nonlinearity)
 	cell.resistanceAvg = (cell.resistanceOn + cell.resistanceOff)/2;            // Average resistance (for energy estimation)
@@ -123,7 +122,7 @@ void ProcessingUnitInitialize(SubArray *& subArray, InputParameter& inputParamet
 	cell.readPulseWidth = param->readPulseWidth;
 	cell.accessVoltage = param->accessVoltage;                                       // Gate voltage for the transistor in 1T1R
 	cell.resistanceAccess = param->resistanceAccess;
-	cell.featureSize = param->featuresize; 
+	cell.featureSize = param->featuresize;
 	cell.maxNumLevelLTP = param->maxNumLevelLTP;	                            // Maximum number of conductance states during LTP or weight increase
 	cell.maxNumLevelLTD = param->maxNumLevelLTD;	                            // Maximum number of conductance states during LTD or weight decrease
 	double writeVoltageLTP = param->writeVoltage;
@@ -148,13 +147,13 @@ void ProcessingUnitInitialize(SubArray *& subArray, InputParameter& inputParamet
 	}
 
 	subArray->trainingEstimation = param->trainingEstimation;
-	subArray->XNORparallelMode = param->XNORparallelMode;               
-	subArray->XNORsequentialMode = param->XNORsequentialMode;             
-	subArray->BNNparallelMode = param->BNNparallelMode;                
-	subArray->BNNsequentialMode = param->BNNsequentialMode;              
-	subArray->conventionalParallel = param->conventionalParallel;                  
-	subArray->conventionalSequential = param->conventionalSequential;   
-	subArray->parallelBP = param->parallelBP;	
+	subArray->XNORparallelMode = param->XNORparallelMode;
+	subArray->XNORsequentialMode = param->XNORsequentialMode;
+	subArray->BNNparallelMode = param->BNNparallelMode;
+	subArray->BNNsequentialMode = param->BNNsequentialMode;
+	subArray->conventionalParallel = param->conventionalParallel;
+	subArray->conventionalSequential = param->conventionalSequential;
+	subArray->parallelBP = param->parallelBP;
 	subArray->numRow = param->numRowSubArray;
 	subArray->numCol = param->numRowSubArray;
 	subArray->levelOutput = param->levelOutput;
@@ -172,10 +171,10 @@ void ProcessingUnitInitialize(SubArray *& subArray, InputParameter& inputParamet
 	subArray->SARADC = param->SARADC;
 	subArray->currentMode = param->currentMode;
 	subArray->spikingMode = NONSPIKING;
-	
+
 	int numRow = param->numRowSubArray;
 	int numCol = param->numColSubArray;
-	
+
 	if (subArray->numColMuxed > numCol) {                      // Set the upperbound of numColMuxed
 		subArray->numColMuxed = numCol;
 	}
@@ -192,25 +191,25 @@ void ProcessingUnitInitialize(SubArray *& subArray, InputParameter& inputParamet
 	int numSubArrayColNM = _numSubArrayColNM;
 	int numSubArrayRowCM = _numSubArrayRowCM;
 	int numSubArrayColCM = _numSubArrayColCM;
-	
+
 	/*** initialize modules ***/
 	subArray->Initialize(numRow, numCol, param->unitLengthWireResistance);        // initialize subArray
 	subArray->CalculateArea();
-	
+
 	if (param->novelMapping) {
 		if (param->parallelRead) {
 			adderTreeNM->Initialize(numSubArrayRowNM, log2((double)param->levelOutput)+param->numBitInput+param->numColPerSynapse+1, ceil((double)numSubArrayColNM*(double)numCol/(double)param->numColMuxed));
 		} else {
 			adderTreeNM->Initialize(numSubArrayRowNM, (log2((double)numRow)+param->cellBit-1)+param->numBitInput+param->numColPerSynapse+1, ceil((double)numSubArrayColNM*(double)numCol/(double)param->numColMuxed));
 		}
-		
+
 		bufferInputNM->Initialize(param->numBitInput*numRow, param->clkFreq);
 		if (param->parallelRead) {
 			bufferOutputNM->Initialize((numCol/param->numColMuxed)*(log2((double)param->levelOutput)+param->numBitInput+param->numColPerSynapse+adderTreeNM->numStage), param->clkFreq);
 		} else {
 			bufferOutputNM->Initialize((numCol/param->numColMuxed)*((log2((double)numRow)+param->cellBit-1)+param->numBitInput+param->numColPerSynapse+adderTreeNM->numStage), param->clkFreq);
 		}
-		
+
 		busInputNM->Initialize(HORIZONTAL, numSubArrayRowNM, numSubArrayColNM, 0, numRow, subArray->height, subArray->width);
 		busOutputNM->Initialize(VERTICAL, numSubArrayRowNM, numSubArrayColNM, 0, numCol, subArray->height, subArray->width);
 	}
@@ -219,14 +218,14 @@ void ProcessingUnitInitialize(SubArray *& subArray, InputParameter& inputParamet
 	} else {
 		adderTreeCM->Initialize(numSubArrayRowCM, (log2((double)numRow)+param->cellBit-1)+param->numBitInput+param->numColPerSynapse+1, ceil((double)numSubArrayColCM*(double)numCol/(double)param->numColMuxed));
 	}
-	
+
 	bufferInputCM->Initialize(param->numBitInput*numRow, param->clkFreq);
 	if (param->parallelRead) {
 		bufferOutputCM->Initialize((numCol/param->numColMuxed)*(log2((double)param->levelOutput)+param->numBitInput+param->numColPerSynapse+adderTreeCM->numStage), param->clkFreq);
 	} else {
 		bufferOutputCM->Initialize((numCol/param->numColMuxed)*((log2((double)numRow)+param->cellBit-1)+param->numBitInput+param->numColPerSynapse+adderTreeCM->numStage), param->clkFreq);
 	}
-	
+
 	busInputCM->Initialize(HORIZONTAL, numSubArrayRowCM, numSubArrayColCM, 0, numRow, subArray->height, subArray->width);
 	busOutputCM->Initialize(VERTICAL, numSubArrayRowCM, numSubArrayColCM, 0, numCol, subArray->height, subArray->width);
 }
@@ -238,20 +237,20 @@ vector<double> ProcessingUnitCalculateArea(SubArray *subArray, int numSubArrayRo
 	*width = 0;
 	*bufferArea = 0;
 	double area = 0;
-	
+
 	subArray->CalculateArea();
 	if (NMpe) {
 		adderTreeNM->CalculateArea(NULL, subArray->width, NONE);
 		bufferInputNM->CalculateArea(numSubArrayRow*subArray->height, NULL, NONE);
 		bufferOutputNM->CalculateArea(NULL, numSubArrayCol*subArray->width, NONE);
-		
-		busInputNM->CalculateArea(1, true); 
-		busOutputNM->CalculateArea(1, true);	
+
+		busInputNM->CalculateArea(1, true);
+		busOutputNM->CalculateArea(1, true);
 		area += subArray->usedArea * (numSubArrayRow*numSubArrayCol) + adderTreeNM->area + bufferInputNM->area + bufferOutputNM->area;
-		
+
 		*height = sqrt(area);
 		*width = area/(*height);
-		
+
 		areaResults.push_back(area);
 		areaResults.push_back(subArray->areaADC*(numSubArrayRow*numSubArrayCol));
 		areaResults.push_back(subArray->areaAccum*(numSubArrayRow*numSubArrayCol)+adderTreeNM->area);
@@ -261,35 +260,35 @@ vector<double> ProcessingUnitCalculateArea(SubArray *subArray, int numSubArrayRo
 		adderTreeCM->CalculateArea(NULL, subArray->width, NONE);
 		bufferInputCM->CalculateArea(numSubArrayRow*subArray->height, NULL, NONE);
 		bufferOutputCM->CalculateArea(NULL, numSubArrayCol*subArray->width, NONE);
-		
-		busInputCM->CalculateArea(1, true); 
+
+		busInputCM->CalculateArea(1, true);
 		busOutputCM->CalculateArea(1, true);
 		area += subArray->usedArea * (numSubArrayRow*numSubArrayCol) + adderTreeCM->area + bufferInputCM->area + bufferOutputCM->area;
-		
+
 		*height = sqrt(area);
 		*width = area/(*height);
-		
+
 		areaResults.push_back(area);
 		areaResults.push_back(subArray->areaADC*(numSubArrayRow*numSubArrayCol));
 		areaResults.push_back(subArray->areaAccum*(numSubArrayRow*numSubArrayCol)+adderTreeCM->area);
 		areaResults.push_back(subArray->areaOther*(numSubArrayRow*numSubArrayCol)+ bufferInputCM->area + bufferOutputCM->area);
 		areaResults.push_back(subArray->areaArray*(numSubArrayRow*numSubArrayCol));
 	}
-	
+
 	return areaResults;
 }
 
 
-double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, MemCell& cell, int layerNumber, bool NMpe, 
+double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, MemCell& cell, int layerNumber, bool NMpe,
 											const vector<vector<double> > &newMemory, const vector<vector<double> > &oldMemory, const vector<vector<double> > &inputVector,
 											int arrayDupRow, int arrayDupCol, int numSubArrayRow, int numSubArrayCol, int weightMatrixRow,
-											int weightMatrixCol, int numInVector, double *readLatency, double *readDynamicEnergy, double *leakage, 
+											int weightMatrixCol, int numInVector, double *readLatency, double *readDynamicEnergy, double *leakage,
 											double *readLatencyAG, double *readDynamicEnergyAG, double *writeLatencyWU, double *writeDynamicEnergyWU,
 											double *bufferLatency, double *bufferDynamicEnergy, double *icLatency, double *icDynamicEnergy,
-											double *coreLatencyADC, double *coreLatencyAccum, double *coreLatencyOther, double *coreEnergyADC, 
+											double *coreLatencyADC, double *coreLatencyAccum, double *coreLatencyOther, double *coreEnergyADC,
 											double *coreEnergyAccum, double *coreEnergyOther, double *readLatencyPeakFW, double *readDynamicEnergyPeakFW,
 											double *readLatencyPeakAG, double *readDynamicEnergyPeakAG, double *writeLatencyPeakWU, double *writeDynamicEnergyPeakWU) {
-	
+
 	/*** define how many subArray are used to map the whole layer ***/
 	*readLatency = 0;
 	*readDynamicEnergy = 0;
@@ -297,7 +296,7 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 	*readDynamicEnergyAG = 0;
 	*writeLatencyWU = 0;
 	*writeDynamicEnergyWU = 0;
-	
+
 	*readLatencyPeakFW = 0;
 	*readDynamicEnergyPeakFW = 0;
 	*readLatencyPeakAG = 0;
@@ -315,10 +314,10 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 	*coreLatencyADC = 0;
 	*coreLatencyAccum = 0;
 	*coreLatencyOther = 0;
-	
+
 	double subArrayReadLatency, subArrayReadDynamicEnergy, subArrayLeakage, subArrayLatencyADC, subArrayLatencyAccum, subArrayLatencyOther;
 	double subArrayReadLatencyAG, subArrayReadDynamicEnergyAG, subArrayWriteLatencyWU, subArrayWriteDynamicEnergyWU;
-	
+
 	if (arrayDupRow*arrayDupCol > 1) {
 		// weight matrix is duplicated among subArray
 		if (arrayDupRow < numSubArrayRow || arrayDupCol < numSubArrayCol) {
@@ -337,7 +336,7 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 						subArrayMemory = CopySubArray(newMemory, i*param->numRowSubArray, j*param->numColSubArray, numRowMatrix, numColMatrix);
 						vector<vector<double> > subArrayInput;
 						subArrayInput = CopySubInput(inputVector, i*param->numRowSubArray, numInVector, numRowMatrix);
-						
+
 						subArrayReadLatency = 0;
 						subArrayLatencyADC = 0;
 						subArrayLatencyAccum = 0;
@@ -351,10 +350,10 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 							int numWritePulseAVG=0;
 							int totalNumWritePulse = 0;
 							double writeDynamicEnergyArray = 0;
-							
-							GetWriteUpdateEstimation(subArray, tech, cell, subArrayMemory, subArrayMemoryOld, 
+
+							GetWriteUpdateEstimation(subArray, tech, cell, subArrayMemory, subArrayMemoryOld,
 								&activityColWrite, &activityRowWrite, &numWritePulseAVG, &totalNumWritePulse, &writeDynamicEnergyArray);
-							
+
 							subArray->activityColWrite = activityColWrite;
 							subArray->activityRowWrite = activityRowWrite;
 							subArray->numWritePulseAVG = numWritePulseAVG;
@@ -365,26 +364,26 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 
 						for (int k=0; k<numInVector; k++) {                 // calculate single subArray through the total input vectors
 							double activityRowRead = 0;
-							vector<double> input; 
+							vector<double> input;
 							input = GetInputVector(subArrayInput, k, &activityRowRead);
 							subArray->activityRowRead = activityRowRead;
-							
+
 							int cellRange = pow(2, param->cellBit);
 							if (param->parallelRead) {
 								subArray->levelOutput = param->levelOutput;               // # of levels of the multilevelSenseAmp output
 							} else {
 								subArray->levelOutput = cellRange;
 							}
-							
+
 							vector<double> columnResistance;
 							columnResistance = GetColumnResistance(input, subArrayMemory, cell, param->parallelRead, subArray->resCellAccess);
-							
+
 							vector<double> rowResistance;
 							rowResistance = GetRowResistance(input, subArrayMemory, cell, param->parallelBP, subArray->resCellAccess);
-							
+
 							subArray->CalculateLatency(1e20, columnResistance, rowResistance);
 							subArray->CalculatePower(columnResistance, rowResistance);
-							
+
 							subArrayReadLatency += subArray->readLatency;
 							*readDynamicEnergy += subArray->readDynamicEnergy;
 							subArrayLeakage = subArray->leakage;
@@ -394,7 +393,7 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 							subArrayLatencyADC += subArray->readLatencyADC;
 							subArrayLatencyAccum += subArray->readLatencyAccum;
 							subArrayLatencyOther += subArray->readLatencyOther;
-							
+
 							*coreEnergyADC += subArray->readDynamicEnergyADC;
 							*coreEnergyAccum += subArray->readDynamicEnergyAccum;
 							*coreEnergyOther += subArray->readDynamicEnergyOther;
@@ -406,12 +405,12 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 						if (NMpe) {
 							adderTreeNM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), ceil((double) weightMatrixRow/(double) param->numRowSubArray), 0);
 							adderTreeNM->CalculatePower((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), ceil((double) weightMatrixRow/(double) param->numRowSubArray));
-							
+
 							*readLatency = MAX(subArrayReadLatency + adderTreeNM->readLatency, (*readLatency));
 							*readDynamicEnergy += adderTreeNM->readDynamicEnergy;
 							*readLatencyAG = MAX(subArrayReadLatencyAG + adderTreeNM->readLatency, (*readLatencyAG));
 							*readDynamicEnergyAG += adderTreeNM->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
-							
+
 							*coreLatencyADC = MAX(subArrayLatencyADC, (*coreLatencyADC));
 							*coreLatencyAccum = MAX(subArrayLatencyAccum + adderTreeNM->readLatency, (*coreLatencyAccum));
 							*coreLatencyOther = MAX(subArrayLatencyOther, (*coreLatencyOther));
@@ -419,12 +418,12 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 						} else {
 							adderTreeCM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), ceil((double) weightMatrixRow/(double) param->numRowSubArray), 0);
 							adderTreeCM->CalculatePower((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), ceil((double) weightMatrixRow/(double) param->numRowSubArray));
-							
+
 							*readLatency = MAX(subArrayReadLatency + adderTreeCM->readLatency, (*readLatency));
 							*readDynamicEnergy += adderTreeCM->readDynamicEnergy;
 							*readLatencyAG = MAX(subArrayReadLatencyAG + adderTreeCM->readLatency, (*readLatencyAG));
 							*readDynamicEnergyAG += adderTreeCM->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
-							
+
 							*coreLatencyADC = MAX(subArrayLatencyADC, (*coreLatencyADC));
 							*coreLatencyAccum = MAX(subArrayLatencyAccum + adderTreeCM->readLatency, (*coreLatencyAccum));
 							*coreLatencyOther = MAX(subArrayLatencyOther, (*coreLatencyOther));
@@ -463,10 +462,10 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 				int numWritePulseAVG=0;
 				int totalNumWritePulse = 0;
 				double writeDynamicEnergyArray = 0;
-				
-				GetWriteUpdateEstimation(subArray, tech, cell, subArrayMemory, subArrayMemoryOld, 
+
+				GetWriteUpdateEstimation(subArray, tech, cell, subArrayMemory, subArrayMemoryOld,
 					&activityColWrite, &activityRowWrite, &numWritePulseAVG, &totalNumWritePulse, &writeDynamicEnergyArray);
-				
+
 				subArray->activityColWrite = activityColWrite;
 				subArray->activityRowWrite = activityRowWrite;
 				subArray->numWritePulseAVG = numWritePulseAVG;
@@ -481,39 +480,39 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 				input = GetInputVector(subArrayInput, k, &activityRowRead);
 				subArray->activityRowRead = activityRowRead;
 				int cellRange = pow(2, param->cellBit);
-				
+
 				if (param->parallelRead) {
 					subArray->levelOutput = param->levelOutput;               // # of levels of the multilevelSenseAmp output
 				} else {
 					subArray->levelOutput = cellRange;
 				}
-				
+
 				vector<double> columnResistance;
 				columnResistance = GetColumnResistance(input, subArrayMemory, cell, param->parallelRead, subArray->resCellAccess);
-				
+
 				vector<double> rowResistance;
 				rowResistance = GetRowResistance(input, subArrayMemory, cell, param->parallelBP, subArray->resCellAccess);
-				
+
 				subArray->CalculateLatency(1e20, columnResistance, rowResistance);
 				subArray->CalculatePower(columnResistance, rowResistance);
-				
+
 				subArrayReadLatency += subArray->readLatency;
 				*readDynamicEnergy += subArray->readDynamicEnergy;
 				subArrayLeakage = subArray->leakage;
 				subArrayReadLatencyAG += subArray->readLatencyAG*((param->trainingEstimation)==true? 1:0);
 				*readDynamicEnergyAG += subArray->readDynamicEnergyAG*((param->trainingEstimation)==true? 1:0);
-				
+
 				subArrayLatencyADC += subArray->readLatencyADC;
 				subArrayLatencyAccum += subArray->readLatencyAccum;
 				subArrayLatencyOther += subArray->readLatencyOther;
-				
+
 				*coreEnergyADC += subArray->readDynamicEnergyADC;
 				*coreEnergyAccum += subArray->readDynamicEnergyAccum;
 				*coreEnergyOther += subArray->readDynamicEnergyOther;
 			}
 			*writeLatencyWU += subArray->writeLatency*((param->trainingEstimation)==true? 1:0);
 			*writeDynamicEnergyWU += subArray->writeDynamicEnergy*(arrayDupRow*arrayDupCol)*((param->trainingEstimation)==true? 1:0);
-			// do not pass adderTree 
+			// do not pass adderTree
 			*readLatency = subArrayReadLatency/(arrayDupRow*arrayDupCol);
 			*readLatencyAG = subArrayReadLatencyAG/(arrayDupRow*arrayDupCol);
 			*coreLatencyADC = subArrayLatencyADC/(arrayDupRow*arrayDupCol);
@@ -534,7 +533,7 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 					subArrayMemory = CopySubArray(newMemory, i*param->numRowSubArray, j*param->numColSubArray, numRowMatrix, numColMatrix);
 					vector<vector<double> > subArrayInput;
 					subArrayInput = CopySubInput(inputVector, i*param->numRowSubArray, numInVector, numRowMatrix);
-					
+
 					subArrayReadLatency = 0;
 					subArrayLatencyADC = 0;
 					subArrayLatencyAccum = 0;
@@ -548,10 +547,10 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 						int numWritePulseAVG=0;
 						int totalNumWritePulse = 0;
 						double writeDynamicEnergyArray = 0;
-						
-						GetWriteUpdateEstimation(subArray, tech, cell, subArrayMemory, subArrayMemoryOld, 
+
+						GetWriteUpdateEstimation(subArray, tech, cell, subArrayMemory, subArrayMemoryOld,
 							&activityColWrite, &activityRowWrite, &numWritePulseAVG, &totalNumWritePulse, &writeDynamicEnergyArray);
-						
+
 						subArray->activityColWrite = activityColWrite;
 						subArray->activityRowWrite = activityRowWrite;
 						subArray->numWritePulseAVG = numWritePulseAVG;
@@ -565,37 +564,37 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 						vector<double> input;
 						input = GetInputVector(subArrayInput, k, &activityRowRead);
 						subArray->activityRowRead = activityRowRead;
-						
+
 						int cellRange = pow(2, param->cellBit);
 						if (param->parallelRead) {
 							subArray->levelOutput = param->levelOutput;               // # of levels of the multilevelSenseAmp output
 						} else {
 							subArray->levelOutput = cellRange;
 						}
-						
+
 						vector<double> columnResistance;
 						columnResistance = GetColumnResistance(input, subArrayMemory, cell, param->parallelRead, subArray->resCellAccess);
-						
+
 						vector<double> rowResistance;
 						rowResistance = GetRowResistance(input, subArrayMemory, cell, param->parallelBP, subArray->resCellAccess);
-						
+
 						subArray->CalculateLatency(1e20, columnResistance, rowResistance);
 						subArray->CalculatePower(columnResistance, rowResistance);
-						
+
 						subArrayReadLatency += subArray->readLatency;
 						*readDynamicEnergy += subArray->readDynamicEnergy;
 						subArrayLeakage = subArray->leakage;
 						subArrayReadLatencyAG += subArray->readLatencyAG*((param->trainingEstimation)==true? 1:0);
 						*readDynamicEnergyAG += subArray->readDynamicEnergyAG*((param->trainingEstimation)==true? 1:0);
-						
+
 						subArrayLatencyADC += subArray->readLatencyADC;
 						subArrayLatencyAccum += subArray->readLatencyAccum;
 						subArrayLatencyOther += subArray->readLatencyOther;
-						
+
 						*coreEnergyADC += subArray->readDynamicEnergyADC;
 						*coreEnergyAccum += subArray->readDynamicEnergyAccum;
 						*coreEnergyOther += subArray->readDynamicEnergyOther;
-						
+
 					}
 					// accumulate write latency as array need to be write sequentially (worst case)
 					// limitation by on-chip buffer, write latency will be divided by numArrayWriteParallel (real case)
@@ -629,23 +628,23 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 			*coreEnergyAccum += adderTreeCM->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 		}
 	}
-	*readLatencyPeakFW = (*readLatency); 
+	*readLatencyPeakFW = (*readLatency);
 	*readDynamicEnergyPeakFW = (*readDynamicEnergy);
 	*readLatencyPeakAG = (*readLatencyAG);
 	*readDynamicEnergyPeakAG = (*readDynamicEnergyAG);
-	
+
 	//considering buffer activation: no matter speedup or not, the total number of data transferred is fixed
 	// input buffer: total num of data loaded in = weightMatrixRow*numInVector
-	// output buffer: total num of data transferred = weightMatrixRow*numInVector/param->numBitInput (total num of IFM in the PE) *adderTree->numAdderTree*adderTree->numAdderBit (bit precision of OFMs) 
+	// output buffer: total num of data transferred = weightMatrixRow*numInVector/param->numBitInput (total num of IFM in the PE) *adderTree->numAdderTree*adderTree->numAdderBit (bit precision of OFMs)
 	if (NMpe) {
 		bufferInputNM->CalculateLatency(0, numInVector*ceil((double) weightMatrixRow/(double) param->numRowSubArray));
 		bufferOutputNM->CalculateLatency(0, numInVector/param->numBitInput);
 		bufferInputNM->CalculatePower(weightMatrixRow/param->numRowPerSynapse, numInVector);
 		bufferOutputNM->CalculatePower(weightMatrixCol/param->numColPerSynapse*adderTreeNM->numAdderBit, numInVector/param->numBitInput);
-		
-		busInputNM->CalculateLatency(weightMatrixRow/param->numRowPerSynapse*numInVector/(busInputNM->busWidth)); 
+
+		busInputNM->CalculateLatency(weightMatrixRow/param->numRowPerSynapse*numInVector/(busInputNM->busWidth));
 		busInputNM->CalculatePower(busInputNM->busWidth, weightMatrixRow/param->numRowPerSynapse*numInVector/(busInputNM->busWidth));
-		
+
 		if (param->parallelRead) {
 			busOutputNM->CalculateLatency((weightMatrixCol/param->numColPerSynapse*log2((double)param->levelOutput)*numInVector/param->numBitInput)/(busOutputNM->numRow*busOutputNM->busWidth));
 			busOutputNM->CalculatePower(busOutputNM->numRow*busOutputNM->busWidth, (weightMatrixCol/param->numColPerSynapse*log2((double)param->levelOutput)*numInVector/param->numBitInput)/(busOutputNM->numRow*busOutputNM->busWidth));
@@ -654,7 +653,7 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 			busOutputNM->CalculatePower(busOutputNM->numRow*busOutputNM->busWidth, (weightMatrixCol/param->numColPerSynapse*(log2((double)param->numRowSubArray)+param->cellBit-1)*numInVector/param->numBitInput)/(busOutputNM->numRow*busOutputNM->busWidth));
 		}
 		*leakage = subArrayLeakage*numSubArrayRow*numSubArrayCol + adderTreeNM->leakage + bufferInputNM->leakage + bufferOutputNM->leakage;
-		
+
 		*readLatency += (bufferInputNM->readLatency + bufferOutputNM->readLatency + busInputNM->readLatency + busOutputNM->readLatency);
 		*readDynamicEnergy += (bufferInputNM->readDynamicEnergy + bufferOutputNM->readDynamicEnergy + busInputNM->readDynamicEnergy + busOutputNM->readDynamicEnergy);
 		*readLatencyAG += (bufferInputNM->readLatency + bufferOutputNM->readLatency + busInputNM->readLatency + busOutputNM->readLatency)*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
@@ -669,10 +668,10 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 		bufferOutputCM->CalculateLatency(0, numInVector/param->numBitInput);
 		bufferInputCM->CalculatePower(weightMatrixRow/param->numRowPerSynapse, numInVector);
 		bufferOutputCM->CalculatePower(weightMatrixCol/param->numColPerSynapse*adderTreeCM->numAdderBit, numInVector/param->numBitInput);
-		
-		busInputCM->CalculateLatency(weightMatrixRow/param->numRowPerSynapse*numInVector/(busInputCM->busWidth)); 
+
+		busInputCM->CalculateLatency(weightMatrixRow/param->numRowPerSynapse*numInVector/(busInputCM->busWidth));
 		busInputCM->CalculatePower(busInputCM->busWidth, weightMatrixRow/param->numRowPerSynapse*numInVector/(busInputCM->busWidth));
-		
+
 		if (param->parallelRead) {
 			busOutputCM->CalculateLatency((weightMatrixCol/param->numColPerSynapse*log2((double)param->levelOutput)*numInVector/param->numBitInput)/(busOutputCM->numRow*busOutputCM->busWidth));
 			busOutputCM->CalculatePower(busOutputCM->numRow*busOutputCM->busWidth, (weightMatrixCol/param->numColPerSynapse*log2((double)param->levelOutput)*numInVector/param->numBitInput)/(busOutputCM->numRow*busOutputCM->busWidth));
@@ -681,7 +680,7 @@ double ProcessingUnitCalculatePerformance(SubArray *subArray, Technology& tech, 
 			busOutputCM->CalculatePower(busOutputCM->numRow*busOutputCM->busWidth, (weightMatrixCol/param->numColPerSynapse*(log2((double)param->numRowSubArray)+param->cellBit-1)*numInVector/param->numBitInput)/(busOutputCM->numRow*busOutputCM->busWidth));
 		}
 		*leakage = subArrayLeakage*numSubArrayRow*numSubArrayCol + adderTreeCM->leakage + bufferInputCM->leakage + bufferOutputCM->leakage;
-		
+
 		*readLatency += (bufferInputCM->readLatency + bufferOutputCM->readLatency + busInputCM->readLatency + busOutputCM->readLatency);
 		*readDynamicEnergy += (bufferInputCM->readDynamicEnergy + bufferOutputCM->readDynamicEnergy + busInputCM->readDynamicEnergy + busOutputCM->readDynamicEnergy);
 		*readLatencyAG += (bufferInputCM->readLatency + bufferOutputCM->readLatency + busInputCM->readLatency + busOutputCM->readLatency)*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
@@ -710,7 +709,7 @@ vector<vector<double> > CopySubArray(const vector<vector<double> > &orginal, int
 	}
 	return copy;
 	copy.clear();
-} 
+}
 
 
 vector<vector<double> > CopySubInput(const vector<vector<double> > &orginal, int positionRow, int numInputVector, int numRow) {
@@ -732,8 +731,8 @@ vector<double> GetInputVector(const vector<vector<double> > &input, int numInput
 	vector<double> copy;
 	for (int i=0; i<input.size(); i++) {
 		double x = input[i][numInput];
-		copy.push_back(x);   
-	}  
+		copy.push_back(x);
+	}
 	double numofreadrow = 0;  // initialize readrowactivity parameters
 	for (int i=0; i<input.size(); i++) {
 		if (copy[i] != 0) {
@@ -746,14 +745,14 @@ vector<double> GetInputVector(const vector<vector<double> > &input, int numInput
 	*(activityRowRead) = numofreadrow/totalnumRow;
 	return copy;
 	copy.clear();
-} 
+}
 
 
 vector<double> GetColumnResistance(const vector<double> &input, const vector<vector<double> > &weight, MemCell& cell, bool parallelRead, double resCellAccess) {
 	vector<double> resistance;
 	vector<double> conductance;
-	double columnG = 0; 
-	
+	double columnG = 0;
+
 	for (int j=0; j<weight[0].size(); j++) {
 		int activatedRow = 0;
 		columnG = 0;
@@ -780,8 +779,8 @@ vector<double> GetColumnResistance(const vector<double> &input, const vector<vec
 				} else {
 					columnG += 0;
 				}
-				
-			} else if (cell.memCellType == Type::SRAM) {	
+
+			} else if (cell.memCellType == Type::SRAM) {
 				// SRAM: weight value do not affect sense energy --> read energy calculated in subArray.cpp (based on wireRes wireCap etc)
 				double totalWireResistance = (double) (resCellAccess + param->wireResistanceCol);
 				if ((int) input[i] == 1) {
@@ -792,9 +791,9 @@ vector<double> GetColumnResistance(const vector<double> &input, const vector<vec
 				}
 			}
 		}
-		
+
 		if (cell.memCellType == Type::RRAM || cell.memCellType == Type::FeFET) {
-			if (!parallelRead) {  
+			if (!parallelRead) {
 				conductance.push_back((double) columnG/activatedRow);
 			} else {
 				conductance.push_back(columnG);
@@ -807,18 +806,18 @@ vector<double> GetColumnResistance(const vector<double> &input, const vector<vec
 	for (int i=0; i<weight[0].size(); i++) {
 		resistance.push_back((double) 1.0/conductance[i]);
 	}
-		
+
 	return resistance;
 	resistance.clear();
-} 
+}
 
 
 vector<double> GetRowResistance(const vector<double> &input, const vector<vector<double> > &weight, MemCell& cell, bool parallelRead, double resCellAccess) {
 	vector<double> resistance;
 	vector<double> conductance;
-	double rowG = 0; 
+	double rowG = 0;
 	double totalWireResistance;
-	
+
 	for (int i=0; i<weight.size(); i++) {
 		int activatedCol = ceil(weight[0].size()/2);  // assume 50% of the input vector is 1
 		rowG = 0;
@@ -831,15 +830,15 @@ vector<double> GetRowResistance(const vector<double> &input, const vector<vector
 				}
 			} else if (cell.memCellType == Type::FeFET) {
 				totalWireResistance = (double) 1.0/weight[i][j] + (i + 1) * param->wireResistanceRow + (weight[0].size() - j) * param->wireResistanceCol;
-			} else if (cell.memCellType == Type::SRAM) {	
+			} else if (cell.memCellType == Type::SRAM) {
 				// SRAM: weight value do not affect sense energy --> read energy calculated in subArray.cpp (based on wireRes wireCap etc)
 				totalWireResistance = (double) (resCellAccess + param->wireResistanceCol);
 			}
 		}
 		rowG = (double) 1.0/totalWireResistance * activatedCol;
-		
+
 		if (cell.memCellType == Type::RRAM || cell.memCellType == Type::FeFET) {
-			if (!parallelRead) {  
+			if (!parallelRead) {
 				conductance.push_back((double) rowG/activatedCol);
 			} else {
 				conductance.push_back(rowG);
@@ -851,27 +850,28 @@ vector<double> GetRowResistance(const vector<double> &input, const vector<vector
 	// covert conductance to resistance
 	for (int i=0; i<weight.size(); i++) {
 		resistance.push_back((double) 1.0/conductance[i]);
-		
+
 	}
-		
+
 	return resistance;
 	resistance.clear();
-} 
+}
+
 
 double GetWriteUpdateEstimation(SubArray *subArray, Technology& tech, MemCell& cell, const vector<vector<double> > &newMemory, const vector<vector<double> > &oldMemory,
 								double *activityColWrite, double *activityRowWrite, int *numWritePulseAVG, int *totalNumWritePulse, double *writeDynamicEnergyArray) {
-									
+
 	int maxNumWritePulse = MAX(cell.maxNumLevelLTP, cell.maxNumLevelLTD);
 	double minDeltaConductance = (double) (param->maxConductance-param->minConductance)/maxNumWritePulse;     // define the min delta weight
 	int totalNumSetWritePulse = 0;
 	int totalNumResetWritePulse = 0;
-	
+
 	*activityColWrite = 0;
 	*activityRowWrite = 0;
 	*numWritePulseAVG = 0;
 	*totalNumWritePulse = 0;
 	*writeDynamicEnergyArray = 0;
-	
+
 	int numSelectedRowSet = 0;							// used to calculate activityRowWrite
 	int numSelectedRowReset = 0;						// used to calculate activityRowWrite
 	int numSelectedColSet = 0;							// used to calculate activityColWrite
@@ -882,7 +882,7 @@ double GetWriteUpdateEstimation(SubArray *subArray, Technology& tech, MemCell& c
 		int numSetWritePulse = 0;						// num of set pulse of each row
 		int numResetWritePulse = 0;						// num of reset pulse of each row
 		bool rowSelected = false;
-		
+
 		for (int j=0; j<newMemory[0].size(); j++) {   	// sweep column for a row
 			if (param->memcelltype != 1) { // eNVM
 				if (abs(newMemory[i][j]-oldMemory[i][j]) >= minDeltaConductance) {
@@ -940,25 +940,25 @@ double GetWriteUpdateEstimation(SubArray *subArray, Technology& tech, MemCell& c
 		totalNumSetWritePulse += numSetWritePulse;
 		totalNumResetWritePulse += numResetWritePulse;
 	}
-	
+
 	// get average num of selected column for set and reset
 	numSelectedColSet = numSelectedRowSet==0? 0:ceil(numSelectedColSet/numSelectedRowSet);
 	numSelectedColReset = numSelectedRowReset==0? 0:ceil(numSelectedColReset/numSelectedRowReset);
-		
+
 	*totalNumWritePulse = totalNumResetWritePulse + totalNumSetWritePulse;
 	*numWritePulseAVG = (*totalNumWritePulse)/(MAX(1, (numSelectedRowSet+numSelectedRowReset)/2.0));
 	*activityColWrite = ((numSelectedColSet+numSelectedColReset)/2.0)/newMemory[0].size();
-	*activityRowWrite = ((numSelectedRowSet+numSelectedRowReset)/2.0)/newMemory.size();	
-	
+	*activityRowWrite = ((numSelectedRowSet+numSelectedRowReset)/2.0)/newMemory.size();
+
 	// calculate WL BL and SL energy
 	if (cell.memCellType == Type::RRAM || cell.memCellType == Type::FeFET) {
 		if (cell.accessType == CMOS_access) {
 			if (cell.memCellType == Type::FeFET) {
 				// SET
-				*writeDynamicEnergyArray += subArray->capRow2 * tech.vdd * tech.vdd * totalNumSetWritePulse;	
+				*writeDynamicEnergyArray += subArray->capRow2 * tech.vdd * tech.vdd * totalNumSetWritePulse;
 				*writeDynamicEnergyArray += (subArray->capCol + param->gateCapFeFET * numSelectedRowSet) * cell.writeVoltage * cell.writeVoltage * numSelectedColSet * totalNumSetWritePulse;
 				// RESET
-				*writeDynamicEnergyArray += subArray->capRow2 * tech.vdd * tech.vdd * totalNumResetWritePulse;	
+				*writeDynamicEnergyArray += subArray->capRow2 * tech.vdd * tech.vdd * totalNumResetWritePulse;
 				*writeDynamicEnergyArray += (subArray->capCol + param->gateCapFeFET * numSelectedRowReset) * cell.writeVoltage * cell.writeVoltage * numSelectedColReset * totalNumResetWritePulse;
 			} else {
 				// SET
@@ -975,21 +975,20 @@ double GetWriteUpdateEstimation(SubArray *subArray, Technology& tech, MemCell& c
 			*writeDynamicEnergyArray += subArray->capRow1 * cell.writeVoltage * cell.writeVoltage * totalNumSetWritePulse;   																// Selected WL
 			*writeDynamicEnergyArray += subArray->capRow1 * cell.writeVoltage/2 * cell.writeVoltage/2 * (newMemory.size()>=numSelectedRowSet? (newMemory.size()-numSelectedRowSet):(newMemory.size())) * (*numWritePulseAVG);  						// Unselected WLs
 			*writeDynamicEnergyArray += subArray->capCol * cell.writeVoltage/2 * cell.writeVoltage/2 * (newMemory[0].size()>=numSelectedColSet? (newMemory[0].size()-numSelectedColSet):(newMemory[0].size())) * totalNumSetWritePulse; 					// Unselected BLs
-			*writeDynamicEnergyArray += cell.writeVoltage/2 * cell.writeVoltage/2 * (1/cell.resMemCellOnAtHalfVw + 1/cell.resMemCellOffAtHalfVw) / 2 
+			*writeDynamicEnergyArray += cell.writeVoltage/2 * cell.writeVoltage/2 * (1/cell.resMemCellOnAtHalfVw + 1/cell.resMemCellOffAtHalfVw) / 2
 										* cell.writePulseWidth * (newMemory[0].size()>=numSelectedColSet? (newMemory[0].size()-numSelectedColSet):(newMemory[0].size())) * totalNumSetWritePulse;    										                // Half-selected (unselected) cells on the selected row
-			*writeDynamicEnergyArray += cell.writeVoltage/2 * cell.writeVoltage/2 * (1/cell.resMemCellOnAtHalfVw + 1/cell.resMemCellOffAtHalfVw) / 2 
+			*writeDynamicEnergyArray += cell.writeVoltage/2 * cell.writeVoltage/2 * (1/cell.resMemCellOnAtHalfVw + 1/cell.resMemCellOffAtHalfVw) / 2
 										* cell.writePulseWidth * (newMemory.size()>=numSelectedRowSet? (newMemory.size()-numSelectedRowSet):(newMemory.size())) * totalNumSetWritePulse;  											                // Half-selected (unselected) cells on the selected columns
 			// RESET
 			*writeDynamicEnergyArray += subArray->capRow1 * cell.writeVoltage/2 * cell.writeVoltage/2 * (newMemory.size()>=numSelectedRowReset? (newMemory.size()-numSelectedRowReset):(newMemory.size())) * (*numWritePulseAVG);  					    // Unselected WLs
 			*writeDynamicEnergyArray += subArray->capCol * cell.writeVoltage * cell.writeVoltage * totalNumResetWritePulse; 																	// Selected BLs
 			*writeDynamicEnergyArray += subArray->capCol * cell.writeVoltage/2 * cell.writeVoltage/2 * (newMemory[0].size()>=numSelectedColReset? (newMemory[0].size()-numSelectedColReset):(newMemory[0].size())) * totalNumResetWritePulse; 					// Unselected BLs
-			*writeDynamicEnergyArray += cell.writeVoltage/2 * cell.writeVoltage/2 * (1/cell.resMemCellOnAtHalfVw + 1/cell.resMemCellOffAtHalfVw) / 2 
+			*writeDynamicEnergyArray += cell.writeVoltage/2 * cell.writeVoltage/2 * (1/cell.resMemCellOnAtHalfVw + 1/cell.resMemCellOffAtHalfVw) / 2
 										* cell.writePulseWidth * (newMemory[0].size()>=numSelectedColReset? (newMemory[0].size()-numSelectedColReset):(newMemory[0].size())) * totalNumResetWritePulse;    									                    // Half-selected (unselected) cells on the selected row
-			*writeDynamicEnergyArray += cell.writeVoltage/2 * cell.writeVoltage/2 * (1/cell.resMemCellOnAtHalfVw + 1/cell.resMemCellOffAtHalfVw) / 2 
-										* cell.writePulseWidth * (newMemory.size()>=numSelectedRowReset? (newMemory.size()-numSelectedRowReset):(newMemory.size())) * totalNumResetWritePulse;   										                // Half-selected (unselected) cells on the selected columns			
+			*writeDynamicEnergyArray += cell.writeVoltage/2 * cell.writeVoltage/2 * (1/cell.resMemCellOnAtHalfVw + 1/cell.resMemCellOffAtHalfVw) / 2
+										* cell.writePulseWidth * (newMemory.size()>=numSelectedRowReset? (newMemory.size()-numSelectedRowReset):(newMemory.size())) * totalNumResetWritePulse;   										                // Half-selected (unselected) cells on the selected columns
 		}
 	} else {   // SRAM
-		*writeDynamicEnergyArray = 0; // leave to subarray.cpp 
+		*writeDynamicEnergyArray = 0; // leave to subarray.cpp
 	}
 }
-
