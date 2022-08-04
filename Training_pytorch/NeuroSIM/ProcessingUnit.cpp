@@ -79,6 +79,7 @@ void ProcessingUnitInitialize(SubArray *& subArray, InputParameter& inputParamet
 		case -1:	break;
 		default:	exit(-1);
 	}
+
 	switch(param->accesstype) {
 		case 4:	    cell.accessType = none_access;  break;
 		case 3:	    cell.accessType = diode_access; break;
@@ -857,7 +858,6 @@ vector<double> GetRowResistance(const vector<double> &input, const vector<vector
 	resistance.clear();
 }
 
-
 double GetWriteUpdateEstimation(SubArray *subArray, Technology& tech, MemCell& cell, const vector<vector<double> > &newMemory, const vector<vector<double> > &oldMemory,
 								double *activityColWrite, double *activityRowWrite, int *numWritePulseAVG, int *totalNumWritePulse, double *writeDynamicEnergyArray) {
 
@@ -992,3 +992,4 @@ double GetWriteUpdateEstimation(SubArray *subArray, Technology& tech, MemCell& c
 		*writeDynamicEnergyArray = 0; // leave to subarray.cpp
 	}
 }
+
