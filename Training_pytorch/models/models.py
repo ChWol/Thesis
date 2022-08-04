@@ -186,11 +186,11 @@ def get_model(num_classes, network):
         },
         'six': {
             'features': [],
-            'classifier': [('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
-                           ('L', 800, 1, 'same', 1),
+            'classifier': [('L', 1024, 1, 'same', 1),
+                           ('L', 1024, 1, 'same', 1),
+                           ('L', 1024, 1, 'same', 1),
+                           ('L', 1024, 1, 'same', 1),
+                           ('L', 1024, 1, 'same', 1),
                            ('L', num_classes, 1, 'same', 1)]
         },
         'ten': {
