@@ -309,6 +309,8 @@ int main(int argc, char * argv[]) {
 	    }
 	}
 
+	double scalingFLOPs = 1 - (flopsBP - flopsDFA) / (flopsBP);
+
     cout << "Approximation via forward pass" << endl;
     cout << "Forward: " << numComputation_Forward << endl;
     cout << "DFA adjusted Forward: " << numComputation_DFA - numComputation_Forward << endl;
@@ -320,10 +322,8 @@ int main(int argc, char * argv[]) {
     cout << "FLOPs approach" << endl;
 	cout << "BP: " << flopsBP << endl;
 	cout << "DFA: " << flopsDFA << endl;
-	cout << "Scaling factor: " << 1- (flopsBP - flopsDFA) / (flopsBP) << endl;
-
-	cout << endl;
-	cout << "Total: " << scalingFactor_Total << endl;
+	cout << "Scaling factor WG: " << 1 - (flopsBP - flopsDFA) / (flopsBP) << endl;
+	cout << "Scaling factor Total: " << 1 - (scalingFLOPs*numComputation_BP) / (numComputation_BP + numComputation_Forward);
 
 	ChipInitialize(inputParameter, tech, cell, netStructure, markNM, numTileEachLayer,
 					numPENM, desiredNumTileNM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow, numTileCol, &numArrayWriteParallel);
