@@ -54,10 +54,11 @@ class MODEL(nn.Module):
                 a = sigmoid(a) * (torch.ones_like(a) - sigmoid(a))
             else:
                 a = torch.ones_like(a)
-            if i == len(self.classifier)-1:
+            if i == len(self.classifier) - 1:
                 layer.weight.grad = torch.matmul(e, y)
             else:
                 layer.weight.grad = torch.matmul(torch.matmul(B, e) * a, y)
+
 
 def build_csv(features, classifiers, linear_dimension, input_depth=3):
     current_dir = os.path.dirname(__file__)
@@ -166,7 +167,7 @@ def get_model(num_classes, depth, hidden):
 
 
 def cifar(args, logger, num_classes, pretrained=None):
-    model = get_model(num_classes, args.network)
+    model = get_model(num_classes, args.network, args.hidden)
     features = model["features"]
     classifiers = model["classifier"]
 

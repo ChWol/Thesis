@@ -1,4 +1,3 @@
-#import cv2
 import os
 import shutil
 import pickle as pkl
@@ -6,7 +5,6 @@ import time
 import numpy as np
 import hashlib
 
-#from IPython import embed
 
 class Logger(object):
     def __init__(self):
@@ -30,9 +28,13 @@ class Logger(object):
     def info(self, str_info):
         self.init('/tmp', 'tmp.log')
         self._logger.info(str_info)
+
+
 logger = Logger()
 
 print = logger.info
+
+
 def ensure_dir(path, erase=False):
     if os.path.exists(path) and erase:
         print("Removing old folder {}".format(path))
@@ -40,6 +42,7 @@ def ensure_dir(path, erase=False):
     if not os.path.exists(path):
         print("Creating folder {}".format(path))
         os.makedirs(path)
+
 
 def load_pickle(path):
     begin_st = time.time()
@@ -49,10 +52,12 @@ def load_pickle(path):
     print("=> Done ({:.4f} s)".format(time.time() - begin_st))
     return v
 
+
 def dump_pickle(obj, path):
     with open(path, 'wb') as f:
         print("Dumping pickle object to {}".format(path))
         pkl.dump(obj, f, protocol=pkl.HIGHEST_PROTOCOL)
+
 
 def auto_select_gpu(mem_bound=500, utility_bound=0, gpus=(0, 1, 2, 3, 4, 5, 6, 7), num_gpu=1, selected_gpus=None):
     import sys
@@ -66,7 +71,7 @@ def auto_select_gpu(mem_bound=500, utility_bound=0, gpus=(0, 1, 2, 3, 4, 5, 6, 7
     if selected_gpus is None:
         mem_trace = []
         utility_trace = []
-        for i in range(5): # sample 5 times
+        for i in range(5):  # sample 5 times
             info = subprocess.check_output('nvidia-smi', shell=True).decode('utf-8')
             mem = [int(s[:-5]) for s in re.compile('\d+MiB\s/').findall(info)]
             utility = [int(re.compile('\d+').findall(s)[0]) for s in re.compile('\d+%\s+Default').findall(info)]
@@ -75,7 +80,7 @@ def auto_select_gpu(mem_bound=500, utility_bound=0, gpus=(0, 1, 2, 3, 4, 5, 6, 7
             time.sleep(0.1)
         mem = np.mean(mem_trace, axis=0)
         utility = np.mean(utility_trace, axis=0)
-        assert(len(mem) == len(utility))
+        assert (len(mem) == len(utility))
         nGPU = len(utility)
         ideal_gpus = [i for i in range(nGPU) if mem[i] <= mem_bound and utility[i] <= utility_bound and i in gpus]
 
@@ -91,8 +96,10 @@ def auto_select_gpu(mem_bound=500, utility_bound=0, gpus=(0, 1, 2, 3, 4, 5, 6, 7
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join(selected_gpus)
     return selected_gpus
 
+
 def expand_user(path):
     return os.path.abspath(os.path.expanduser(path))
+
 
 def model_snapshot(model, new_file, old_file=None, verbose=False):
     from collections import OrderedDict
@@ -126,6 +133,7 @@ def model_save(model, new_file, old_file=None, verbose=False):
 
     torch.save(model.state_dict(), expand_user(new_file))
 
+
 def load_lmdb(lmdb_file, n_records=None):
     import lmdb
     import numpy as np
@@ -150,16 +158,20 @@ def load_lmdb(lmdb_file, n_records=None):
     else:
         print("Not found lmdb file".format(lmdb_file))
 
+
 def str2img(str_b):
     return cv2.imdecode(np.fromstring(str_b, np.uint8), cv2.IMREAD_COLOR)
 
+
 def img2str(img):
     return cv2.imencode('.jpg', img)[1].tostring()
+
 
 def md5(s):
     m = hashlib.md5()
     m.update(s)
     return m.hexdigest()
+
 
 def eval_model(model, ds, n_sample=None, ngpu=1, is_imagenet=False):
     import tqdm
@@ -191,7 +203,7 @@ def eval_model(model, ds, n_sample=None, ngpu=1, is_imagenet=False):
     n_sample = len(ds) if n_sample is None else n_sample
     for idx, (data, target) in enumerate(tqdm.tqdm(ds, total=n_sample)):
         n_passed += len(data)
-        data =  Variable(torch.FloatTensor(data)).cuda()
+        data = Variable(torch.FloatTensor(data)).cuda()
         indx_target = torch.LongTensor(target)
         output = model(data)
         bs = output.size(0)
@@ -210,13 +222,14 @@ def eval_model(model, ds, n_sample=None, ngpu=1, is_imagenet=False):
     acc5 = correct5 * 1.0 / n_passed
     return acc1, acc5
 
+
 def load_state_dict(model, model_urls, model_root):
     from torch.utils import model_zoo
     from torch import nn
     import re
     from collections import OrderedDict
     own_state_old = model.state_dict()
-    own_state = OrderedDict() # remove all 'group' string
+    own_state = OrderedDict()  # remove all 'group' string
     for k, v in own_state_old.items():
         k = re.sub('group\d+\.', '', k)
         own_state[k] = v
@@ -236,4 +249,3 @@ def load_state_dict(model, model_urls, model_root):
     missing = set(own_state.keys()) - set(state_dict.keys())
     if len(missing) > 0:
         raise KeyError('missing keys in state_dict: "{}"'.format(missing))
-
