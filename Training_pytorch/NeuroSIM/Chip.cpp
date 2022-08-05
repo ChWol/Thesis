@@ -89,9 +89,9 @@ vector<int> ChipDesignInitialize(InputParameter& inputParameter, Technology& tec
 	maxPool = new MaxPooling(inputParameter, tech, cell);
 	dRAM = new DRAM(inputParameter, tech, cell);
 	for (int i = 0; i < netStructure.size(); i++) {
-	    weightGradientUnit = new WeightGradientUnit(inputParameter, tech, cell);
+	    WeightGradientUnit weightGradientUnit = new WeightGradientUnit(inputParameter, tech, cell);
 	    weightGradientUnits.push_back(weightGradientUnit);
-	    gradientAccum = new Adder(inputParameter, tech, cell);
+	    Adder gradientAccum = new Adder(inputParameter, tech, cell);
 	    gradientAccums.push_back(gradientAccum);
 	}
 	// weightGradientUnit = new WeightGradientUnit(inputParameter, tech, cell);
@@ -417,7 +417,7 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 	// consider limited buffer to store gradient of weight: only part of the weight matrix is processed at a specific cycle
 	// we could set a bufferOverheadConstraint to limit the overhead and speed of computation and weight-update
 	// start: at least can support gradient of one weight matrix = subArray size * weightPrecision/cellPrecision
-	int bufferOverHead = param->numRowSubArray*param->numColSubArray*param->numColPerSynapse*(weightGradientUnit[0]->outPrecision+ceil(log2(param->batchSize)));
+	int bufferOverHead = param->numRowSubArray*param->numColSubArray*param->numColPerSynapse*(weightGradientUnits[0]->outPrecision+ceil(log2(param->batchSize)));
 	*numArrayWriteParallel = floor(bufferOverHead/((param->numRowSubArray*param->numColSubArray)*param->synapseBit));
 
 	dRAM->Initialize(param->dramType);
