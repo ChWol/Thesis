@@ -299,6 +299,7 @@ int main(int argc, char * argv[]) {
 	ChipInitialize(inputParameter, tech, cell, netStructure, markNM, numTileEachLayer,
 					numPENM, desiredNumTileNM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow, numTileCol, &numArrayWriteParallel);
 
+    cout << "after init" << endl;
 	double chipHeight, chipWidth, chipArea, chipAreaIC, chipAreaADC, chipAreaAccum, chipAreaOther, chipAreaWG, chipAreaArray;
 	double CMTileheight = 0;
 	double CMTilewidth = 0;
@@ -315,6 +316,8 @@ int main(int argc, char * argv[]) {
 	chipAreaOther = chipAreaResults[4];
 	chipAreaWG = chipAreaResults[5];
 	chipAreaArray = chipAreaResults[6];
+
+	cout << "After area" << endl;
 
 	double chipReadLatency = 0;
 	double chipReadDynamicEnergy = 0;
