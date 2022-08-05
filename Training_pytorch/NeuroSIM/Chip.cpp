@@ -579,7 +579,7 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 	areaADC += CMTileAreaADC*(desiredNumTileCM+dfaTiles);
 	areaAccum += CMTileAreaAccum*(desiredNumTileCM+dfaTiles);
 	areaOther += CMTileAreaOther*(desiredNumTileCM+dfaTiles);
-	areaArray += CMTileAreaArray*(desiredNumTileCM+dfaTiles);
+	areaArray += CMTileAreaArray*(desiredNumTileCM);
 	*CMTileheight = CMheight;
 	*CMTilewidth = CMwidth;
 
