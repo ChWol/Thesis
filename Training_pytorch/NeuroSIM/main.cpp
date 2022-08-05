@@ -859,7 +859,6 @@ int main(int argc, char * argv[]) {
 	// ToDo: Scale?
 	cout << "Chip total Latency (per epoch) is: " << (chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU)*1e9 << "ns" << endl;
 	summaryfile << (chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU)*1e9 << ",";
-	// ToDo: Leakage
 	cout << "Chip total Energy (per epoch) is: " << (chipReadDynamicEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG*scalingFactor_WG+chipWriteDynamicEnergyWU)*1e12 << "pJ" << endl;
 	summaryfile << (chipReadDynamicEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*scalingFactor_Total*1e12 << ",";
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
@@ -885,7 +884,6 @@ int main(int argc, char * argv[]) {
 	// ToDo: Scale?
 	cout << "Chip PEAK total Latency (per epoch) is: " << (chipReadLatencyPeakFW+chipReadLatencyPeakAG+chipReadLatencyPeakWG+chipWriteLatencyPeakWU)*1e9 << "ns" << endl;
 	summaryfile << (chipReadLatencyPeakFW+chipReadLatencyPeakAG+chipReadLatencyPeakWG+chipWriteLatencyPeakWU)*1e9 << ",";
-	// ToDo: Leakage
 	cout << "Chip PEAK total Energy (per epoch) is: " << (chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG*scalingFactor_WG+chipWriteDynamicEnergyPeakWU)*1e12 << "pJ" << endl;
 	summaryfile << (chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*scalingFactor_Total*1e12 << ",";
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
@@ -942,7 +940,6 @@ int main(int argc, char * argv[]) {
 		cout << "--------------------------------------Chip pipeline Performance---------------------------------" << endl;
 	}
 
-    // ToDo: Leakage
 	cout << "Energy Efficiency TOPS/W: " << numComputation/((chipReadDynamicEnergy+chipLeakageEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG*scalingFactor_WG+chipWriteDynamicEnergyWU)*scalingFactor_Total*1e12) << endl;
 	summaryfile << numComputation/((chipReadDynamicEnergy+chipLeakageEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*scalingFactor_Total*1e12) << ",";
 	// ToDo: Scale?
@@ -952,7 +949,6 @@ int main(int argc, char * argv[]) {
 	cout << "Throughput FPS: " << 1/(chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU) << endl;
 	summaryfile << 1/(chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU) << ",";
 	cout << "--------------------------------------------------------------------------" << endl;
-	// ToDo: Leakage
 	cout << "Peak Energy Efficiency TOPS/W: " << numComputation/((chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG*scalingFactor_WG+chipWriteDynamicEnergyPeakWU)*scalingFactor_Total*1e12) << endl;
 	summaryfile << numComputation/((chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*scalingFactor_Total*1e12) << ",";
 	// ToDo: Scale?
