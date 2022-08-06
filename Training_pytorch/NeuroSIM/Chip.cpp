@@ -1176,7 +1176,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
         }
 
 		// weight gradient also need *batchSize computation
-		cout << "Anteil: " << (*readLatencyPeakWG)/(*readLatencyWG)
+		cout << "Anteil: " << (*readLatencyPeakWG)/(*readLatencyWG);
 		*readLatencyWG *= param->batchSize;
 		*readDynamicEnergyWG *= param->batchSize;
 		*readLatencyPeakWG *= param->batchSize;
