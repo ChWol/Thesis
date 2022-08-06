@@ -80,7 +80,6 @@ vector<Adder *> gradientAccums;
 
 vector<int> ChipDesignInitialize(InputParameter& inputParameter, Technology& tech, MemCell& cell, bool pip, const vector<vector<double> > &netStructure,
 					double *maxPESizeNM, double *maxTileSizeCM, double *numPENM){
-    cout << "Test" << endl;
 	globalBuffer = new Buffer(inputParameter, tech, cell);
 	GhTree = new HTree(inputParameter, tech, cell);
 	Gaccumulation = new AdderTree(inputParameter, tech, cell);
@@ -88,10 +87,13 @@ vector<int> ChipDesignInitialize(InputParameter& inputParameter, Technology& tec
 	GreLu = new BitShifter(inputParameter, tech, cell);
 	maxPool = new MaxPooling(inputParameter, tech, cell);
 	dRAM = new DRAM(inputParameter, tech, cell);
-	for (int i = 0; i < netStructure.size(); i++) {
-	    weightGradientUnits.push_back(new WeightGradientUnit(inputParameter, tech, cell));
-	    gradientAccums.push_back(new Adder(inputParameter, tech, cell));
+	if (weightGradientUnits.size() == 0) {
+        for (int i = 0; i < netStructure.size(); i++) {
+            weightGradientUnits.push_back(new WeightGradientUnit(inputParameter, tech, cell));
+            gradientAccums.push_back(new Adder(inputParameter, tech, cell));
+        }
 	}
+	cout << "Test: " << weightGradientUnits.size() << endl;
 	// weightGradientUnit = new WeightGradientUnit(inputParameter, tech, cell);
 	// gradientAccum = new Adder(inputParameter, tech, cell);
 
@@ -194,7 +196,6 @@ vector<vector<double> > ChipFloorPlan(bool findNumTile, bool findUtilization, bo
 					double maxPESizeNM, double maxTileSizeCM, double numPENM, const vector<int> &pipelineSpeedUp,
 					double *desiredNumTileNM, double *desiredPESizeNM, double *desiredNumTileCM, double *desiredTileSizeCM, double *desiredPESizeCM, int *numTileRow, int *numTileCol) {
 
-    cout << "Floorplan" << endl;
 	int numRowPerSynapse, numColPerSynapse;
 	numRowPerSynapse = param->numRowPerSynapse;
 	numColPerSynapse = param->numColPerSynapse;
@@ -415,7 +416,9 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 	// consider limited buffer to store gradient of weight: only part of the weight matrix is processed at a specific cycle
 	// we could set a bufferOverheadConstraint to limit the overhead and speed of computation and weight-update
 	// start: at least can support gradient of one weight matrix = subArray size * weightPrecision/cellPrecision
+	cout << "We come here" << endl;
 	int bufferOverHead = param->numRowSubArray*param->numColSubArray*param->numColPerSynapse*(weightGradientUnits[0]->outPrecision+ceil(log2(param->batchSize)));
+	cout << "and wont print this" << endl;
 	*numArrayWriteParallel = floor(bufferOverHead/((param->numRowSubArray*param->numColSubArray)*param->synapseBit));
 
 	dRAM->Initialize(param->dramType);
