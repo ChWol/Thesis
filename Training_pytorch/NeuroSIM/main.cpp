@@ -249,12 +249,12 @@ int main(int argc, char * argv[]) {
     double numComputation_BP = 0;
 	if (param->trainingEstimation) {
 		numComputation_BP = 2 * numComputation_Forward;
-		// numComputation_BP -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
+		numComputation_BP -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
 	}
     double  numComputation_DFA = 0;
 	if (param->trainingEstimation) {
 	    numComputation_DFA = 1 * numComputation_Forward;
-	    // numComputation_DFA -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
+	    numComputation_DFA -= 2*(netStructure[0][0] * netStructure[0][1] * netStructure[0][2] * netStructure[0][3] * netStructure[0][4] * netStructure[0][5]);
 	    for (int i=0; i<netStructure.size(); i++) {
 		    numComputation_DFA += 2*(netStructure[i][0] * netStructure[i][1] * num_classes * netStructure[i][3] * netStructure[i][4] * netStructure[i][5]);
 	    }
@@ -284,12 +284,12 @@ int main(int argc, char * argv[]) {
 	double scalingFactor_WG = 1;
 	if (param->rule == "dfa") {
 	    // Approximation approach
-	    // scalingFactor_Total = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_Forward + numComputation_BP);
-	    // scalingFactor_WG = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_Forward);
+	    scalingFactor_Total = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_Forward + numComputation_BP);
+	    scalingFactor_WG = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_Forward);
 
 	    // FLOPs approach
-	    scalingFactor_WG = flopsDFA / flopsBP;
-	    scalingFactor_Total = (scalingFactor_WG * numComputation_BP + numComputation_Forward) / (numComputation_Forward + numComputation_BP);
+	    // scalingFactor_WG = flopsDFA / flopsBP;
+	    // scalingFactor_Total = (scalingFactor_WG * numComputation_BP + numComputation_Forward) / (numComputation_Forward + numComputation_BP);
 	}
 
 	cout << "WG: " << scalingFactor_WG << endl;
