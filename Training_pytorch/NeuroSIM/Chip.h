@@ -38,6 +38,13 @@
 
 #ifndef CHIP_H_
 #define CHIP_H_
+#include "WeightGradientUnit.h"
+#include "Adder.h"
+
+#include <vector>
+
+vector<WeightGradientUnit *> weightGradientUnits;
+vector<Adder *> gradientAccums;
 
 /*** Functions ***/
 vector<int> ChipDesignInitialize(InputParameter& inputParameter, Technology& tech, MemCell& cell, bool pip, const vector<vector<double> > &netStructure,
