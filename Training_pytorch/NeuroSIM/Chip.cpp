@@ -1134,13 +1134,10 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 
 		*readLatencyWG += (*readLatencyPeakWG);
 		*readDynamicEnergyWG += (*readDynamicEnergyPeakWG);
-		cout << "peak: " << *readDynamicEnergyPeakWG << endl;
 
 		// weight gradient need to be send back to DRAM
 		*readLatencyWG += dRAM->readLatency + (globalBuffer->readLatency + globalBuffer->writeLatency);
 		*readDynamicEnergyWG += dRAM->readDynamicEnergy + (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy);
-		cout << "dram: " << dRAM->readDynamicEnergy << endl;
-		cout << "buffer: " << globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy << endl;
 		// Data Transfer during Weight Gradient
 		*bufferLatency += (globalBuffer->readLatency + globalBuffer->writeLatency);
 		*bufferDynamicEnergy += (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy);
@@ -1172,7 +1169,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
                             MIN(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5], gradientAccum->numAdder));
             *readLatencyWG += gradientAccum->readLatency;
             *readDynamicEnergyWG += gradientAccum->readDynamicEnergy;
-            cout << "accum: " << gradientAccum->readDynamicEnergy << endl;
             *readLatencyPeakWG += gradientAccum->readLatency;
             *readDynamicEnergyPeakWG += gradientAccum->readDynamicEnergy;
         }
