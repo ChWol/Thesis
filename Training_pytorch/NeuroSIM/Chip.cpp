@@ -75,6 +75,7 @@ MaxPooling *maxPool;
 DRAM *dRAM;
 // WeightGradientUnit *weightGradientUnit;
 vector<WeightGradientUnit *> weightGradientUnits;
+cout << "do we at least get this far?" << endl;
 // Adder *gradientAccum;
 vector<Adder *> gradientAccums;
 
@@ -88,6 +89,7 @@ vector<int> ChipDesignInitialize(InputParameter& inputParameter, Technology& tec
 	GreLu = new BitShifter(inputParameter, tech, cell);
 	maxPool = new MaxPooling(inputParameter, tech, cell);
 	dRAM = new DRAM(inputParameter, tech, cell);
+	cout << "and this far?" << endl;
 	for (int i = 0; i < netStructure.size(); i++) {
 	    cout << "Test: " << i << endl;
 	    WeightGradientUnit *weightGradientUnit = new WeightGradientUnit(inputParameter, tech, cell);
