@@ -292,6 +292,9 @@ int main(int argc, char * argv[]) {
 	    scalingFactor_Total = 1 - scalingFactor_WG * numComputation_Forward / (numComputation_Forward + numComputation_BP);
 	}
 
+	cout << "WG: " << scalingFactor_WG << endl;
+	cout << "Total: " << scalingFactor_Total << endl;
+
     numComputation = numComputation_Forward + numComputation_BP;
 	numComputation *= param->batchSize * param->numIteration * scalingFactor_Total;
 	// End of my addition
