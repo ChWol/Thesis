@@ -288,8 +288,8 @@ int main(int argc, char * argv[]) {
 	    // scalingFactor_WG = 1 - (numComputation_BP - numComputation_DFA) / (numComputation_Forward);
 
 	    // FLOPs approach
-	    scalingFactor_WG = 1 - (flopsBP - flopsDFA) / (flopsBP);
-	    scalingFactor_Total = 1 - scalingFactor_WG * numComputation_Forward / (numComputation_Forward + numComputation_BP);
+	    scalingFactor_WG = flopsDFA / flopsBP;
+	    scalingFactor_Total = (scalingFactor_WG * (numComputation_BP - numComputation_Forward) + 2 * numComputation_Forward) / (numComputation_Forward + numComputation_BP);
 	}
 
 	cout << "WG: " << scalingFactor_WG << endl;
