@@ -1125,11 +1125,13 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		    actualUsedArray = thisMatrixRow*thisMatrixCol/(weightGradientUnits[l]->numArrayInRow*weightGradientUnits[l]->numArrayInCol*param->numRowSubArrayWG*param->numColSubArrayWG);
 		    *readLatencyPeakWG = (weightGradientUnits[l]->readLatencyPeak/(speedUpRow*speedUpCol) + weightGradientUnits[l]->writeLatencyPeak)*(netStructure[l][3]*netStructure[l][4]);
 		    *readDynamicEnergyPeakWG = (weightGradientUnits[l]->readDynamicEnergyPeak + weightGradientUnits[l]->writeDynamicEnergyPeak)*actualUsedArray*(netStructure[l][3]*netStructure[l][4]);
+		    cout << "peak: " << *readLatencyPeakWG << endl;
 		}
 		else {
 		    actualUsedArray = thisMatrixRow*thisMatrixCol/(weightGradientUnit->numArrayInRow*weightGradientUnit->numArrayInCol*param->numRowSubArrayWG*param->numColSubArrayWG);
 		    *readLatencyPeakWG = (weightGradientUnit->readLatencyPeak/(speedUpRow*speedUpCol) + weightGradientUnit->writeLatencyPeak)*(netStructure[l][3]*netStructure[l][4]);
 		    *readDynamicEnergyPeakWG = (weightGradientUnit->readDynamicEnergyPeak + weightGradientUnit->writeDynamicEnergyPeak)*actualUsedArray*(netStructure[l][3]*netStructure[l][4]);
+		    cout << "peak: " << *readLatencyPeakWG << endl;
 		}
 
 		*readLatencyWG += (*readLatencyPeakWG);
@@ -1174,6 +1176,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
         }
 
 		// weight gradient also need *batchSize computation
+		cout << "Anteil: " << (*readLatencyPeakWG)/(*readLatencyWG)
 		*readLatencyWG *= param->batchSize;
 		*readDynamicEnergyWG *= param->batchSize;
 		*readLatencyPeakWG *= param->batchSize;
