@@ -74,9 +74,9 @@ BitShifter *GreLu;
 MaxPooling *maxPool;
 DRAM *dRAM;
 // WeightGradientUnit *weightGradientUnit;
-vector<WeightGradientUnit *> weightGradientUnits;
+vector<WeightGradientUnit *> weightGradientUnits(5);
 // Adder *gradientAccum;
-vector<Adder *> gradientAccums;
+vector<Adder *> gradientAccums(5);
 
 vector<int> ChipDesignInitialize(InputParameter& inputParameter, Technology& tech, MemCell& cell, bool pip, const vector<vector<double> > &netStructure,
 					double *maxPESizeNM, double *maxTileSizeCM, double *numPENM){
