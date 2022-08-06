@@ -75,7 +75,6 @@ MaxPooling *maxPool;
 DRAM *dRAM;
 // WeightGradientUnit *weightGradientUnit;
 vector<WeightGradientUnit *> weightGradientUnits;
-cout << "do we at least get this far?" << endl;
 // Adder *gradientAccum;
 vector<Adder *> gradientAccums;
 
