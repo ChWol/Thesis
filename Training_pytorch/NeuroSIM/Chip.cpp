@@ -601,9 +601,11 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
     // My addition
 	double dfaTiles = 0;
 	if (param->rule == "dfa") {
-	    double dfaTileRows = ceil(dfaRows*(double) param->numRowPerSynapse/(double) desiredTileSizeCM);
-        double dfaTileColumns = ceil(dfaColumns*(double) param->numColPerSynapse/(double) desiredTileSizeCM);
-        dfaTiles = dfaTileRows*dfaTileColumns;
+	    for (int i = 0; i < netStructure.size(); i++) {
+            double dfaTileRows = ceil(netStructure[i][5]*(double) param->numRowPerSynapse/(double) desiredTileSizeCM);
+            double dfaTileColumns = ceil(dfaColumns*(double) param->numColPerSynapse/(double) desiredTileSizeCM);
+            dfaTiles += dfaTileRows*dfaTileColumns;
+	    }
     }
 
 	area += CMTileArea*(desiredNumTileCM+dfaTiles);
