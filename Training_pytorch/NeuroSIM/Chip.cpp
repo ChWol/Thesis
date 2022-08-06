@@ -1052,7 +1052,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		*readLatencyAG += (dRAM->readLatency)*2*((layerNumber!=0)==true? 1:0);
 		*readDynamicEnergyAG += (dRAM->readDynamicEnergy)*2*((layerNumber!=0)==true? 1:0);
 		*readLatencyWG += (dRAM->readLatency)*2;
-		cout << "dram: " << dram->readLatency << endl;
+		cout << "dram: " << dRAM->readLatency << endl;
 		*readDynamicEnergyWG += (dRAM->readDynamicEnergy)*2;
 		*dramLatency = (dRAM->readLatency)*6*((layerNumber!=0)==true? 6:4); // 2 for forward, 2 for AG, 2 for WG
 		*dramDynamicEnergy = (dRAM->readDynamicEnergy)*6*((layerNumber!=0)==true? 6:4);
