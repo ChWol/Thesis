@@ -74,13 +74,13 @@ BitShifter *GreLu;
 MaxPooling *maxPool;
 DRAM *dRAM;
 // WeightGradientUnit *weightGradientUnit;
-vector<WeightGradientUnit *> weightGradientUnits(5);
+vector<WeightGradientUnit *> weightGradientUnits;
 // Adder *gradientAccum;
-vector<Adder *> gradientAccums(5);
+vector<Adder *> gradientAccums;
 
 vector<int> ChipDesignInitialize(InputParameter& inputParameter, Technology& tech, MemCell& cell, bool pip, const vector<vector<double> > &netStructure,
 					double *maxPESizeNM, double *maxTileSizeCM, double *numPENM){
-
+    cout << "Test" << endl;
 	globalBuffer = new Buffer(inputParameter, tech, cell);
 	GhTree = new HTree(inputParameter, tech, cell);
 	Gaccumulation = new AdderTree(inputParameter, tech, cell);
@@ -194,7 +194,7 @@ vector<vector<double> > ChipFloorPlan(bool findNumTile, bool findUtilization, bo
 					double maxPESizeNM, double maxTileSizeCM, double numPENM, const vector<int> &pipelineSpeedUp,
 					double *desiredNumTileNM, double *desiredPESizeNM, double *desiredNumTileCM, double *desiredTileSizeCM, double *desiredPESizeCM, int *numTileRow, int *numTileCol) {
 
-
+    cout << "Floorplan" << endl;
 	int numRowPerSynapse, numColPerSynapse;
 	numRowPerSynapse = param->numRowPerSynapse;
 	numColPerSynapse = param->numColPerSynapse;
