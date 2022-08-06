@@ -511,6 +511,8 @@ int main(int argc, char * argv[]) {
 			cout << "************************ Breakdown of Latency and Dynamic Energy *************************" << endl;
 			cout << endl;
 
+			cout << "Linearity test: " << layerReadLatencyWG / (netStructure[i][2]*netStructure[i][5]) << endl;
+
             // My addition
             if (param->rule == "dfa" && chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU < layerReadLatencyAG+layerReadLatencyWG+layerWriteLatencyWU) {
                 chipReadLatencyAG = layerReadLatencyAG;
@@ -931,9 +933,6 @@ int main(int argc, char * argv[]) {
 		cout << "--------------------------------------Chip pipeline Performance---------------------------------" << endl;
 	}
 
-    cout << numComputation << endl;
-    cout << chipLeakageEnergy << endl;
-    cout << chipReadDynamicEnergy+chipLeakageEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG*scalingFactor_WG+chipWriteDynamicEnergyWU << endl;
 	cout << "Energy Efficiency TOPS/W: " << numComputation/((chipReadDynamicEnergy+chipLeakageEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG*scalingFactor_WG+chipWriteDynamicEnergyWU)*1e12) << endl;
 	summaryfile << numComputation/((chipReadDynamicEnergy+chipLeakageEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*scalingFactor_Total*1e12) << ",";
 	// ToDo: Scale?
