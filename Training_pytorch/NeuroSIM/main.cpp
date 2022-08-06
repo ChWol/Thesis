@@ -264,16 +264,16 @@ int main(int argc, char * argv[]) {
 	double flopsBP = 0;
 	for (int i=0; i<netStructure.size(); i++) {
 	    if (i == netStructure.size() - 1) {
-	        flopsBP += netStructure[i][5]*(netStructure[i][2]-1)*2*param->batchSize + netStructure[i][5] * param->batchSize + netStructure[i][5]*2*(param->batchSize-1)*netStructure[i][2] + netStructure[i][5] * param->batchSize;
+	        flopsBP += netStructure[i][5] * 2 * (netStructure[i][2] - 1) * param->batchSize + netStructure[i][5] * param->batchSize + netStructure[i][5] * 2 * (param->batchSize - 1) * netStructure[i][2] + netStructure[i][5] * param->batchSize;
 	    }
 	    else {
-	        flopsBP += num_classes * 2 * (param->batchSize-1) * netStructure[i][2];
+	        flopsBP += num_classes * 2 * (param->batchSize - 1) * netStructure[i][2];
 	    }
 	}
 	double flopsDFA = 0;
 	for (int i=0; i<netStructure.size(); i++) {
 	    if (i == netStructure.size() - 1) {
-	        flopsDFA += netStructure[i][5]*2*(num_classes-1)*param->batchSize + netStructure[i][5] * param->batchSize + netStructure[i][5]*2*(param->batchSize-1)*netStructure[i][2] + netStructure[i][5] * param->batchSize;
+	        flopsDFA += netStructure[i][5] * 2 * (num_classes - 1) * param->batchSize + netStructure[i][5] * param->batchSize + netStructure[i][5] * 2 * (param->batchSize - 1) * netStructure[i][2] + netStructure[i][5] * param->batchSize;
 	    }
 	    else {
 	        flopsBP += num_classes * 2 * (param->batchSize-1) * netStructure[i][2];
@@ -289,7 +289,7 @@ int main(int argc, char * argv[]) {
 
 	    // FLOPs approach
 	    scalingFactor_WG = flopsDFA / flopsBP;
-	    scalingFactor_Total = (scalingFactor_WG * numComputation_Forward + numComputation_BP) / (numComputation_Forward + numComputation_BP);
+	    scalingFactor_Total = (scalingFactor_WG * numComputation_BP + numComputation_Forward) / (numComputation_Forward + numComputation_BP);
 	}
 
 	cout << "WG: " << scalingFactor_WG << endl;
