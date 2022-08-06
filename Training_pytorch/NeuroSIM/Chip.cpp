@@ -1170,7 +1170,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
             gradientAccum->CalculateLatency(1e20, 0, ceil(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]/gradientAccum->numAdder));
             gradientAccum->CalculatePower(ceil(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]/gradientAccum->numAdder),
                             MIN(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5], gradientAccum->numAdder));
-            cout << "accum: " << gradientAccums->readLatency << endl;
+            cout << "accum: " << gradientAccum->readLatency << endl;
             *readLatencyWG += gradientAccum->readLatency;
             *readDynamicEnergyWG += gradientAccum->readDynamicEnergy;
             *readLatencyPeakWG += gradientAccum->readLatency;
