@@ -183,12 +183,14 @@ int main(int argc, char * argv[]) {
 	double dfaTiles = 0;
 	double dfaRealMappedMemory = 0;
 	if (param->rule == "dfa") {
-	    double dfaTileRows = ceil(max_layer_output*(double) param->numRowPerSynapse/(double) desiredTileSizeCM);
-        double dfaTileColumns = ceil(num_classes*(double) param->numColPerSynapse/(double) desiredTileSizeCM);
-        dfaTiles = dfaTileRows*dfaTileColumns;
+	    for (int i = 0; i < netStructure.size(); i++) {
+            double dfaTileRows = ceil(netStructure[i][5]*(double) param->numRowPerSynapse/(double) desiredTileSizeCM);
+            double dfaTileColumns = ceil(num_classes*(double) param->numColPerSynapse/(double) desiredTileSizeCM);
+            dfaTiles += dfaTileRows*dfaTileColumns;
 
-        double utilization = (max_layer_output*param->numRowPerSynapse*num_classes*param->numColPerSynapse)/(dfaTiles*desiredTileSizeCM*desiredTileSizeCM);
-        dfaRealMappedMemory = dfaTiles*utilization;
+            double utilization = (netStructure[i][5]*param->numRowPerSynapse*num_classes*param->numColPerSynapse)/(dfaTiles*desiredTileSizeCM*desiredTileSizeCM);
+            dfaRealMappedMemory += dfaTiles*utilization;
+	    }
     }
 
 	cout << "------------------------------ FloorPlan --------------------------------" <<  endl;
