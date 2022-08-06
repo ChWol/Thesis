@@ -1024,6 +1024,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 	*readLatencyAG += GhTree->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
 	*readDynamicEnergyAG += GhTree->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
 
+    cout << "here" << endl;
 	*readLatencyWG = (globalBuffer->readLatency + globalBuffer->writeLatency)*((param->trainingEstimation)==true? 2:0);
 	*readDynamicEnergyWG = (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy)*((param->trainingEstimation)==true? 2:0);
 
@@ -1057,6 +1058,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		*readDynamicEnergy += (dRAM->readDynamicEnergy)*2;
 		*readLatencyAG += (dRAM->readLatency)*2*((layerNumber!=0)==true? 1:0);
 		*readDynamicEnergyAG += (dRAM->readDynamicEnergy)*2*((layerNumber!=0)==true? 1:0);
+		cout << "or here" << endl;
 		*readLatencyWG += (dRAM->readLatency)*2;
 		*readDynamicEnergyWG += (dRAM->readDynamicEnergy)*2;
 		*dramLatency = (dRAM->readLatency)*6*((layerNumber!=0)==true? 6:4); // 2 for forward, 2 for AG, 2 for WG
@@ -1138,6 +1140,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		    *readDynamicEnergyPeakWG = (weightGradientUnit->readDynamicEnergyPeak + weightGradientUnit->writeDynamicEnergyPeak)*actualUsedArray*(netStructure[l][3]*netStructure[l][4]);
 		}
 
+        cout << "last chance" << endl;
 		*readLatencyWG += (*readLatencyPeakWG);
 		*readDynamicEnergyWG += (*readDynamicEnergyPeakWG);
 

@@ -511,8 +511,6 @@ int main(int argc, char * argv[]) {
 			cout << "************************ Breakdown of Latency and Dynamic Energy *************************" << endl;
 			cout << endl;
 
-			cout << "Linearity test: " << layerReadLatencyWG / (num_classes*netStructure[i][5]) << endl;
-
             // My addition
             if (param->rule == "dfa" && chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU < layerReadLatencyAG+layerReadLatencyWG+layerWriteLatencyWU) {
                 chipReadLatencyAG = layerReadLatencyAG;
