@@ -89,6 +89,7 @@ vector<int> ChipDesignInitialize(InputParameter& inputParameter, Technology& tec
 	maxPool = new MaxPooling(inputParameter, tech, cell);
 	dRAM = new DRAM(inputParameter, tech, cell);
 	for (int i = 0; i < netStructure.size(); i++) {
+	    cout << "Test: " << i << endl;
 	    WeightGradientUnit *weightGradientUnit = new WeightGradientUnit(inputParameter, tech, cell);
 	    weightGradientUnits.push_back(weightGradientUnit);
 	    Adder *gradientAccum = new Adder(inputParameter, tech, cell);
