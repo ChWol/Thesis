@@ -544,7 +544,7 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 
 
 
-vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tech, MemCell& cell, double dfaRows, double dfaColumns, double numLayers, double desiredNumTileNM, double numPENM, double desiredPESizeNM, double desiredNumTileCM, double desiredTileSizeCM,
+vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tech, MemCell& cell, double dfaTiles, double numLayers, double desiredNumTileNM, double numPENM, double desiredPESizeNM, double desiredNumTileCM, double desiredTileSizeCM,
 						double desiredPESizeCM, int numTileRow, double *height, double *width, double *CMTileheight, double *CMTilewidth, double *NMTileheight, double *NMTilewidth) {
 
 	vector<double> areaResults;
@@ -599,14 +599,6 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 	double CMTileAreaArray = areaCMTile[5];
 
     // My addition
-	double dfaTiles = 0;
-	if (param->rule == "dfa") {
-	    for (int i = 0; i < netStructure.size(); i++) {
-            double dfaTileRows = ceil(netStructure[i][5]*(double) param->numRowPerSynapse/(double) desiredTileSizeCM);
-            double dfaTileColumns = ceil(dfaColumns*(double) param->numColPerSynapse/(double) desiredTileSizeCM);
-            dfaTiles += dfaTileRows*dfaTileColumns;
-	    }
-    }
 
 	area += CMTileArea*(desiredNumTileCM+dfaTiles);
 	areaIC += CMTileAreaIC*(desiredNumTileCM+dfaTiles);
