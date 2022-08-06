@@ -928,7 +928,7 @@ int main(int argc, char * argv[]) {
 		cout << "--------------------------------------Chip pipeline Performance---------------------------------" << endl;
 	}
 
-	cout << "Energy Efficiency TOPS/W: " << numComputation/((chipReadDynamicEnergy+chipLeakageEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG*scalingFactor_WG+chipWriteDynamicEnergyWU)*scalingFactor_Total*1e12) << endl;
+	cout << "Energy Efficiency TOPS/W: " << numComputation/((chipReadDynamicEnergy+chipLeakageEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG*scalingFactor_WG+chipWriteDynamicEnergyWU)*1e12) << endl;
 	summaryfile << numComputation/((chipReadDynamicEnergy+chipLeakageEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*scalingFactor_Total*1e12) << ",";
 	// ToDo: Scale?
 	cout << "Throughput TOPS: " << numComputation/(chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU)*1e-12 << endl;
@@ -937,7 +937,7 @@ int main(int argc, char * argv[]) {
 	cout << "Throughput FPS: " << 1/(chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU) << endl;
 	summaryfile << 1/(chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU) << ",";
 	cout << "--------------------------------------------------------------------------" << endl;
-	cout << "Peak Energy Efficiency TOPS/W: " << numComputation/((chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG*scalingFactor_WG+chipWriteDynamicEnergyPeakWU)*scalingFactor_Total*1e12) << endl;
+	cout << "Peak Energy Efficiency TOPS/W: " << numComputation/((chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG*scalingFactor_WG+chipWriteDynamicEnergyPeakWU)*1e12) << endl;
 	summaryfile << numComputation/((chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*scalingFactor_Total*1e12) << ",";
 	// ToDo: Scale?
 	cout << "Peak Throughput TOPS: " << numComputation/(chipReadLatencyPeakFW+chipReadLatencyPeakAG+chipReadLatencyPeakWG+chipWriteLatencyPeakWU)*1e-12 << endl;
