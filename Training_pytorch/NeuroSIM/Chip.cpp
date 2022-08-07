@@ -1153,7 +1153,9 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		*bufferDynamicEnergy += (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy);
 		*dramLatency += dRAM->readLatency;
 		*dramDynamicEnergy += dRAM->readDynamicEnergy;
+
         double test = 0;
+        double test2 = 0;
         if (param->rule == "dfa") {
             gradientAccums[l]->CalculateLatency(1e20, 0, ceil(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]/gradientAccums[l]->numAdder));
             gradientAccums[l]->CalculatePower(ceil(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]/gradientAccums[l]->numAdder),
@@ -1161,6 +1163,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
             *readLatencyWG += gradientAccums[l]->readLatency;
             *readDynamicEnergyWG += gradientAccums[l]->readDynamicEnergy;
             test += gradientAccums[l]->readDynamicEnergy;
+            test2 += gradientAccums[l]->readLatency;
             *readLatencyPeakWG += gradientAccums[l]->readLatency;
             *readDynamicEnergyPeakWG += gradientAccums[l]->readDynamicEnergy;
         }
@@ -1174,9 +1177,16 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
             *readDynamicEnergyPeakWG += gradientAccum->readDynamicEnergy;
         }
 
+        cout << "Energy" << endl;
         cout << "DRAM: " << 4 * dRAM->readDynamicEnergy << endl;
         cout << "Peak: " << *readDynamicEnergyPeakWG << endl;
         cout << "Buffer: " << (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy) << endl;
+        cout << "Accumulation: " << test << endl;
+        cout << endl;
+        cout << "Latency" << endl;
+        cout << "DRAM: " << 4 * dRAM->readLatency << endl;
+        cout << "Peak: " << *readLatencyPeakWG << endl;
+        cout << "Buffer: " << (globalBuffer->readLatency + globalBuffer->writeLatency) << endl;
         cout << "Accumulation: " << test << endl;
 
 		// weight gradient also need *batchSize computation
