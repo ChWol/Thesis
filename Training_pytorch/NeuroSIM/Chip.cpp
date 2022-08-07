@@ -1133,7 +1133,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		}
 
 		*readLatencyWG += (*readLatencyPeakWG);
-		*readDynamicEnergyWG += (*readDynamicEnergyPeakWG)*0.01;
+		*readDynamicEnergyWG += (*readDynamicEnergyPeakWG);
 
 		// weight gradient need to be send back to DRAM
 		*readLatencyWG += dRAM->readLatency + (globalBuffer->readLatency + globalBuffer->writeLatency);
@@ -1153,13 +1153,14 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		*bufferDynamicEnergy += (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy);
 		*dramLatency += dRAM->readLatency;
 		*dramDynamicEnergy += dRAM->readDynamicEnergy;
-
+        double test = 0;
         if (param->rule == "dfa") {
             gradientAccums[l]->CalculateLatency(1e20, 0, ceil(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]/gradientAccums[l]->numAdder));
             gradientAccums[l]->CalculatePower(ceil(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]/gradientAccums[l]->numAdder),
                             MIN(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5], gradientAccums[l]->numAdder));
             *readLatencyWG += gradientAccums[l]->readLatency;
-            *readDynamicEnergyWG += gradientAccums[l]->readDynamicEnergy*0.01;
+            *readDynamicEnergyWG += gradientAccums[l]->readDynamicEnergy;
+            test += gradientAccums[l]->readDynamicEnergy;
             *readLatencyPeakWG += gradientAccums[l]->readLatency;
             *readDynamicEnergyPeakWG += gradientAccums[l]->readDynamicEnergy;
         }
@@ -1168,10 +1169,15 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
             gradientAccum->CalculatePower(ceil(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]/gradientAccum->numAdder),
                             MIN(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5], gradientAccum->numAdder));
             *readLatencyWG += gradientAccum->readLatency;
-            *readDynamicEnergyWG += gradientAccum->readDynamicEnergy*0.01;
+            *readDynamicEnergyWG += gradientAccum->readDynamicEnergy;
             *readLatencyPeakWG += gradientAccum->readLatency;
             *readDynamicEnergyPeakWG += gradientAccum->readDynamicEnergy;
         }
+
+        cout << "DRAM: " << 4 * dRAM->readDynamicEnergy << endl;
+        cout << "Peak: " << *readDynamicEnergyPeakWG << endl;
+        cout << "Buffer: " << (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy) << endl;
+        cout << "Accumulation: " << test << endl;
 
 		// weight gradient also need *batchSize computation
 		*readLatencyWG *= param->batchSize;
