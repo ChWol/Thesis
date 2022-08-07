@@ -1133,7 +1133,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		}
 
 		*readLatencyWG += (*readLatencyPeakWG);
-		*readDynamicEnergyWG += (*readDynamicEnergyPeakWG);
+		*readDynamicEnergyWG += (*readDynamicEnergyPeakWG)*0.01;
 
 		// weight gradient need to be send back to DRAM
 		*readLatencyWG += dRAM->readLatency + (globalBuffer->readLatency + globalBuffer->writeLatency);
@@ -1159,7 +1159,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
             gradientAccums[l]->CalculatePower(ceil(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]/gradientAccums[l]->numAdder),
                             MIN(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5], gradientAccums[l]->numAdder));
             *readLatencyWG += gradientAccums[l]->readLatency;
-            *readDynamicEnergyWG += gradientAccums[l]->readDynamicEnergy;
+            *readDynamicEnergyWG += gradientAccums[l]->readDynamicEnergy*0.01;
             *readLatencyPeakWG += gradientAccums[l]->readLatency;
             *readDynamicEnergyPeakWG += gradientAccums[l]->readDynamicEnergy;
         }
@@ -1168,7 +1168,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
             gradientAccum->CalculatePower(ceil(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]/gradientAccum->numAdder),
                             MIN(netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5], gradientAccum->numAdder));
             *readLatencyWG += gradientAccum->readLatency;
-            *readDynamicEnergyWG += gradientAccum->readDynamicEnergy;
+            *readDynamicEnergyWG += gradientAccum->readDynamicEnergy*0.01;
             *readLatencyPeakWG += gradientAccum->readLatency;
             *readDynamicEnergyPeakWG += gradientAccum->readDynamicEnergy;
         }
