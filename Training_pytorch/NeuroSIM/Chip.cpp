@@ -610,11 +610,7 @@ vector<double> ChipCalculateArea(InputParameter& inputParameter, Technology& tec
 	areaADC += CMTileAreaADC*(desiredNumTileCM+dfaTiles);
 	areaAccum += CMTileAreaAccum*(desiredNumTileCM+dfaTiles);
 	areaOther += CMTileAreaOther*(desiredNumTileCM+dfaTiles);
-	areaArray += CMTileAreaArray*(desiredNumTileCM);
-
-    cout << "Test" << endl;
-	cout << CMTileArea << endl;
-	cout << CMTileAreaIC + CMTileAreaADC + CMTileAreaAccum + CMTileAreaOther + CMTileAreaArray << endl;
+	areaArray += CMTileAreaArray*(desiredNumTileCM+dfaTiles);
 
 	*CMTileheight = CMheight;
 	*CMTilewidth = CMwidth;
