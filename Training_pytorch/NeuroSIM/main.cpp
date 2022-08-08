@@ -181,6 +181,7 @@ int main(int argc, char * argv[]) {
 
 	// My addition
 	double dfaTiles = 0;
+	double dfaRealMappedMemory = 0;
 	if (param->rule == "dfa") {
 	    double dfaTileRows = ceil(max_layer_output*(double) param->numRowPerSynapse/(double) desiredTileSizeCM);
         double dfaTileColumns = ceil(num_classes*(double) param->numColPerSynapse/(double) desiredTileSizeCM);
