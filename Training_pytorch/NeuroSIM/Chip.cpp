@@ -1132,7 +1132,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		    *readDynamicEnergyPeakWG = (weightGradientUnit->readDynamicEnergyPeak + weightGradientUnit->writeDynamicEnergyPeak)*actualUsedArray*(netStructure[l][3]*netStructure[l][4]);
 		}
 
-		*readLatencyWG += (*readLatencyPeakWG)*0.01;
+		*readLatencyWG += (*readLatencyPeakWG);
 		*readDynamicEnergyWG += (*readDynamicEnergyPeakWG);
 
 		// weight gradient need to be send back to DRAM
@@ -1180,16 +1180,16 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
         }
 
         cout << "Energy" << endl;
-        cout << "DRAM: " << 4 * dRAM->readDynamicEnergy << endl;
-        cout << "Peak: " << *readDynamicEnergyPeakWG << endl;
-        cout << "Buffer: " << (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy) << endl;
-        cout << "Accumulation: " << test << endl;
+        cout << "DRAM: " << 4 * dRAM->readDynamicEnergy * (param->batchSize * param->numIteration) << endl;
+        cout << "Peak: " << *readDynamicEnergyPeakWG * (param->batchSize * param->numIteration) << endl;
+        cout << "Buffer: " << (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy) * (param->batchSize * param->numIteration) << endl;
+        cout << "Accumulation: " << test * (param->batchSize * param->numIteration) << endl;
         cout << endl;
         cout << "Latency" << endl;
-        cout << "DRAM: " << 4 * dRAM->readLatency << endl;
-        cout << "Peak: " << *readLatencyPeakWG << endl;
-        cout << "Buffer: " << (globalBuffer->readLatency + globalBuffer->writeLatency) << endl;
-        cout << "Accumulation: " << test << endl;
+        cout << "DRAM: " << 4 * dRAM->readLatency * (param->batchSize * param->numIteration) << endl;
+        cout << "Peak: " << *readLatencyPeakWG * (param->batchSize * param->numIteration) << endl;
+        cout << "Buffer: " << (globalBuffer->readLatency + globalBuffer->writeLatency) * (param->batchSize * param->numIteration) << endl;
+        cout << "Accumulation: " << test * (param->batchSize * param->numIteration) << endl;
 
 		// weight gradient also need *batchSize computation
 		*readLatencyWG *= param->batchSize;
