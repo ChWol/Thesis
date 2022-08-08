@@ -169,7 +169,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 
 			// My addition
 			/* Transpose Peripheral for BP */
-				if (trainingEstimation) {
+			if (trainingEstimation && param->rule == "bp") {
 				wlDecoderBP.Initialize(REGULAR_ROW, (int)ceil(log2(numCol)), false, false);
 				senseAmpBP.Initialize(numCol, false, cell.minSenseVoltage, lengthCol/numRow, clkFreq, numReadCellPerOperationNeuro);
 				int adderBit = (int)ceil(log2(numCol)) + 1;
@@ -203,7 +203,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 				shiftAddInput.Initialize(ceil(numCol/numColMuxed), log2(levelOutput)+numCellPerSynapse, clkFreq, spikingMode, numReadPulse);
 			}
 			// My Addition
-				if (trainingEstimation) {
+			if (trainingEstimation && param->rule == "bp") {
 				wlSwitchMatrixBP.Initialize(ROW_MODE, numCol, resCol, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, 1, clkFreq);
 				if (parallelBP) {
 					if (numRowMuxedBP>1) {
@@ -351,7 +351,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 
 			/* Transpose Peripheral for BP */
 			// My addition
-				if (trainingEstimation) {
+			if (trainingEstimation && param->rule == "bp") {
 				if (numRowMuxedBP>1) {
 					muxBP.Initialize(ceil(numRow/numRowMuxedBP), numRowMuxedBP, resTg, FPGA);
 					muxDecoderBP.Initialize(REGULAR_ROW, (int)ceil(log2(numRowMuxedBP)), true, false);
@@ -404,7 +404,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 
 			/* Transpose Peripheral for BP */
 			// My addition
-				if (trainingEstimation) {
+			if (trainingEstimation && param->rule == "bp") {
 				if (numRowMuxedBP>1) {
 					muxBP.Initialize(ceil(numRow/numRowMuxedBP), numRowMuxedBP, cell.resMemCellOn/numCol, FPGA);
 					muxDecoderBP.Initialize(REGULAR_ROW, (int)ceil(log2(numRowMuxedBP)), true, false);
@@ -554,7 +554,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					wlDecoderBP.CalculateArea(NULL, widthArray, NONE);
 					senseAmpBP.CalculateArea(heightArray, NULL, NONE);
 					dffBP.CalculateArea(heightArray, NULL, NONE);
@@ -610,7 +610,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					wlSwitchMatrixBP.CalculateArea(NULL, widthArray, NONE);
 
 					if (parallelBP) {
@@ -761,7 +761,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					if (numRowMuxedBP>1) {
 						muxBP.CalculateArea(heightArray, NULL, NONE);
 						muxDecoderBP.CalculateArea(NULL, NULL, NONE);
@@ -836,7 +836,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					if (numRowMuxedBP>1) {
 						muxBP.CalculateArea(heightArray, NULL, NONE);
 						muxDecoderBP.CalculateArea(NULL, NULL, NONE);
@@ -1038,7 +1038,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						int numReadOperationPerCol = (int)ceil((double)numCol/numReadCellPerOperationNeuro);
@@ -1138,7 +1138,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						int numReadOperationPerCol = (int)ceil((double)numCol/numReadCellPerOperationNeuro);
@@ -1421,7 +1421,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						double capRow = lengthRow * 0.2e-15/1e-6 + CalculateDrainCap(cell.widthAccessCMOS * tech.featureSize, NMOS, cell.widthInFeatureSize * tech.featureSize, tech) * numCol;
@@ -1521,7 +1521,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						double capRow = lengthRow * 0.2e-15/1e-6 + CalculateDrainCap(cell.widthAccessCMOS * tech.featureSize, NMOS, cell.widthInFeatureSize * tech.featureSize, tech) * numCol;
@@ -1790,7 +1790,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
 						int numReadOperationPerCol = numRow / numReadCellPerOperationNeuro;
@@ -1888,7 +1888,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
 						if (parallelBP) {
@@ -2169,7 +2169,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
 						readDynamicEnergyArray = 0;
@@ -2300,7 +2300,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
 						if (parallelBP) {
