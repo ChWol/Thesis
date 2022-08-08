@@ -181,16 +181,13 @@ int main(int argc, char * argv[]) {
 
 	// My addition
 	double dfaTiles = 0;
-	double dfaRealMappedMemory = 0;
 	if (param->rule == "dfa") {
-	    for (int i = 0; i < netStructure.size(); i++) {
-            double dfaTileRows = ceil(netStructure[i][5]*(double) param->numRowPerSynapse/(double) desiredTileSizeCM);
-            double dfaTileColumns = ceil(num_classes*(double) param->numColPerSynapse/(double) desiredTileSizeCM);
-            dfaTiles += dfaTileRows*dfaTileColumns;
+	    double dfaTileRows = ceil(max_layer_output*(double) param->numRowPerSynapse/(double) desiredTileSizeCM);
+        double dfaTileColumns = ceil(num_classes*(double) param->numColPerSynapse/(double) desiredTileSizeCM);
+        dfaTiles = dfaTileRows*dfaTileColumns;
 
-            double utilization = (netStructure[i][5]*param->numRowPerSynapse*num_classes*param->numColPerSynapse)/(dfaTiles*desiredTileSizeCM*desiredTileSizeCM);
-            dfaRealMappedMemory += dfaTiles*utilization;
-	    }
+        double utilization = (max_layer_output*param->numRowPerSynapse*num_classes*param->numColPerSynapse)/(dfaTiles*desiredTileSizeCM*desiredTileSizeCM);
+        dfaRealMappedMemory = dfaTiles*utilization;
     }
 
 	cout << "------------------------------ FloorPlan --------------------------------" <<  endl;
@@ -278,7 +275,7 @@ int main(int argc, char * argv[]) {
 	        flopsDFA += netStructure[i][5] * 2 * (num_classes - 1) * param->batchSize + netStructure[i][5] * param->batchSize + netStructure[i][5] * 2 * (param->batchSize - 1) * netStructure[i][2] + netStructure[i][5] * param->batchSize;
 	    }
 	    else {
-	        flopsBP += num_classes * 2 * (param->batchSize-1) * netStructure[i][2];
+	        flopsDFA += num_classes * 2 * (param->batchSize-1) * netStructure[i][2];
 	    }
 	}
 
@@ -311,7 +308,7 @@ int main(int argc, char * argv[]) {
 	double NMTilewidth = 0;
 	vector<double> chipAreaResults;
 
-	chipAreaResults = ChipCalculateArea(inputParameter, tech, cell, dfaTiles, netStructure.size(), desiredNumTileNM, numPENM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow,
+	chipAreaResults = ChipCalculateArea(inputParameter, tech, cell, max_layer_output, num_classes, netStructure.size(), desiredNumTileNM, numPENM, desiredPESizeNM, desiredNumTileCM, desiredTileSizeCM, desiredPESizeCM, numTileRow,
 					&chipHeight, &chipWidth, &CMTileheight, &CMTilewidth, &NMTileheight, &NMTilewidth);
 	chipArea = chipAreaResults[0];
 	chipAreaIC = chipAreaResults[1];
