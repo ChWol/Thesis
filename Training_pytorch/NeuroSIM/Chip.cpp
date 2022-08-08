@@ -438,7 +438,7 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 		}
 		else {
             int numMemInRow = (netStructure[maxIFMLayer][0]-netStructure[maxIFMLayer][3]+1)*(netStructure[maxIFMLayer][1]-netStructure[maxIFMLayer][4]+1);
-            int numMemInCol = 10*param->numBitInput;
+            int numMemInCol = netStructure[maxIFMLayer][2]*param->numBitInput;
             weightGradientUnit->Initialize(numMemInRow, numMemInCol);
 		}
 
@@ -1040,6 +1040,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		// Limited by global buffer, the weight gradient will be sent to DRAM and then grab back to be accumulated across batch
 		int dataLoadIn = (netStructure[l][0])*(netStructure[l][1])*param->numBitInput;
 		int dataLoadWeight;
+		// ToDo: Change this?
 		if (param->rule == "dfa") {
 	        dataLoadWeight = netStructure[l][2]*netStructure[l][3]*netStructure[l][4]*netStructure[l][5]*weightGradientUnits[l]->outPrecision;
 		}
@@ -1095,6 +1096,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		globalBuffer->writeLatency /= MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width));
 
 		// calculation of weight gradient
+		// ToDo: This is probably the decisive part, but no dram included here, but before for getting the matrix, we should get B instead of W
 		if (param->rule == "dfa") {
             weightGradientUnits[l]->CalculateLatency(netStructure[l][5], (netStructure[l][0]-netStructure[l][3]+1)*(netStructure[l][1]-netStructure[l][4]+1)*param->numBitInput);
             weightGradientUnits[l]->CalculatePower(netStructure[l][5], (netStructure[l][0]-netStructure[l][3]+1)*(netStructure[l][1]-netStructure[l][4]+1)*param->numBitInput);
@@ -1104,6 +1106,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		    weightGradientUnit->CalculatePower(netStructure[l][5], (netStructure[l][0]-netStructure[l][3]+1)*(netStructure[l][1]-netStructure[l][4]+1)*param->numBitInput);
 		}
 		double thisMatrixRow = (netStructure[l][0]-netStructure[l][3]+1)*(netStructure[l][1]-netStructure[l][4]+1);
+		// ToDo: Might change this
 		double thisMatrixCol = netStructure[l][2]*param->numBitInput;
 		double arrayNeedRow = ceil(thisMatrixRow/param->numRowSubArrayWG)==0? 1:ceil(thisMatrixRow/param->numRowSubArrayWG);
 		double arrayNeedCol = ceil(thisMatrixCol/param->numColSubArrayWG)==0? 1:ceil(thisMatrixCol/param->numColSubArrayWG);
