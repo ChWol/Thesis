@@ -432,13 +432,13 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 		if (param->rule == "dfa") {
             for (int i = 0; i < weightGradientUnits.size(); i++) {
                 int numMemInRow = (netStructure[i][0]-netStructure[i][3]+1)*(netStructure[i][1]-netStructure[i][4]+1);
-                int numMemInCol = 10*param->numBitInput;
+                int numMemInCol = netStructure[i][2]*param->numBitInput;
                 weightGradientUnits[i]->Initialize(numMemInRow, numMemInCol);
             }
 		}
 		else {
             int numMemInRow = (netStructure[maxIFMLayer][0]-netStructure[maxIFMLayer][3]+1)*(netStructure[maxIFMLayer][1]-netStructure[maxIFMLayer][4]+1);
-            int numMemInCol = netStructure[maxIFMLayer][2]*param->numBitInput;
+            int numMemInCol = 10*param->numBitInput;
             weightGradientUnit->Initialize(numMemInRow, numMemInCol);
 		}
 
