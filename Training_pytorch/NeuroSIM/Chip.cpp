@@ -1019,6 +1019,10 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 	*readDynamicEnergyAG += GhTree->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
 
 	*readLatencyWG = (globalBuffer->readLatency + globalBuffer->writeLatency)*((param->trainingEstimation)==true? 2:0);
+	double test_BufferL = (globalBuffer->readLatency + globalBuffer->writeLatency)*((param->trainingEstimation)==true? 2:0);
+	double test_BufferE = (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy)*((param->trainingEstimation)==true? 2:0);;
+	double test_dramL = 0;
+	double test_dramE = 0;
 	*readDynamicEnergyWG = (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy)*((param->trainingEstimation)==true? 2:0);
 
 	int dataLoadIn = (netStructure[0][0])*(netStructure[0][1])*param->numBitInput;
@@ -1052,7 +1056,9 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		*readLatencyAG += (dRAM->readLatency)*2*((layerNumber!=0)==true? 1:0);
 		*readDynamicEnergyAG += (dRAM->readDynamicEnergy)*2*((layerNumber!=0)==true? 1:0);
 		*readLatencyWG += (dRAM->readLatency)*2;
+		test_dramL += (dRAM->readLatency)*2;
 		*readDynamicEnergyWG += (dRAM->readDynamicEnergy)*2;
+		test_dramE += (dRAM->readDynamicEnergy)*2;
 		*dramLatency = (dRAM->readLatency)*6*((layerNumber!=0)==true? 6:4); // 2 for forward, 2 for AG, 2 for WG
 		*dramDynamicEnergy = (dRAM->readDynamicEnergy)*6*((layerNumber!=0)==true? 6:4);
 
@@ -1137,7 +1143,11 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 
 		// weight gradient need to be send back to DRAM
 		*readLatencyWG += dRAM->readLatency + (globalBuffer->readLatency + globalBuffer->writeLatency);
+		test_dramL += dRAM->readLatency;
+		test_BufferL += (globalBuffer->readLatency + globalBuffer->writeLatency);
 		*readDynamicEnergyWG += dRAM->readDynamicEnergy + (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy);
+		test_dramE += dRAM->readDynamicEnergy;
+		test_BufferE += (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy);
 		// Data Transfer during Weight Gradient
 		*bufferLatency += (globalBuffer->readLatency + globalBuffer->writeLatency);
 		*bufferDynamicEnergy += (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy);
@@ -1147,7 +1157,11 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		// Before weight update: accumulation of weight gradient
 		// need to load weight gradient data from DRAM back to chip
 		*readLatencyWG += dRAM->readLatency + (globalBuffer->readLatency + globalBuffer->writeLatency);
+		test_dramL += dRAM->readLatency;
+		test_BufferL += (globalBuffer->readLatency + globalBuffer->writeLatency);
 		*readDynamicEnergyWG += dRAM->readDynamicEnergy + (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy);
+		test_dramE += dRAM->readDynamicEnergy;
+		test_BufferE += (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy);
 		// Data Transfer before weight update
 		*bufferLatency += (globalBuffer->readLatency + globalBuffer->writeLatency);
 		*bufferDynamicEnergy += (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy);
@@ -1180,15 +1194,15 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
         }
 
         cout << "Energy" << endl;
-        cout << "DRAM: " << 4 * dRAM->readDynamicEnergy * (param->batchSize * param->numIteration) << endl;
+        cout << "DRAM: " << test_dramE * (param->batchSize * param->numIteration) << endl;
         cout << "Peak: " << *readDynamicEnergyPeakWG * (param->batchSize * param->numIteration) << endl;
-        cout << "Buffer: " << (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy) * (param->batchSize * param->numIteration) << endl;
+        cout << "Buffer: " << test_BufferE * (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy) * (param->batchSize * param->numIteration) << endl;
         cout << "Accumulation: " << test * (param->batchSize * param->numIteration) << endl;
         cout << endl;
         cout << "Latency" << endl;
-        cout << "DRAM: " << 4 * dRAM->readLatency * (param->batchSize * param->numIteration) << endl;
+        cout << "DRAM: " << test_dramL * (param->batchSize * param->numIteration) << endl;
         cout << "Peak: " << *readLatencyPeakWG * (param->batchSize * param->numIteration) << endl;
-        cout << "Buffer: " << (globalBuffer->readLatency + globalBuffer->writeLatency) * (param->batchSize * param->numIteration) << endl;
+        cout << "Buffer: " << test_BufferL * (param->batchSize * param->numIteration) << endl;
         cout << "Accumulation: " << test * (param->batchSize * param->numIteration) << endl;
 
 		// weight gradient also need *batchSize computation
