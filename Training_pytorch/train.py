@@ -311,6 +311,8 @@ try:
                 summary_out = pd.read_csv("Summary.csv").to_dict()
                 log_input = {"Epoch": epoch + 1}
                 for key, value in summary_out.items():
+                    if key == "Chip total Latency (ns)":
+                        log_input[key] += value[0]
                     log_input[key] = value[0]
                 wandb.log(log_input)
 
