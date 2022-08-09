@@ -169,7 +169,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 
 			// My addition
 			/* Transpose Peripheral for BP */
-			if (trainingEstimation && param->rule == "bp") {
+			if (trainingEstimation) {
 				wlDecoderBP.Initialize(REGULAR_ROW, (int)ceil(log2(numCol)), false, false);
 				senseAmpBP.Initialize(numCol, false, cell.minSenseVoltage, lengthCol/numRow, clkFreq, numReadCellPerOperationNeuro);
 				int adderBit = (int)ceil(log2(numCol)) + 1;
@@ -203,7 +203,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 				shiftAddInput.Initialize(ceil(numCol/numColMuxed), log2(levelOutput)+numCellPerSynapse, clkFreq, spikingMode, numReadPulse);
 			}
 			// My Addition
-			if (trainingEstimation && param->rule == "bp") {
+			if (trainingEstimation) {
 				wlSwitchMatrixBP.Initialize(ROW_MODE, numCol, resCol, true, false, activityRowRead, activityColWrite, numWriteCellPerOperationMemory, numWriteCellPerOperationNeuro, 1, clkFreq);
 				if (parallelBP) {
 					if (numRowMuxedBP>1) {
@@ -351,7 +351,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 
 			/* Transpose Peripheral for BP */
 			// My addition
-			if (trainingEstimation && param->rule == "bp") {
+			if (trainingEstimation) {
 				if (numRowMuxedBP>1) {
 					muxBP.Initialize(ceil(numRow/numRowMuxedBP), numRowMuxedBP, resTg, FPGA);
 					muxDecoderBP.Initialize(REGULAR_ROW, (int)ceil(log2(numRowMuxedBP)), true, false);
@@ -404,7 +404,7 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 
 			/* Transpose Peripheral for BP */
 			// My addition
-			if (trainingEstimation && param->rule == "bp") {
+			if (trainingEstimation) {
 				if (numRowMuxedBP>1) {
 					muxBP.Initialize(ceil(numRow/numRowMuxedBP), numRowMuxedBP, cell.resMemCellOn/numCol, FPGA);
 					muxDecoderBP.Initialize(REGULAR_ROW, (int)ceil(log2(numRowMuxedBP)), true, false);
