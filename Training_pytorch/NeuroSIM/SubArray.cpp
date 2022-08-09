@@ -1499,20 +1499,13 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				}
 
 				// Read
-				cout << "Test" << endl;
 				readLatency = 0;
 				readLatency += MAX(wlNewSwitchMatrix.readLatency + wlSwitchMatrix.readLatency, ( ((numColMuxed > 1)==true? (mux.readLatency+muxDecoder.readLatency):0) )/numReadPulse);
-				cout << readLatency << endl;
 				readLatency += multilevelSenseAmp.readLatency;
-				cout << readLatency << endl;
 				readLatency += multilevelSAEncoder.readLatency;
-				cout << readLatency << endl;
 				readLatency += shiftAddInput.readLatency + shiftAddWeight.readLatency;
-				cout << readLatency << endl;
 				readLatency += colDelay/numReadPulse;
-				cout << readLatency << endl;
 				readLatency += sarADC.readLatency;
-                cout << readLatency << endl;
 
 				readLatencyADC = multilevelSenseAmp.readLatency + multilevelSAEncoder.readLatency + sarADC.readLatency;
 				readLatencyAccum = shiftAddInput.readLatency + shiftAddWeight.readLatency;

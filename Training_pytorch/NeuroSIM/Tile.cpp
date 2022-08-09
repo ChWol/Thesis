@@ -397,7 +397,8 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 											&peLatencyADC, &peLatencyAccum, &peLatencyOther, &peEnergyADC, &peEnergyAccum, &peEnergyOther,
 											&peReadLatencyPeakFW, &peReadDynamicEnergyPeakFW, &peReadLatencyPeakAG, &peReadDynamicEnergyPeakAG,
 											&peWriteLatencyPeakWU, &peWriteDynamicEnergyPeakWU);
-
+                cout << "test" << endl;
+                cout << numPE << endl;
 				*readLatency = PEreadLatency/(numPE*numPE);  // further speed up in PE level
 				*readDynamicEnergy = PEreadDynamicEnergy;   // since subArray.cpp takes all input vectors, no need to *numPE here
 				*readLatencyAG = PEreadLatencyAG/(numPE*numPE);
