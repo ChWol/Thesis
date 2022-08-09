@@ -142,6 +142,8 @@ try:
     neurosim_time = 0
     for epoch in range(args.epochs):
         split_time = time.time()
+        print(epoch)
+        print("Split: {}".format(split_time))
         model.train()
 
         velocity = {}
@@ -256,6 +258,7 @@ try:
                 h = h + 1
 
         accumulated_time += time.time() - split_time
+        print("Split end: {}".format(split_time))
         if epoch % args.test_interval == 0:
             model.eval()
             test_loss = 0
@@ -310,6 +313,7 @@ try:
                 log_input = {"Epoch": epoch + 1, "GPU time": accumulated_time}
                 for key, value in summary_out.items():
                     if key == "Chip total Latency (ns)":
+                        print("We are here")
                         neurosim_time += value[0]
                         log_input[key] = neurosim_time
                     log_input[key] = value[0]
