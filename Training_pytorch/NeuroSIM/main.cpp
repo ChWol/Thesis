@@ -441,8 +441,8 @@ int main(int argc, char * argv[]) {
 			layerfile << layerReadDynamicEnergyAG*1e12 << ",";
 			cout << "layer" << i+1 << "'s readLatency of Weight Gradient is: " << layerReadLatencyWG*1e9 << "ns" << endl;
 			layerfile << layerReadLatencyWG*1e9 << ",";
-			cout << "layer" << i+1 << "'s readDynamicEnergy of Weight Gradient is: " << layerReadDynamicEnergyWG<< "pJ" << endl;
-			layerfile << layerReadDynamicEnergyWG << ",";
+			cout << "layer" << i+1 << "'s readDynamicEnergy of Weight Gradient is: " << layerReadDynamicEnergyWG*1e12<< "pJ" << endl;
+			layerfile << layerReadDynamicEnergyWG*1e12<< ",";
 			cout << "layer" << i+1 << "'s writeLatency of Weight Update is: " << layerWriteLatencyWU*1e9 << "ns" << endl;
 			layerfile << layerWriteLatencyWU*1e9 << ",";
 			cout << "layer" << i+1 << "'s writeDynamicEnergy of Weight Update is: " << layerWriteDynamicEnergyWU*1e12 << "pJ" << endl;
@@ -791,7 +791,7 @@ int main(int argc, char * argv[]) {
 
     ofstream summaryfile;
     summaryfile.open("Summary.csv", ios::out);
-    summaryfile << "Memory Utilization (%), Chip Area (um^2), Chip total CIM array (um^2), Total IC Area on chip (um^2), Total ADC Area on chip (um^2), Total Accumulation Circuits on chip (um^2), " <<
+    summaryfile << "Scaling WG, Scaling Total, Memory Utilization (%), Chip Area (um^2), Chip total CIM array (um^2), Total IC Area on chip (um^2), Total ADC Area on chip (um^2), Total Accumulation Circuits on chip (um^2), " <<
       "Other Peripheries (um^2), Weight Gradient Calculation (um^2), Chip Read Latency of Forward (ns), Chip Read Dynamic Energy of Forward (pJ), " <<
       "Chip Read Latency of Activation Gradient (ns), Chip Read Dynamic Energy of Activation Gradient (pJ), Chip Read Latency of Weight Gradient (ns), " <<
       "Chip Read Dynamic Energy of Weight Gradient (pJ), Chip Write Latency of Weight Update (ns), Chip Write Dynamic Energy of Weight Update (pJ), " <<
@@ -806,6 +806,8 @@ int main(int argc, char * argv[]) {
       "DRAM data transfer Dynamic Energy (pJ), Energy Efficiency TOPS/W, Throughput TOPS, Throughput FPS, Peak Energy Efficiency TOPS/W, " <<
       "Peak Throughput TOPS, Peak Throughput FPS" << endl;
 
+    summaryfile << scalingFactor_WG << ", ";
+    summaryfile << scalingFactor_Total << ", ";
     summaryfile << realMappedMemory/totalNumTile*100 << ", ";
 	cout << "------------------------------ Summary --------------------------------" <<  endl;
 	cout << endl;
