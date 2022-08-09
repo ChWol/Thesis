@@ -512,8 +512,6 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 
 		} else {
 			// no duplication --> tell PE to further partition the weight and grab data (redefine a few data-grab start-point)
-			cout << "test" << endl;
-            cout << numPE << endl;
 			for (int i=0; i<numPE; i++) {
 				for (int j=0; j<numPE; j++) {
 					// each cycle assign to different PE
@@ -537,6 +535,9 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 												&peReadLatencyPeakFW, &peReadDynamicEnergyPeakFW, &peReadLatencyPeakAG, &peReadDynamicEnergyPeakAG,
 												&peWriteLatencyPeakWU, &peWriteDynamicEnergyPeakWU);
 					}
+					cout << "test" << endl;
+					cout << PEreadLatency << endl;
+					cout << (*readLatency) << endl;
 					*readLatency = MAX(PEreadLatency, (*readLatency));
 					*readDynamicEnergy += PEreadDynamicEnergy;
 					*readLatencyAG = MAX(PEreadLatencyAG, (*readLatencyAG));
@@ -573,6 +574,8 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 
 			accumulationCM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), numPE, 0);
 			accumulationCM->CalculatePower((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), numPE);
+			cout "test 2" << endl;
+			cout << accumulationCM->readLatency << endl;
 			*readLatency += accumulationCM->readLatency;
 			*readLatencyAG += accumulationCM->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
 			*readLatencyPeakFW += accumulationCM->readLatency;
@@ -602,6 +605,8 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 			} else {
 				sigmoidCM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse)/sigmoidCM->numEntry);
 				sigmoidCM->CalculatePower((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse)/sigmoidCM->numEntry);
+				cout << "test 3" << endl;
+				cout << sigmoidCM->readLatency << endl;
 				*readLatency += sigmoidCM->readLatency;
 				*readDynamicEnergy += sigmoidCM->readDynamicEnergy;
 				*readLatencyPeakFW += sigmoidCM->readLatency;
@@ -637,6 +642,10 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 		hTreeCM->CalculateLatency(NULL, NULL, NULL, NULL, PEheight, PEwidth, (numBitToLoadOut+numBitToLoadIn)/hTreeCM->busWidth);
 		hTreeCM->CalculatePower(NULL, NULL, NULL, NULL, PEheight, PEwidth, hTreeCM->busWidth, (numBitToLoadOut+numBitToLoadIn)/hTreeCM->busWidth);
 
+        cout << "another one" << endl;
+        cout << inputBufferCM->readLatency + inputBufferCM->writeLatency << endl;
+        cout << outputBufferCM->readLatency + outputBufferCM->writeLatency << endl;
+        cout << hTreeCM->readLatency << endl;
 		*readLatency += (inputBufferCM->readLatency + inputBufferCM->writeLatency);
 		*readDynamicEnergy += inputBufferCM->readDynamicEnergy + inputBufferCM->writeDynamicEnergy;
 		*readLatency += (outputBufferCM->readLatency + outputBufferCM->writeLatency);
