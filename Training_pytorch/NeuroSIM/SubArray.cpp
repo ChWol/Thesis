@@ -1789,7 +1789,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
 						int numReadOperationPerCol = numRow / numReadCellPerOperationNeuro;
@@ -1887,7 +1887,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
 						if (parallelBP) {
@@ -2168,7 +2168,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
 						readDynamicEnergyArray = 0;
@@ -2299,7 +2299,7 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					readDynamicEnergyAG = 0;
 					if (layerNumber != 0) {
 						if (parallelBP) {
