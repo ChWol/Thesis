@@ -554,7 +554,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					wlDecoderBP.CalculateArea(NULL, widthArray, NONE);
 					senseAmpBP.CalculateArea(heightArray, NULL, NONE);
 					dffBP.CalculateArea(heightArray, NULL, NONE);
@@ -610,7 +610,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					wlSwitchMatrixBP.CalculateArea(NULL, widthArray, NONE);
 
 					if (parallelBP) {
@@ -761,7 +761,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					if (numRowMuxedBP>1) {
 						muxBP.CalculateArea(heightArray, NULL, NONE);
 						muxDecoderBP.CalculateArea(NULL, NULL, NONE);
@@ -836,7 +836,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					if (numRowMuxedBP>1) {
 						muxBP.CalculateArea(heightArray, NULL, NONE);
 						muxDecoderBP.CalculateArea(NULL, NULL, NONE);
@@ -1499,13 +1499,20 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				}
 
 				// Read
+				cout << "Test" << endl;
 				readLatency = 0;
 				readLatency += MAX(wlNewSwitchMatrix.readLatency + wlSwitchMatrix.readLatency, ( ((numColMuxed > 1)==true? (mux.readLatency+muxDecoder.readLatency):0) )/numReadPulse);
+				cout << readLatency << endl;
 				readLatency += multilevelSenseAmp.readLatency;
+				cout << readLatency << endl;
 				readLatency += multilevelSAEncoder.readLatency;
+				cout << readLatency << endl;
 				readLatency += shiftAddInput.readLatency + shiftAddWeight.readLatency;
+				cout << readLatency << endl;
 				readLatency += colDelay/numReadPulse;
+				cout << readLatency << endl;
 				readLatency += sarADC.readLatency;
+                cout << readLatency << endl;
 
 				readLatencyADC = multilevelSenseAmp.readLatency + multilevelSAEncoder.readLatency + sarADC.readLatency;
 				readLatencyAccum = shiftAddInput.readLatency + shiftAddWeight.readLatency;
