@@ -121,7 +121,6 @@ if args.scheduler == 1:
 
 best_acc, old_file = 0, None
 accumulated_time = 0
-gradient_accumulated = 0
 t_begin = time.time()
 grad_scale = args.grad_scale
 
@@ -140,6 +139,7 @@ try:
         paramALTD[k] = wage_quantizer.GetParamA(NL_LTD.cpu().numpy()) * args.max_level
         k = k + 1
 
+    neurosim_time = 0
     for epoch in range(args.epochs):
         split_time = time.time()
         model.train()
@@ -158,7 +158,6 @@ try:
             data, target = Variable(data), Variable(target)
             optimizer.zero_grad()
 
-            gradient_time = time.time()
             if args.rule == 'dfa':
                 with torch.no_grad():
                     output = model(data)
@@ -170,7 +169,6 @@ try:
                 error = wage_util.SSE(output, target)
                 loss = (0.5 * (error ** 2)).sum()
                 loss.backward()
-            gradient_accumulated += time.time() - gradient_time
 
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
@@ -309,10 +307,11 @@ try:
                         log_input["Layer {}: {}".format(layer + 1, key)] = result
                 wandb.log(log_input)
                 summary_out = pd.read_csv("Summary.csv").to_dict()
-                log_input = {"Epoch": epoch + 1}
+                log_input = {"Epoch": epoch + 1, "GPU time": accumulated_time}
                 for key, value in summary_out.items():
                     if key == "Chip total Latency (ns)":
-                        log_input[key] += value[0]
+                        neurosim_time += value[0]
+                        log_input[key] = neurosim_time
                     log_input[key] = value[0]
                 wandb.log(log_input)
 
@@ -322,5 +321,4 @@ except Exception as e:
 
     traceback.print_exc()
 finally:
-    wandb.log({'Training time': accumulated_time, 'Gradient time': gradient_accumulated})
     logger("Total Elapse: {:.2f}, Best Result: {:.3f}%".format(time.time() - t_begin, best_acc))
