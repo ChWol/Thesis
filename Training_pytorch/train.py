@@ -309,7 +309,6 @@ try:
                 summary_out = pd.read_csv("Summary.csv").to_dict()
                 log_input = {"Epoch": epoch + 1, "GPU time": accumulated_time}
                 for key, value in summary_out.items():
-                    print(key)
                     if "Chip total Latency (ns)" in key:
                         neurosim_time += value[0]
                         log_input[key] = neurosim_time
