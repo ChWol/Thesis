@@ -167,9 +167,8 @@ void SubArray::Initialize(int _numRow, int _numCol, double _unitWireRes){  //ini
 				shiftAddInput.Initialize(numAdder, adderBit+numCellPerSynapse, clkFreq, spikingMode, numReadPulse);
 			}
 
-			// My addition
 			/* Transpose Peripheral for BP */
-			if (trainingEstimation && param->rule == "bp") {
+			if (trainingEstimation) {
 				wlDecoderBP.Initialize(REGULAR_ROW, (int)ceil(log2(numCol)), false, false);
 				senseAmpBP.Initialize(numCol, false, cell.minSenseVoltage, lengthCol/numRow, clkFreq, numReadCellPerOperationNeuro);
 				int adderBit = (int)ceil(log2(numCol)) + 1;
@@ -1037,7 +1036,6 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				writeLatency += sramWriteDriver.writeLatency;
 
 				/* Transpose Peripheral for BP */
-				// My addition
 				if (trainingEstimation && param->rule == "bp") {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
