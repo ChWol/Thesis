@@ -1104,7 +1104,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		    weightGradientUnit->CalculatePower(netStructure[l][5], (netStructure[l][0]-netStructure[l][3]+1)*(netStructure[l][1]-netStructure[l][4]+1)*param->numBitInput);
 		}
 		double thisMatrixRow = (netStructure[l][0]-netStructure[l][3]+1)*(netStructure[l][1]-netStructure[l][4]+1);
-		// ToDo: Might change this
 		double thisMatrixCol = netStructure[l][2]*param->numBitInput;
 		double arrayNeedRow = ceil(thisMatrixRow/param->numRowSubArrayWG)==0? 1:ceil(thisMatrixRow/param->numRowSubArrayWG);
 		double arrayNeedCol = ceil(thisMatrixCol/param->numColSubArrayWG)==0? 1:ceil(thisMatrixCol/param->numColSubArrayWG);
