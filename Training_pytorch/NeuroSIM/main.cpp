@@ -791,10 +791,10 @@ int main(int argc, char * argv[]) {
     summaryfile << "Scaling WG, Scaling Total, Memory Utilization (%), Chip Area (um^2), Chip total CIM array (um^2), Total IC Area on chip (um^2), Total ADC Area on chip (um^2), Total Accumulation Circuits on chip (um^2), " <<
       "Other Peripheries (um^2), Weight Gradient Calculation (um^2), Chip Read Latency of Forward (ns), Chip Read Dynamic Energy of Forward (pJ), " <<
       "Chip Read Latency of Activation Gradient (ns), Chip Read Dynamic Energy of Activation Gradient (pJ), Chip Read Latency of Weight Gradient (ns), " <<
-      "Chip Read Dynamic Energy of Weight Gradient (pJ), Chip Write Latency of Weight Update (ns), Chip Write Dynamic Energy of Weight Update (pJ), " <<
+      "Chip Read Dynamic Energy of Weight Gradient (pJ), Chip Write Latency of Weight Update (ns), Chip Write Dynamic Energy of Weight Update (pJ)," <<
       "Chip total Latency (ns), Chip total Energy (pJ), Chip PEAK Read Latency of Forward (ns), Chip PEAK Read Dynamic Energy of Forward (ns), " <<
       "Chip PEAK Read Latency of Activation Gradient (ns), Chip PEAK Read Dynamic Energy of Activation Gradient (pJ), Chip PEAK Read Latency of Weight Gradient (ns), " <<
-      "Chip PEAK Read Dynamic Energy of Weight Gradient (pJ), Chip PEAK writeLatency of Weight Update (ns), Chip PEAK writeDynamicEnergy of Weight Update (pJ), " <<
+      "Chip PEAK Read Dynamic Energy of Weight Gradient (pJ), Chip PEAK writeLatency of Weight Update (ns), Chip PEAK writeDynamicEnergy of Weight Update (pJ)," <<
       "Chip PEAK total Latency (ns), Chip PEAK total Energy (pJ), Chip leakage Energy (pJ), Chip leakage Power (uW), ADC Read Latency (ns), " <<
       "Accumulation Circuits Read Latency (ns), Synaptic Array w/o ADC Read Latency  (ns), Buffer Read Latency (ns), Interconnect Read Latency (ns), " <<
       "Weight Gradient Calculation Read Latency (ns), Weight Update Write Latency (ns), DRAM data transfer Latency (ns), ADC Read Dynamic Energy (pJ), " <<
