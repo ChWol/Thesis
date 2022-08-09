@@ -397,8 +397,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 											&peLatencyADC, &peLatencyAccum, &peLatencyOther, &peEnergyADC, &peEnergyAccum, &peEnergyOther,
 											&peReadLatencyPeakFW, &peReadDynamicEnergyPeakFW, &peReadLatencyPeakAG, &peReadDynamicEnergyPeakAG,
 											&peWriteLatencyPeakWU, &peWriteDynamicEnergyPeakWU);
-                cout << "test" << endl;
-                cout << numPE << endl;
+
 				*readLatency = PEreadLatency/(numPE*numPE);  // further speed up in PE level
 				*readDynamicEnergy = PEreadDynamicEnergy;   // since subArray.cpp takes all input vectors, no need to *numPE here
 				*readLatencyAG = PEreadLatencyAG/(numPE*numPE);
@@ -513,6 +512,8 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 
 		} else {
 			// no duplication --> tell PE to further partition the weight and grab data (redefine a few data-grab start-point)
+			cout << "test" << endl;
+            cout << numPE << endl;
 			for (int i=0; i<numPE; i++) {
 				for (int j=0; j<numPE; j++) {
 					// each cycle assign to different PE
