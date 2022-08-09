@@ -574,7 +574,7 @@ void TileCalculatePerformance(const vector<vector<double> > &newMemory, const ve
 
 			accumulationCM->CalculateLatency((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), numPE, 0);
 			accumulationCM->CalculatePower((int)(numInVector/param->numBitInput)*ceil(param->numColMuxed/param->numColPerSynapse), numPE);
-			cout "test 2" << endl;
+			cout << "test 2" << endl;
 			cout << accumulationCM->readLatency << endl;
 			*readLatency += accumulationCM->readLatency;
 			*readLatencyAG += accumulationCM->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
