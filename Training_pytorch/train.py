@@ -62,8 +62,6 @@ parser.add_argument('--initial', default='xavier')
 parser.add_argument('--gradient_analysis', type=int, default=0)
 
 args = parser.parse_args()
-if args.memcelltype == 1:
-    args.cellBit = 1
 args.wl_weight = args.wl_grad = args.cellBit
 args.max_level = 2 ** args.cellBit
 technode_to_width = {7: 14, 10: 14, 14: 22, 22: 32, 32: 40, 45: 50, 65: 100, 90: 200, 130: 200}
@@ -269,8 +267,12 @@ try:
                         relu = 0
                     else:
                         relu = 1
-                    hook_handle_list = hook.hardware_evaluation(model, args.wl_weight, args.wl_activate,
-                                                                epoch, args.batch_size, args.cellBit, args.technode,
+                    if args.memcelltype == 1:
+                        cellBit, wl_weight = 1, args.wl_weight
+                    else:
+                        cellBit, wl_weight = args.cellBit, args.wl_weight
+                    hook_handle_list = hook.hardware_evaluation(model, wl_weight, args.wl_activate,
+                                                                epoch, args.batch_size, cellBit, args.technode,
                                                                 args.wireWidth, relu, args.memcelltype,
                                                                 2 ** args.ADCprecision,
                                                                 args.onoffratio, args.rule)
