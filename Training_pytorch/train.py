@@ -301,14 +301,14 @@ try:
 
             if args.neurosim == 1:
                 call(["/bin/bash", "./layer_record/trace_command.sh"])
-                log_input = {"Epoch": epoch + 1}
+                log_input = {"Epoch": epoch + 1, "Depth": args.network, "Hidden nodes": args.hidden}
                 layer_out = pd.read_csv("Layer.csv").to_dict()
                 for key, value in layer_out.items():
                     for layer, result in value.items():
                         log_input["Layer {}: {}".format(layer + 1, key)] = result
                 wandb.log(log_input)
                 summary_out = pd.read_csv("Summary.csv").to_dict()
-                log_input = {"Epoch": epoch + 1, "GPU time": accumulated_time}
+                log_input = {"Epoch": epoch + 1, "GPU time": accumulated_time, "Depth": args.network, "Hidden nodes": args.hidden}
                 for key, value in summary_out.items():
                     if key == "Chip total Latency (s)":
                         neurosim_time += value[0]
