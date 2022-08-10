@@ -788,7 +788,7 @@ int main(int argc, char * argv[]) {
 
     ofstream summaryfile;
     summaryfile.open("Summary.csv", ios::out);
-    summaryfile << "Scaling WG,Scaling Total,Memory Utilization (%),Chip Area (mm^2),Chip total CIM array (mm^2),Total IC Area on chip (mm^2),Total ADC Area on chip (mm^2),Total Accumulation Circuits on chip (mm^2)," <<
+    summaryfile << "# of DFA Tiles,Scaling WG,Scaling Total,Memory Utilization (%),Chip Area (mm^2),Chip total CIM array (mm^2),Total IC Area on chip (mm^2),Total ADC Area on chip (mm^2),Total Accumulation Circuits on chip (mm^2)," <<
       "Other Peripheries (mm^2),Weight Gradient Calculation (mm^2),Chip Read Latency of Forward (ms),Chip Read Dynamic Energy of Forward (mJ)," <<
       "Chip Read Latency of Activation Gradient (ms),Chip Read Dynamic Energy of Activation Gradient (mJ),Chip Read Latency of Weight Gradient(ms)," <<
       "Chip Read Dynamic Energy of Weight Gradient (mJ),Chip Write Latency of Weight Update (ms),Chip Write Dynamic Energy of Weight Update (mJ)," <<
@@ -803,6 +803,7 @@ int main(int argc, char * argv[]) {
       "DRAM data transfer Dynamic Energy (mJ),Energy Efficiency TOPS/W,Throughput TOPS,Throughput FPS,Peak Energy Efficiency TOPS/W," <<
       "Peak Throughput TOPS,Peak Throughput FPS" << endl;
 
+    summaryfile << dfaTiles << ", ";
     summaryfile << scalingFactor_WG << ", ";
     summaryfile << scalingFactor_Total << ", ";
     summaryfile << realMappedMemory/totalNumTile*100 << ", ";
