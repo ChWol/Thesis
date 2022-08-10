@@ -288,7 +288,7 @@ try:
 
             test_loss = test_loss / len(test_loader)
             acc = 100. * correct / len(test_loader.dataset)
-            wandb.log({'Epoch': epoch + 1, 'Test Accuracy': acc, 'Test Loss': test_loss})
+            wandb.log({'Epoch': epoch + 1, 'Test Accuracy': acc/100, 'Test Loss': test_loss})
             logger('\tEpoch {} Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
                 epoch, test_loss, correct, len(test_loader.dataset), acc))
             accuracy = acc.cpu().data.numpy()

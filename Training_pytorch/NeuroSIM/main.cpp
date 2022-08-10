@@ -209,6 +209,7 @@ int main(int argc, char * argv[]) {
 	cout << endl;
 
 	double totalNumTile = 0;
+	cout << netStructure.size() << endl;
 	for (int i=0; i<netStructure.size(); i++) {
 		cout << "layer" << i+1 << ": " << numTileEachLayer[0][i] * numTileEachLayer[1][i] << endl;
 		totalNumTile += numTileEachLayer[0][i] * numTileEachLayer[1][i];
