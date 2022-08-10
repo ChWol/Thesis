@@ -74,7 +74,7 @@ alpha = 0.1
 
 current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
-wandb.init(project="test", config=args, entity='duke-tum')
+wandb.init(project="test2", config=args, entity='duke-tum')
 wandb.run.name = "{} ({}): {}".format(args.network, args.rule, wandb.run.id)
 
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
@@ -301,14 +301,14 @@ try:
 
             if args.neurosim == 1:
                 call(["/bin/bash", "./layer_record/trace_command.sh"])
-                log_input = {"Epoch": epoch + 1, "Depth": args.network, "Hidden nodes": args.hidden}
+                log_input = {"Epoch": epoch + 1}
                 layer_out = pd.read_csv("Layer.csv").to_dict()
                 for key, value in layer_out.items():
                     for layer, result in value.items():
                         log_input["Layer {}: {}".format(layer + 1, key)] = result
-                wandb.log(log_input)
+                wandb.log(log_input, step=args.network)
                 summary_out = pd.read_csv("Summary.csv").to_dict()
-                log_input = {"Epoch": epoch + 1, "GPU time": accumulated_time, "Depth": args.network, "Hidden nodes": args.hidden}
+                log_input = {"Epoch": epoch + 1, "GPU time": accumulated_time}
                 for key, value in summary_out.items():
                     if key == "Chip total Latency (s)":
                         neurosim_time += value[0]
@@ -320,7 +320,7 @@ try:
                         log_input[key] = energy
                     else:
                         log_input[key] = value[0]
-                wandb.log(log_input)
+                wandb.log(log_input, step=args.network)
 
 
 except Exception as e:
