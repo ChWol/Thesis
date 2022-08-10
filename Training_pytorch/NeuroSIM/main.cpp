@@ -788,20 +788,20 @@ int main(int argc, char * argv[]) {
 
     ofstream summaryfile;
     summaryfile.open("Summary.csv", ios::out);
-    summaryfile << "Scaling WG, Scaling Total, Memory Utilization (%), Chip Area (mm^2), Chip total CIM array (mm^2), Total IC Area on chip (mm^2), Total ADC Area on chip (mm^2), Total Accumulation Circuits on chip (mm^2), " <<
-      "Other Peripheries (mm^2), Weight Gradient Calculation (mm^2), Chip Read Latency of Forward (ms), Chip Read Dynamic Energy of Forward (mJ), " <<
-      "Chip Read Latency of Activation Gradient (ms), Chip Read Dynamic Energy of Activation Gradient (mJ), Chip Read Latency of Weight Gradient (ms), " <<
-      "Chip Read Dynamic Energy of Weight Gradient (mJ), Chip Write Latency of Weight Update (ms), Chip Write Dynamic Energy of Weight Update (mJ)," <<
-      "Chip total Latency (s), Chip total Energy (J), Chip PEAK Read Latency of Forward (ms), Chip PEAK Read Dynamic Energy of Forward (ms), " <<
-      "Chip PEAK Read Latency of Activation Gradient (ms), Chip PEAK Read Dynamic Energy of Activation Gradient (mJ), Chip PEAK Read Latency of Weight Gradient (ms), " <<
-      "Chip PEAK Read Dynamic Energy of Weight Gradient (mJ), Chip PEAK writeLatency of Weight Update (ms), Chip PEAK writeDynamicEnergy of Weight Update (mJ)," <<
-      "Chip PEAK total Latency (s), Chip PEAK total Energy (J), Chip leakage Energy (mJ), Chip leakage Power (uW), ADC Read Latency (ms), " <<
-      "Accumulation Circuits Read Latency (ms), Synaptic Array w/o ADC Read Latency  (ms), Buffer Read Latency (ms), Interconnect Read Latency (ms), " <<
-      "Weight Gradient Calculation Read Latency (ms), Weight Update Write Latency (ms), DRAM data tramsfer Latency (ns), ADC Read Dynamic Energy (mJ), " <<
-      "Accumulation Circuits Read Dynamic Energy (mJ), Synaptic Array w/o ADC Read Dynamic Energy (mJ), Buffer Read Dynamic Energy (mJ), " <<
-      "Interconnect Read Dynamic Energy (mJ), Weight Gradient Calculation Read Dynamic Energy (mJ), Weight Update Write Dynamic Energy (mJ), " <<
-      "DRAM data transfer Dynamic Energy (mJ), Energy Efficiency TOPS/W, Throughput TOPS, Throughput FPS, Peak Energy Efficiency TOPS/W, " <<
-      "Peak Throughput TOPS, Peak Throughput FPS" << endl;
+    summaryfile << "Scaling WG,Scaling Total,Memory Utilization (%),Chip Area (mm^2),Chip total CIM array (mm^2),Total IC Area on chip (mm^2),Total ADC Area on chip (mm^2),Total Accumulation Circuits on chip (mm^2)," <<
+      "Other Peripheries (mm^2),Weight Gradient Calculation (mm^2),Chip Read Latency of Forward (ms),Chip Read Dynamic Energy of Forward (mJ)," <<
+      "Chip Read Latency of Activation Gradient (ms),Chip Read Dynamic Energy of Activation Gradient (mJ),Chip Read Latency of Weight Gradient(ms)," <<
+      "Chip Read Dynamic Energy of Weight Gradient (mJ),Chip Write Latency of Weight Update (ms),Chip Write Dynamic Energy of Weight Update (mJ)," <<
+      "Chip total Latency (s),Chip total Energy (J),Chip PEAK Read Latency of Forward (ms),Chip PEAK Read Dynamic Energy of Forward (ms)," <<
+      "Chip PEAK Read Latency of Activation Gradient (ms),Chip PEAK Read Dynamic Energy of Activation Gradient (mJ),Chip PEAK Read Latency of Weight Gradient (ms)," <<
+      "Chip PEAK Read Dynamic Energy of Weight Gradient (mJ),Chip PEAK writeLatency of Weight Update (ms),Chip PEAK writeDynamicEnergy of Weight Update (mJ)," <<
+      "Chip PEAK total Latency (s),Chip PEAK total Energy (J),Chip leakage Energy (mJ),Chip leakage Power (uW),ADC Read Latency (ms)," <<
+      "Accumulation Circuits Read Latency (ms),Synaptic Array w/o ADC Read Latency (ms), Buffer Read Latency (ms),Interconnect Read Latency (ms)," <<
+      "Weight Gradient Calculation Read Latency (ms),Weight Update Write Latency (ms),DRAM data tramsfer Latency (ns),ADC Read Dynamic Energy (mJ)," <<
+      "Accumulation Circuits Read Dynamic Energy (mJ),Synaptic Array w/o ADC Read Dynamic Energy (mJ),Buffer Read Dynamic Energy (mJ)," <<
+      "Interconnect Read Dynamic Energy (mJ),Weight Gradient Calculation Read Dynamic Energy (mJ),Weight Update Write Dynamic Energy (mJ)," <<
+      "DRAM data transfer Dynamic Energy (mJ),Energy Efficiency TOPS/W,Throughput TOPS,Throughput FPS,Peak Energy Efficiency TOPS/W," <<
+      "Peak Throughput TOPS,Peak Throughput FPS" << endl;
 
     summaryfile << scalingFactor_WG << ", ";
     summaryfile << scalingFactor_Total << ", ";
