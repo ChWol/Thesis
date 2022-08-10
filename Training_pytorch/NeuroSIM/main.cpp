@@ -792,10 +792,10 @@ int main(int argc, char * argv[]) {
       "Other Peripheries (mm^2), Weight Gradient Calculation (mm^2), Chip Read Latency of Forward (ms), Chip Read Dynamic Energy of Forward (mJ), " <<
       "Chip Read Latency of Activation Gradient (ms), Chip Read Dynamic Energy of Activation Gradient (mJ), Chip Read Latency of Weight Gradient (ms), " <<
       "Chip Read Dynamic Energy of Weight Gradient (mJ), Chip Write Latency of Weight Update (ms), Chip Write Dynamic Energy of Weight Update (mJ)," <<
-      "Chip total Latency (s), Chip total Energy (mJ), Chip PEAK Read Latency of Forward (ms), Chip PEAK Read Dynamic Energy of Forward (ms), " <<
+      "Chip total Latency (s), Chip total Energy (J), Chip PEAK Read Latency of Forward (ms), Chip PEAK Read Dynamic Energy of Forward (ms), " <<
       "Chip PEAK Read Latency of Activation Gradient (ms), Chip PEAK Read Dynamic Energy of Activation Gradient (mJ), Chip PEAK Read Latency of Weight Gradient (ms), " <<
       "Chip PEAK Read Dynamic Energy of Weight Gradient (mJ), Chip PEAK writeLatency of Weight Update (ms), Chip PEAK writeDynamicEnergy of Weight Update (mJ)," <<
-      "Chip PEAK total Latency (s), Chip PEAK total Energy (mJ), Chip leakage Energy (mJ), Chip leakage Power (uW), ADC Read Latency (ms), " <<
+      "Chip PEAK total Latency (s), Chip PEAK total Energy (J), Chip leakage Energy (mJ), Chip leakage Power (uW), ADC Read Latency (ms), " <<
       "Accumulation Circuits Read Latency (ms), Synaptic Array w/o ADC Read Latency  (ms), Buffer Read Latency (ms), Interconnect Read Latency (ms), " <<
       "Weight Gradient Calculation Read Latency (ms), Weight Update Write Latency (ms), DRAM data tramsfer Latency (ns), ADC Read Dynamic Energy (mJ), " <<
       "Accumulation Circuits Read Dynamic Energy (mJ), Synaptic Array w/o ADC Read Dynamic Energy (mJ), Buffer Read Dynamic Energy (mJ), " <<
@@ -847,8 +847,8 @@ int main(int argc, char * argv[]) {
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 	cout << "Chip total Latency (per epoch) is: " << (chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU) << "s" << endl;
 	summaryfile << (chipReadLatency+chipReadLatencyAG+chipReadLatencyWG+chipWriteLatencyWU) << ",";
-	cout << "Chip total Energy (per epoch) is: " << (chipReadDynamicEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*1e3 << "mJ" << endl;
-	summaryfile << (chipReadDynamicEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU)*1e3<< ",";
+	cout << "Chip total Energy (per epoch) is: " << (chipReadDynamicEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU) << "J" << endl;
+	summaryfile << (chipReadDynamicEnergy+chipReadDynamicEnergyAG+chipReadDynamicEnergyWG+chipWriteDynamicEnergyWU) << ",";
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 	cout << "Chip PEAK readLatency of Forward (per epoch) is: " << chipReadLatencyPeakFW*1e3 << "ms" << endl;
 	summaryfile << chipReadLatencyPeakFW*1e3 << ",";
@@ -869,8 +869,8 @@ int main(int argc, char * argv[]) {
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 	cout << "Chip PEAK total Latency (per epoch) is: " << (chipReadLatencyPeakFW+chipReadLatencyPeakAG+chipReadLatencyPeakWG+chipWriteLatencyPeakWU) << "s" << endl;
 	summaryfile << (chipReadLatencyPeakFW+chipReadLatencyPeakAG+chipReadLatencyPeakWG+chipWriteLatencyPeakWU) << ",";
-	cout << "Chip PEAK total Energy (per epoch) is: " << (chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*1e3 << "mJ" << endl;
-	summaryfile << (chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU)*1e3 << ",";
+	cout << "Chip PEAK total Energy (per epoch) is: " << (chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU) << "J" << endl;
+	summaryfile << (chipReadDynamicEnergyPeakFW+chipReadDynamicEnergyPeakAG+chipReadDynamicEnergyPeakWG+chipWriteDynamicEnergyPeakWU) << ",";
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 	cout << "Chip leakage Energy is: " << chipLeakageEnergy*1e3 << "mJ" << endl;
 	summaryfile << chipLeakageEnergy*1e3 << ",";

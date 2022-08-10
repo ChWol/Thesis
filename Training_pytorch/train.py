@@ -140,6 +140,7 @@ try:
         k = k + 1
 
     neurosim_time = 0
+    energy = 0
     for epoch in range(args.epochs):
         split_time = time.time()
         model.train()
@@ -309,9 +310,14 @@ try:
                 summary_out = pd.read_csv("Summary.csv").to_dict()
                 log_input = {"Epoch": epoch + 1, "GPU time": accumulated_time}
                 for key, value in summary_out.items():
-                    if key == "Chip total Latency (ns)":
+                    if key == "Chip total Latency (s)":
                         neurosim_time += value[0]
+                        log_input["Epoch latency (s)"] = value[0]
                         log_input[key] = neurosim_time
+                    elif key == "Chip total Energy (J)":
+                        energy += value[0]
+                        log_input["Epoch energy (J)"] = value[0]
+                        log_input[key] = energy
                     else:
                         log_input[key] = value[0]
                 wandb.log(log_input)
