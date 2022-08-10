@@ -74,7 +74,7 @@ alpha = 0.1
 
 current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
-wandb.init(project="test2", config=args, entity='duke-tum')
+wandb.init(project=args.dataset.upper(), config=args, entity='duke-tum')
 wandb.run.name = "{} ({}): {}".format(args.network, args.rule, wandb.run.id)
 
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
@@ -306,7 +306,7 @@ try:
                 for key, value in layer_out.items():
                     for layer, result in value.items():
                         log_input["Layer {}: {}".format(layer + 1, key)] = result
-                wandb.log(log_input, step=args.network)
+                wandb.log(log_input)
                 summary_out = pd.read_csv("Summary.csv").to_dict()
                 log_input = {"Epoch": epoch + 1, "GPU time": accumulated_time}
                 for key, value in summary_out.items():
@@ -320,7 +320,7 @@ try:
                         log_input[key] = energy
                     else:
                         log_input[key] = value[0]
-                wandb.log(log_input, step=args.network)
+                wandb.log(log_input)
 
 
 except Exception as e:
