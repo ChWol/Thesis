@@ -309,10 +309,11 @@ try:
                 summary_out = pd.read_csv("Summary.csv").to_dict()
                 log_input = {"Epoch": epoch + 1, "GPU time": accumulated_time}
                 for key, value in summary_out.items():
-                    if str(key) == "Chip total Latency (ns)":
+                    if key == "Chip total Latency (ns)":
                         neurosim_time += value[0]
                         log_input[key] = neurosim_time
-                    log_input[key] = value[0]
+                    else:
+                        log_input[key] = value[0]
                 wandb.log(log_input)
 
 
