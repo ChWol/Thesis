@@ -118,9 +118,13 @@ trained_with_quantization = True
 # for models, target in test_loader:
 for i, (data, target) in enumerate(test_loader):
     if i == 0:
+        if args.activation == 'sigmoid':
+            relu = 0
+        else:
+            relu = 1
         hook_handle_list = hook.hardware_evaluation(model, args.wl_weight, args.wl_activate,
                                                     0, args.batch_size, args.cellBit, args.technode,
-                                                    args.wireWidth, args.relu, args.memcelltype, 2 ** args.ADCprecision,
+                                                    args.wireWidth, relu, args.memcelltype, 2 ** args.ADCprecision,
                                                     args.onoffratio)
     indx_target = target.clone()
     if args.cuda:
