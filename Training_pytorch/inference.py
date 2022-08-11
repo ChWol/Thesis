@@ -93,14 +93,13 @@ print('Path', args.logdir)
 model_path = (args.logdir + '/best-{}.pth').format(args.epochs - 1)
 
 # models loader and model
-assert args.type in ['cifar10', 'cifar100', 'mnist'], args.type
-if args.type == 'cifar10':
+if args.dataset == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
     model = models.cifar(args=args, logger=logger, num_classes=10, pretrained=model_path)
-if args.type == 'cifar100':
+if args.dataset == 'cifar100':
     train_loader, test_loader = dataset.get100(batch_size=args.batch_size, num_workers=1)
     model = models.cifar(args=args, logger=logger, num_classes=100, pretrained=model_path)
-if args.type == 'mnist':
+if args.dataset == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     model = models.mnist(args=args, logger=logger, pretrained=model_path)
 print(args.cuda)
