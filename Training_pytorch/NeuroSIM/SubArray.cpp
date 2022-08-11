@@ -1037,7 +1037,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				writeLatency += sramWriteDriver.writeLatency;
 
 				/* Transpose Peripheral for BP */
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						int numReadOperationPerCol = (int)ceil((double)numCol/numReadCellPerOperationNeuro);
@@ -1137,7 +1137,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						int numReadOperationPerCol = (int)ceil((double)numCol/numReadCellPerOperationNeuro);
@@ -1420,7 +1420,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						double capRow = lengthRow * 0.2e-15/1e-6 + CalculateDrainCap(cell.widthAccessCMOS * tech.featureSize, NMOS, cell.widthInFeatureSize * tech.featureSize, tech) * numCol;
@@ -1520,7 +1520,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						double capRow = lengthRow * 0.2e-15/1e-6 + CalculateDrainCap(cell.widthAccessCMOS * tech.featureSize, NMOS, cell.widthInFeatureSize * tech.featureSize, tech) * numCol;
@@ -1823,12 +1823,14 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 						readDynamicEnergyAccum += adderBP.readDynamicEnergy + dffBP.readDynamicEnergy + shiftAddBPInput.readDynamicEnergy + shiftAddBPWeight.readDynamicEnergy;
 						readDynamicEnergyOther += wlDecoderBP.readDynamicEnergy;
 
-						leakage += wlDecoderBP.leakage;
-						leakage += prechargerBP.leakage;
-						leakage += adderBP.leakage;
-						leakage += dffBP.leakage;
-						leakage += senseAmpBP.leakage;
-						leakage += shiftAddBPInput.leakage + shiftAddBPWeight.leakage;
+                        if (param->rule == "bp") {
+                            leakage += wlDecoderBP.leakage;
+                            leakage += prechargerBP.leakage;
+                            leakage += adderBP.leakage;
+                            leakage += dffBP.leakage;
+                            leakage += senseAmpBP.leakage;
+                            leakage += shiftAddBPInput.leakage + shiftAddBPWeight.leakage;
+                        }
 					}
 				}
 
@@ -1928,13 +1930,16 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 							readDynamicEnergyAccum += shiftAddBPInput.readDynamicEnergy + shiftAddBPWeight.readDynamicEnergy;
 							readDynamicEnergyOther += wlSwitchMatrixBP.readDynamicEnergy + ( ((numRowMuxedBP > 1)==true? (muxBP.readDynamicEnergy + muxDecoderBP.readDynamicEnergy):0) )/numReadPulseBP;
 
-							leakage += wlSwitchMatrixBP.leakage;
-							leakage += prechargerBP.leakage;
-							leakage += multilevelSenseAmpBP.leakage;
-							leakage += multilevelSAEncoderBP.leakage;
-							leakage += muxBP.leakage;
-							leakage += muxDecoderBP.leakage;
-							leakage += shiftAddBPInput.leakage + shiftAddBPWeight.leakage;
+                            if (param->rule == "bp") {
+                                leakage += wlSwitchMatrixBP.leakage;
+                                leakage += prechargerBP.leakage;
+                                leakage += multilevelSenseAmpBP.leakage;
+                                leakage += multilevelSAEncoderBP.leakage;
+                                leakage += muxBP.leakage;
+                                leakage += muxDecoderBP.leakage;
+                                leakage += shiftAddBPInput.leakage + shiftAddBPWeight.leakage;
+                            }
+
 						} else {
 							int numReadOperationPerCol = numRow / numReadCellPerOperationNeuro;
 
@@ -1966,12 +1971,14 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 							readDynamicEnergyAccum += adderBP.readDynamicEnergy + dffBP.readDynamicEnergy + shiftAddBPInput.readDynamicEnergy + shiftAddBPWeight.readDynamicEnergy;
 							readDynamicEnergyOther += wlSwitchMatrixBP.readDynamicEnergy;
 
-							leakage += wlSwitchMatrixBP.leakage;
-							leakage += prechargerBP.leakage;
-							leakage += adderBP.leakage;
-							leakage += dffBP.leakage;
-							leakage += senseAmpBP.leakage;
-							leakage += shiftAddBPInput.leakage +shiftAddBPWeight.leakage;
+                            if (param->rule == "bp") {
+                                leakage += wlSwitchMatrixBP.leakage;
+                                leakage += prechargerBP.leakage;
+                                leakage += adderBP.leakage;
+                                leakage += dffBP.leakage;
+                                leakage += senseAmpBP.leakage;
+                                leakage += shiftAddBPInput.leakage +shiftAddBPWeight.leakage;
+                            }
 						}
 					}
 				}
@@ -2215,13 +2222,15 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 						readDynamicEnergyAccum += dffBP.readDynamicEnergy + adderBP.readDynamicEnergy + shiftAddBPInput.readDynamicEnergy + shiftAddBPWeight.readDynamicEnergy;
 						readDynamicEnergyOther += slSwitchMatrix.readDynamicEnergy + ( ((numRowMuxedBP > 1)==true? (muxBP.readDynamicEnergy + muxDecoderBP.readDynamicEnergy):0) )/numReadPulseBP;
 
-						leakage += slSwitchMatrix.leakage;
-						leakage += (muxBP.leakage+muxDecoderBP.leakage);
-						leakage += multilevelSenseAmpBP.leakage;
-						leakage += multilevelSAEncoderBP.leakage;
-						leakage += dffBP.leakage;
-						leakage += adderBP.leakage;
-						leakage += shiftAddBPInput.leakage + shiftAddBPWeight.leakage;
+                        if (param->rule == "bp") {
+                            leakage += slSwitchMatrix.leakage;
+                            leakage += (muxBP.leakage+muxDecoderBP.leakage);
+                            leakage += multilevelSenseAmpBP.leakage;
+                            leakage += multilevelSAEncoderBP.leakage;
+                            leakage += dffBP.leakage;
+                            leakage += adderBP.leakage;
+                            leakage += shiftAddBPInput.leakage + shiftAddBPWeight.leakage;
+                        }
 					}
 				}
 
@@ -2341,11 +2350,13 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 							readDynamicEnergyAccum += shiftAddBPInput.readDynamicEnergy + shiftAddBPWeight.readDynamicEnergy;
 							readDynamicEnergyOther += slSwitchMatrix.readDynamicEnergy + ( ((numRowMuxedBP > 1)==true? (muxBP.readDynamicEnergy + muxDecoderBP.readDynamicEnergy):0) )/numReadPulseBP;
 
-							leakage += slSwitchMatrix.leakage;
-							leakage += (muxBP.leakage+muxDecoderBP.leakage);
-							leakage += multilevelSenseAmpBP.leakage;
-							leakage += multilevelSAEncoderBP.leakage;
-							leakage += shiftAddBPInput.leakage + shiftAddBPWeight.leakage;
+                            if (param->rule == "bp") {
+                                leakage += slSwitchMatrix.leakage;
+                                leakage += (muxBP.leakage+muxDecoderBP.leakage);
+                                leakage += multilevelSenseAmpBP.leakage;
+                                leakage += multilevelSAEncoderBP.leakage;
+                                leakage += shiftAddBPInput.leakage + shiftAddBPWeight.leakage;
+                            }
 						} else {
 							readDynamicEnergyArray = 0;
 							readDynamicEnergyArray += capBL * cell.readVoltage * cell.readVoltage * numReadCells; // Selected BLs activityColWrite
@@ -2392,13 +2403,15 @@ void SubArray::CalculatePower(const vector<double> &columnResistance, const vect
 							readDynamicEnergyAccum += dffBP.readDynamicEnergy + adderBP.readDynamicEnergy + shiftAddBPInput.readDynamicEnergy + shiftAddBPWeight.readDynamicEnergy;
 							readDynamicEnergyOther += slSwitchMatrix.readDynamicEnergy + ( ((numRowMuxedBP > 1)==true? (muxBP.readDynamicEnergy + muxDecoderBP.readDynamicEnergy):0) )/numReadPulseBP;
 
-							leakage += slSwitchMatrix.leakage;
-							leakage += (muxBP.leakage+muxDecoderBP.leakage);
-							leakage += multilevelSenseAmpBP.leakage;
-							leakage += multilevelSAEncoderBP.leakage;
-							leakage += dffBP.leakage;
-							leakage += adderBP.leakage;
-							leakage += shiftAddBPInput.leakage + shiftAddBPWeight.leakage;
+                            if (param->rule == "bp") {
+                                leakage += slSwitchMatrix.leakage;
+                                leakage += (muxBP.leakage+muxDecoderBP.leakage);
+                                leakage += multilevelSenseAmpBP.leakage;
+                                leakage += multilevelSAEncoderBP.leakage;
+                                leakage += dffBP.leakage;
+                                leakage += adderBP.leakage;
+                                leakage += shiftAddBPInput.leakage + shiftAddBPWeight.leakage;
+                            }
 						}
 					}
 				}
