@@ -155,6 +155,10 @@ print(args.onoffratio)
 print("variation: ")
 print(args.vari)
 
+print(test_loss)
+print(correct)
+print(acc)
+
 logger('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
     test_loss, correct, len(test_loader.dataset), acc))
 
