@@ -124,8 +124,9 @@ for i, (data, target) in enumerate(test_loader):
             relu = 1
         hook_handle_list = hook.hardware_evaluation(model, args.wl_weight, args.wl_activate,
                                                     0, args.batch_size, args.cellBit, args.technode,
-                                                    args.wireWidth, relu, args.memcelltype, 2 ** args.ADCprecision,
-                                                    args.onoffratio)
+                                                    args.wireWidth, relu, args.memcelltype,
+                                                    2 ** args.ADCprecision,
+                                                    args.onoffratio, args.rule)
     indx_target = target.clone()
     if args.cuda:
         data, target = data.cuda(), target.cuda()
