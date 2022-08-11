@@ -19,7 +19,7 @@ parser = argparse.ArgumentParser(description='Evaluation of Biologically-Plausib
                                              'Hardware Architectures')
 parser.add_argument('--dataset', default='mnist', help='dataset for training')
 parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training')
-parser.add_argument('--epochs', type=int, default=50, help='number of epochs to train')
+parser.add_argument('--epochs', type=int, default=1, help='number of epochs to train')
 parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
 parser.add_argument('--seed', type=int, default=117, help='random seed')
 parser.add_argument('--log_interval', type=int, default=100, help='how many batches to wait before logging training '
@@ -103,7 +103,7 @@ if args.dataset == 'cifar100':
     model = models.cifar(args=args, logger=logger, num_classes=100, pretrained=model_path)
 if args.dataset == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
-    model = models.mnist(args=args, logger=logger, num_classes=100, pretrained=model_path)
+    model = models.mnist(args=args, logger=logger, num_classes=10, pretrained=model_path)
 print(args.cuda)
 if args.cuda:
     model.cuda()
