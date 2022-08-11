@@ -5,6 +5,7 @@ import time
 from utee import wage_util
 from utee import misc
 import torch
+import pandas as pd
 import torch.nn.functional as F
 from torch.autograd import Variable
 from utee import make_path
@@ -13,6 +14,7 @@ from models import dataset
 from models import models
 from datetime import datetime
 from subprocess import call
+import wandb
 
 
 parser = argparse.ArgumentParser(description='Evaluation of Biologically-Plausible Learning Rules on Neuromorphic '
@@ -71,6 +73,9 @@ if args.memcelltype == 1:
 args.inference = 0
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
 args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs', 'gpu', 'ngpu', 'debug'])
+
+wandb.init(project=args.dataset.upper() + "-Inference", config=args, entity='duke-tum')
+wandb.run.name = "{} ({}): {}".format(args.network, args.rule, wandb.run.id)
 
 misc.logger.init(args.logdir, 'test_log' + current_time)
 logger = misc.logger.info
@@ -142,6 +147,7 @@ for i, (data, target) in enumerate(test_loader):
 
 test_loss = test_loss / len(test_loader)  # average over number of mini-batch
 acc = 100. * correct / len(test_loader.dataset)
+wandb.log({'Epoch': epoch + 1, 'Test Accuracy': acc/100, 'Test Loss': test_loss})
 
 print(" --- Hardware Properties --- ")
 print("subArray size: ")
@@ -164,7 +170,21 @@ logger('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
 
 accuracy = acc.cpu().data.numpy()
 
+
+
+
 # Running C++ files for layer estimation
 call(["/bin/bash", "./layer_record/trace_command.sh"])
+log_input = {}
+layer_out = pd.read_csv("Layer.csv").to_dict()
+for key, value in layer_out.items():
+    for layer, result in value.items():
+        log_input["Layer {}: {}".format(layer + 1, key)] = result
+wandb.log(log_input)
+summary_out = pd.read_csv("Summary.csv").to_dict()
+log_input = {}
+for key, value in summary_out.items():
+    log_input[key] = value[0]
+wandb.log(log_input)
 
 finish_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
