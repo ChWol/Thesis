@@ -268,7 +268,7 @@ try:
                     else:
                         relu = 1
                     if args.memcelltype == 1:
-                        cellBit, wl_weight = 1, args.wl_weight
+                        cellBit, wl_weight = 1, 1
                     else:
                         cellBit, wl_weight = args.cellBit, args.wl_weight
                     hook_handle_list = hook.hardware_evaluation(model, wl_weight, args.wl_activate,
