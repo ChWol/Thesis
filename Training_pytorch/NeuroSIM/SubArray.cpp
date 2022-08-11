@@ -554,7 +554,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					wlDecoderBP.CalculateArea(NULL, widthArray, NONE);
 					senseAmpBP.CalculateArea(heightArray, NULL, NONE);
 					dffBP.CalculateArea(heightArray, NULL, NONE);
@@ -610,7 +610,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					wlSwitchMatrixBP.CalculateArea(NULL, widthArray, NONE);
 
 					if (parallelBP) {
@@ -761,7 +761,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					if (numRowMuxedBP>1) {
 						muxBP.CalculateArea(heightArray, NULL, NONE);
 						muxDecoderBP.CalculateArea(NULL, NULL, NONE);
@@ -836,7 +836,7 @@ void SubArray::CalculateArea() {  //calculate layout area for total design
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation) {
+				if (trainingEstimation && param->rule == "bp") {
 					if (numRowMuxedBP>1) {
 						muxBP.CalculateArea(heightArray, NULL, NONE);
 						muxDecoderBP.CalculateArea(NULL, NULL, NONE);
@@ -1037,7 +1037,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 				writeLatency += sramWriteDriver.writeLatency;
 
 				/* Transpose Peripheral for BP */
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						int numReadOperationPerCol = (int)ceil((double)numCol/numReadCellPerOperationNeuro);
@@ -1137,7 +1137,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						int numReadOperationPerCol = (int)ceil((double)numCol/numReadCellPerOperationNeuro);
@@ -1420,7 +1420,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						double capRow = lengthRow * 0.2e-15/1e-6 + CalculateDrainCap(cell.widthAccessCMOS * tech.featureSize, NMOS, cell.widthInFeatureSize * tech.featureSize, tech) * numCol;
@@ -1520,7 +1520,7 @@ void SubArray::CalculateLatency(double columnRes, const vector<double> &columnRe
 
 				/* Transpose Peripheral for BP */
 				// My addition
-				if (trainingEstimation && param->rule == "bp") {
+				if (trainingEstimation) {
 					readLatencyAG = 0;
 					if (layerNumber != 0) {
 						double capRow = lengthRow * 0.2e-15/1e-6 + CalculateDrainCap(cell.widthAccessCMOS * tech.featureSize, NMOS, cell.widthInFeatureSize * tech.featureSize, tech) * numCol;
