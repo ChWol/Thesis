@@ -101,7 +101,7 @@ if args.dataset == 'cifar100':
     model = models.cifar(args=args, logger=logger, num_classes=100, pretrained=model_path)
 if args.dataset == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
-    model = models.mnist(args=args, logger=logger, pretrained=model_path)
+    model = models.mnist(args=args, logger=logger, num_classes=100, pretrained=model_path)
 print(args.cuda)
 if args.cuda:
     model.cuda()
