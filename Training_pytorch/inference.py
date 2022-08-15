@@ -131,7 +131,7 @@ for i, (data, target) in enumerate(test_loader):
                                                     0, args.batch_size, args.cellBit, args.technode,
                                                     args.wireWidth, relu, args.memcelltype,
                                                     2 ** args.ADCprecision,
-                                                    args.onoffratio, args.rule)
+                                                    args.onoffratio, args.rule, args.inference)
     indx_target = target.clone()
     if args.cuda:
         data, target = data.cuda(), target.cuda()
@@ -160,10 +160,6 @@ print("on/off ratio: ")
 print(args.onoffratio)
 print("variation: ")
 print(args.vari)
-
-print(test_loss)
-print(correct)
-print(acc)
 
 logger('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
     test_loss, correct, len(test_loader.dataset), acc))
