@@ -71,7 +71,7 @@ if args.memcelltype == 1:
     args.cellBit = 1
 
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
-args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs', 'onoffratio', 'cellBit', 'subArray', 'ADCprecision'])
+args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs', 'onoffratio', 'cellBit', 'subArray', 'ADCprecision', 'neurosim'])
 
 wandb.init(project=args.dataset.upper() + "-Inference", config=args, entity='duke-tum')
 wandb.run.name = "{} ({}): {}".format(args.network, args.rule, wandb.run.id)
@@ -116,9 +116,9 @@ else:
 
 if args.cuda:
     model.cuda()
+
 best_acc, old_file = 0, None
 t_begin = time.time()
-# ready to go
 model.eval()
 test_loss = 0
 correct = 0
@@ -131,6 +131,10 @@ for i, (data, target) in enumerate(test_loader):
             relu = 0
         else:
             relu = 1
+        if args.memcelltype == 1:
+            cellBit, wl_weight = 1, args.wl_weight
+        else:
+            cellBit, wl_weight = args.cellBit, args.wl_weight
         hook_handle_list = hook.hardware_evaluation(model, args.wl_weight, args.wl_activate,
                                                     0, args.batch_size, args.cellBit, args.technode,
                                                     args.wireWidth, relu, args.memcelltype,
@@ -144,12 +148,12 @@ for i, (data, target) in enumerate(test_loader):
         output = model(data)
         test_loss_i = (0.5 * (wage_util.SSE(output, target) ** 2)).sum()
         test_loss += test_loss_i.data
-        pred = output.data.max(1)[1]  # get the index of the max log-probability
+        pred = output.data.max(1)[1]
         correct += pred.cpu().eq(indx_target).sum()
     if i == 0:
         hook.remove_hook_list(hook_handle_list)
 
-test_loss = test_loss / len(test_loader)  # average over number of mini-batch
+test_loss = test_loss / len(test_loader)
 acc = 100. * correct / len(test_loader.dataset)
 wandb.log({'Test Accuracy': acc/100, 'Test Loss': test_loss})
 
