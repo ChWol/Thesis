@@ -87,7 +87,12 @@ int main(int argc, char * argv[]) {
 	    param->trainingEstimation = false;
 	}
 
-	cout << "Training Estimation: " << param->trainingEstimation << endl;
+	if (param->trainingEstimation) {
+	    cout << "Training" << endl;
+	}
+	else {
+	    cout << "Inference" << endl;
+	}
 
 	param->recalculate_Params(param->wireWidth, param->memcelltype, param->resistanceOff);
 
