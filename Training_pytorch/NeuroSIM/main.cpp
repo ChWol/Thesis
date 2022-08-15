@@ -80,7 +80,7 @@ int main(int argc, char * argv[]) {
 	param->levelOutput = atoi(argv[11]);
 	param->resistanceOff = 240e3*atoi(argv[12]);
 	param->rule = argv[13];
-	if (atoi(argv[14]==0)) {
+	if (atoi(argv[14])==0) {
 	    param->trainingEstimation = true;
 	}
 	else {
