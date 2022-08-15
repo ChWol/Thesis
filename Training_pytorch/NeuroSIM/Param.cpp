@@ -164,7 +164,7 @@ Param::Param() {
 	/****** in training: we initialize bi-direction subArray to calculate forward and gradient calculation of activation ******/
 	/****** the gradient calculation of weight is processed in seperate hardware (SRAM array: since need frequent write and erase) ******/
 
-	trainingEstimation = true; 		// false: only run estimation for inference chip
+	// trainingEstimation = true; 		// false: only run estimation for inference chip
 										// true: run estimation for both inference and training on-chip
 
 	parallelBP = true;          		// false: conventionalSequential (Use several multi-bit RRAM as one synapse)
