@@ -775,7 +775,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 									&tileWriteLatencyPeakWU, &tileWriteDynamicEnergyPeakWU);
 
 				*readLatency = MAX(tileReadLatency, (*readLatency));
-				cout << "one: " << tileReadLatency << ", " << (*readLatency) << endl;
 				*readDynamicEnergy += tileReadDynamicEnergy;
 				*readLatencyPeakFW = MAX(tileReadLatencyPeakFW, (*readLatencyPeakFW));
 				*readDynamicEnergyPeakFW += tileReadDynamicEnergyPeakFW;
@@ -835,7 +834,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 			Gaccumulation->CalculateLatency(numTileEachLayer[1][l]*netStructure[l][5]*(ceil(numInVector/(double) Gaccumulation->numAdderTree)), numTileEachLayer[0][l], 0);
 			Gaccumulation->CalculatePower(numTileEachLayer[1][l]*netStructure[l][5]*(ceil(numInVector/(double) Gaccumulation->numAdderTree)), numTileEachLayer[0][l]);
 			*readLatency += Gaccumulation->readLatency;
-			cout << "three: " << Gaccumulation->readLatency << endl;
 			*readDynamicEnergy += Gaccumulation->readDynamicEnergy;
 			*readLatencyPeakFW += Gaccumulation->readLatency;
 			*readDynamicEnergyPeakFW += Gaccumulation->readDynamicEnergy;
@@ -854,7 +852,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 			maxPool->CalculateLatency(1e20, 0, ceil((double) (numInVector/(double) maxPool->window)/(double) desiredTileSizeCM));
 			maxPool->CalculatePower(ceil((double) (numInVector/maxPool->window)/(double) desiredTileSizeCM));
 			*readLatency += maxPool->readLatency;
-			cout << "two: " << maxPool->readLatency << endl;
 			*readDynamicEnergy += maxPool->readDynamicEnergy;
 			*readLatencyPeakFW += maxPool->readLatency;
 			*readDynamicEnergyPeakFW += maxPool->readDynamicEnergy;
@@ -1018,8 +1015,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 	*icDynamicEnergy += GhTree->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
 
 	*readLatency += (globalBuffer->readLatency + globalBuffer->writeLatency)*((param->trainingEstimation)==true? 2:1);
-	cout << "four: " << (param->trainingEstimation == true) << endl;
-	cout << "five: " << GhTree->readLatency << endl;
 	*readDynamicEnergy += (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy)*((param->trainingEstimation)==true? 2:1);
 	*readLatency += GhTree->readLatency;
 	*readDynamicEnergy += GhTree->readDynamicEnergy;
@@ -1037,13 +1032,11 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 	dRAM->CalculateLatency(dataLoadIn);
 	dRAM->CalculatePower(dataLoadIn);
 	*readLatency += (dRAM->readLatency)*((param->trainingEstimation)==true? 0:1);
-	cout << "six: " << dRAM->readLatency << endl;
 	*readDynamicEnergy += (dRAM->readDynamicEnergy)*((param->trainingEstimation)==true? 0:1);
 	*dramLatency = (dRAM->readLatency*((param->trainingEstimation)==true? 0:1));
 	*dramDynamicEnergy = (dRAM->readDynamicEnergy*((param->trainingEstimation)==true? 0:1));
 
 	if (param->trainingEstimation) {
-	cout << "test" << endl;
 		// Dring on-chip training, the activation and gradient of activation of each layer will be sent to DRAM
 		// After all the image in the batch is done with the gradient of activation, the activation and gradient of activation will be sent back to the chip, to get the gradient of weight
 		// Limited by global buffer, the weight gradient will be sent to DRAM and then grab back to be accumulated across batch
