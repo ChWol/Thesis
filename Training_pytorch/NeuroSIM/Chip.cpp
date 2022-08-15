@@ -1037,7 +1037,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 	dRAM->CalculateLatency(dataLoadIn);
 	dRAM->CalculatePower(dataLoadIn);
 	*readLatency += (dRAM->readLatency)*((param->trainingEstimation)==true? 0:1);
-	cout << "six: " << dram->readLatency << endl;
+	cout << "six: " << dRAM->readLatency << endl;
 	*readDynamicEnergy += (dRAM->readDynamicEnergy)*((param->trainingEstimation)==true? 0:1);
 	*dramLatency = (dRAM->readLatency*((param->trainingEstimation)==true? 0:1));
 	*dramDynamicEnergy = (dRAM->readDynamicEnergy*((param->trainingEstimation)==true? 0:1));
