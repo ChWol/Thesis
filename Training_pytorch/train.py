@@ -76,7 +76,8 @@ wandb.init(project=args.dataset.upper(), config=args, entity='duke-tum')
 wandb.run.name = "{} ({}): {}".format(args.network, args.rule, wandb.run.id)
 
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
-args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs'])
+subset = {key: args[key] for key in ["dataset", "wl_activate", "wl_error", "cellBit", "network", "hidden"]}
+args = make_path.makepath(subset, ['log_interval', 'test_interval', 'logdir', 'epochs'])
 misc.logger.init(args.logdir, 'train_log_' + current_time)
 logger = misc.logger.info
 

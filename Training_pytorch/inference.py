@@ -103,13 +103,18 @@ model_path = (args.logdir + '/best-{}.pth').format(args.epochs - 1)
 if args.dataset == 'cifar10':
     train_loader, test_loader = dataset.get10(batch_size=args.batch_size, num_workers=1)
     model = models.cifar(args=args, logger=logger, num_classes=10, pretrained=model_path)
-if args.dataset == 'cifar100':
+elif args.dataset == 'cifar100':
     train_loader, test_loader = dataset.get100(batch_size=args.batch_size, num_workers=1)
     model = models.cifar(args=args, logger=logger, num_classes=100, pretrained=model_path)
-if args.dataset == 'mnist':
+elif args.dataset == 'mnist':
     train_loader, test_loader = dataset.get_mnist(batch_size=args.batch_size, num_workers=1)
     model = models.mnist(args=args, logger=logger, num_classes=10, pretrained=model_path)
-print(args.cuda)
+elif args.dataset == 'fashion':
+    train_loader, test_loader = dataset.get_fashion(batch_size=args.batch_size, num_workers=1)
+    model = models.mnist(args=args, logger=logger, num_classes=10, pretrained=model_path)
+else:
+    raise ValueError("Unknown dataset type")
+
 if args.cuda:
     model.cuda()
 best_acc, old_file = 0, None
@@ -165,9 +170,6 @@ logger('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
     test_loss, correct, len(test_loader.dataset), acc))
 
 accuracy = acc.cpu().data.numpy()
-
-
-
 
 # Running C++ files for layer estimation
 call(["/bin/bash", "./layer_record/trace_command.sh"])

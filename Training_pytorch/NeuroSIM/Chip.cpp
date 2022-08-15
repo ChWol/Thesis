@@ -781,7 +781,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 
 				if (param->trainingEstimation) {
 					*readLatencyAG = MAX(tileReadLatencyAG, (*readLatencyAG));
-					cout << "One: " << *readLatencyAG << endl;
 					*readDynamicEnergyAG += tileReadDynamicEnergyAG;
 					// accumulate write latency as array need to be write sequentially (worst case)
 					// limitation by on-chip buffer, write latency will be divided by numArrayWriteParallel (real case)
@@ -841,7 +840,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 
 			if ((param->trainingEstimation) && (layerNumber!=0)) {
 				*readLatencyAG += Gaccumulation->readLatency;
-				cout << "Two: " << *readLatencyAG << endl;
 				*readDynamicEnergyAG += Gaccumulation->readDynamicEnergy;
 				*readLatencyPeakAG += Gaccumulation->readLatency;
 				*readDynamicEnergyPeakAG += Gaccumulation->readDynamicEnergy;
@@ -1058,7 +1056,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		*readLatency += (dRAM->readLatency)*2;
 		*readDynamicEnergy += (dRAM->readDynamicEnergy)*2;
 		*readLatencyAG += (dRAM->readLatency)*2*((layerNumber!=0)==true? 1:0);
-		cout << "Three: " << *readLatencyAG << endl;
 		*readDynamicEnergyAG += (dRAM->readDynamicEnergy)*2*((layerNumber!=0)==true? 1:0);
 		*readLatencyWG += (dRAM->readLatency)*2;
 		*readDynamicEnergyWG += (dRAM->readDynamicEnergy)*2;
@@ -1069,7 +1066,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		*readLatency *= param->batchSize;
 		*readDynamicEnergy *= param->batchSize;
 		*readLatencyAG *= param->batchSize;
-		cout << "Four: " << *readLatencyAG << endl;
 		*readDynamicEnergyAG *= param->batchSize;
 
 		*readLatencyPeakFW *= param->batchSize;
@@ -1206,7 +1202,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		*readLatency *= param->numIteration;
 		*readDynamicEnergy *= param->numIteration;
 		*readLatencyAG *= param->numIteration;
-		cout << "Five: " << *readLatencyAG << endl;
 		*readDynamicEnergyAG *= param->numIteration;
 		*readLatencyWG *= param->numIteration;
 		*readDynamicEnergyWG *= param->numIteration;
