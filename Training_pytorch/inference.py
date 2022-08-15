@@ -70,9 +70,8 @@ args.wireWidth = technode_to_width[args.technode]
 if args.memcelltype == 1:
     args.cellBit = 1
 
-args.inference = 0
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
-args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs', 'gpu', 'ngpu', 'debug'])
+args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs', 'onoffratio', 'cellBit', 'subArray', 'ADCprecision'])
 
 wandb.init(project=args.dataset.upper() + "-Inference", config=args, entity='duke-tum')
 wandb.run.name = "{} ({}): {}".format(args.network, args.rule, wandb.run.id)
