@@ -276,7 +276,7 @@ try:
                                                                 epoch, args.batch_size, cellBit, args.technode,
                                                                 args.wireWidth, relu, args.memcelltype,
                                                                 2 ** args.ADCprecision,
-                                                                args.onoffratio, args.rule)
+                                                                args.onoffratio, args.rule, args.inference)
                 indx_target = target.clone()
                 if args.cuda:
                     data, target = data.cuda(), target.cuda()
