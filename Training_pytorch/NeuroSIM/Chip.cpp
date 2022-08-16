@@ -413,7 +413,7 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 		globalBusWidth /= 2;
 	}
 	// define bufferSize for inference operation
-	double bufferSize = param->numBitInput*maxLayerInput;
+	int bufferSize = param->numBitInput*maxLayerInput;
 
 	// consider limited buffer to store gradient of weight: only part of the weight matrix is processed at a specific cycle
 	// we could set a bufferOverheadConstraint to limit the overhead and speed of computation and weight-update
@@ -468,12 +468,8 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 		}
 	}
 
-    cout << "davor: " << bufferSize << endl;
-    cout << "here: " << param->globalBufferCoreSizeRow << ", " << param->globalBufferCoreSizeCol << endl;
-    cout << "huh: " << bufferSize/(param->globalBufferCoreSizeRow*param->globalBufferCoreSizeCol) << endl;
  	//globalBuffer->Initialize(param->numBitInput*maxLayerInput, globalBusWidth, 1, param->unitLengthWireResistance, param->clkFreq, param->globalBufferType);
-	numBufferCore = ceil(bufferSize/(param->globalBufferCoreSizeRow*param->globalBufferCoreSizeCol));
-	cout << "dann: " << numBufferCore << endl;
+	numBufferCore = ceil((double) bufferSize/((double) param->globalBufferCoreSizeRow * (double) param->globalBufferCoreSizeCol));
 	//numBufferCore = ceil(1.5*numBufferCore);
 	globalBuffer->Initialize((param->globalBufferCoreSizeRow*param->globalBufferCoreSizeCol), param->globalBufferCoreSizeCol, 1, param->unitLengthWireResistance, param->clkFreq, param->globalBufferType);
 
@@ -874,8 +870,8 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		globalBuffer->CalculatePower(globalBuffer->interface_width, numBitToLoadOut/globalBuffer->interface_width,
 								globalBuffer->interface_width, numBitToLoadIn/globalBuffer->interface_width);
 		// since multi-core buffer has improve the parallelism
-		globalBuffer->readLatency /= MAX(MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width)), 1);
-		globalBuffer->writeLatency /= MAX(MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width)), 1);
+		globalBuffer->readLatency /= MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width));
+		globalBuffer->writeLatency /= MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width));
 		// each time, only a part of the ic is used to transfer data to a part of the tiles
 		globalBuffer->readLatency *= ceil(totalNumTile/(numTileEachLayer[0][l]*numTileEachLayer[1][l]));
 		globalBuffer->writeLatency *= ceil(totalNumTile/(numTileEachLayer[0][l]*numTileEachLayer[1][l]));

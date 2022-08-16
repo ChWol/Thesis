@@ -55,7 +55,7 @@ public:
 	int relaxArrayCellHeight, relaxArrayCellWidth;
 
 	bool globalBufferType, tileBufferType, peBufferType, chipActivation, reLu, novelMapping, pipeline, trainingEstimation, parallelBP, nonlinearIV, SARADC, currentMode;
-	double globalBufferCoreSizeRow, globalBufferCoreSizeCol, tileBufferCoreSizeRow, tileBufferCoreSizeCol;
+	int globalBufferCoreSizeRow, globalBufferCoreSizeCol, tileBufferCoreSizeRow, tileBufferCoreSizeCol;
 
 	double clkFreq, featuresize, readNoise, resistanceOn, resistanceOff, maxConductance, minConductance, gateCapFeFET, polarization;
 	int temp, technode, wireWidth, multipleCells;
