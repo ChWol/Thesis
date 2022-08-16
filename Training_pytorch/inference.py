@@ -63,6 +63,7 @@ current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 args = parser.parse_args()
 
+args.wl_weight = args.wl_grad = args.cellBit
 args.max_level = 2 ** args.cellBit
 technode_to_width = {7: 14, 10: 14, 14: 22, 22: 32, 32: 40, 45: 50, 65: 100, 90: 200, 130: 200}
 args.wireWidth = technode_to_width[args.technode]
@@ -135,7 +136,7 @@ for i, (data, target) in enumerate(test_loader):
             cellBit, wl_weight = 1, args.wl_weight
         else:
             cellBit, wl_weight = args.cellBit, args.wl_weight
-        hook_handle_list = hook.hardware_evaluation(model, args.wl_weight, args.wl_activate,
+        hook_handle_list = hook.hardware_evaluation(model, wl_weight, args.wl_activate,
                                                     0, args.batch_size, args.cellBit, args.technode,
                                                     args.wireWidth, relu, args.memcelltype,
                                                     2 ** args.ADCprecision,
