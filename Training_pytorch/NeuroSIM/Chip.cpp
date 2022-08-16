@@ -470,7 +470,8 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 
     cout << "davor: " << bufferSize << endl;
     cout << "here: " << param->globalBufferCoreSizeRow << ", " << param->globalBufferCoreSizeCol << endl;
-	//globalBuffer->Initialize(param->numBitInput*maxLayerInput, globalBusWidth, 1, param->unitLengthWireResistance, param->clkFreq, param->globalBufferType);
+    cout << "huh: " << bufferSize/(param->globalBufferCoreSizeRow*param->globalBufferCoreSizeCol) << endl;
+ 	//globalBuffer->Initialize(param->numBitInput*maxLayerInput, globalBusWidth, 1, param->unitLengthWireResistance, param->clkFreq, param->globalBufferType);
 	numBufferCore = ceil(bufferSize/(param->globalBufferCoreSizeRow*param->globalBufferCoreSizeCol));
 	cout << "dann: " << numBufferCore << endl;
 	//numBufferCore = ceil(1.5*numBufferCore);
