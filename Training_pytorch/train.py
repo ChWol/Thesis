@@ -72,7 +72,7 @@ alpha = 0.1
 
 current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
-wandb.init(project=args.dataset.upper(), config=args, entity='duke-tum')
+wandb.init(project="example", config=args, entity='duke-tum')
 wandb.run.name = "{} ({}): {}".format(args.network, args.rule, wandb.run.id)
 
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)

@@ -1200,6 +1200,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 
 		// since for each epoch, need *numIteration computation
 		*readLatency *= param->numIteration;
+		cout << "one: " << *readLatency << endl;
 		*readDynamicEnergy *= param->numIteration;
 		*readLatencyAG *= param->numIteration;
 		*readDynamicEnergyAG *= param->numIteration;

@@ -414,7 +414,6 @@ int main(int argc, char * argv[]) {
             param->activityRowWriteWG = atof(argv[4*i+18]);
             param->activityColWriteWG = atof(argv[4*i+18]);
 
-            cout << "before: " << layerReadLatency << endl;
 			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[4*i+15], argv[4*i+16], argv[4*i+17], netStructure[i][6],
 						netStructure, markNM, numTileEachLayer, utilizationEachLayer, speedUpEachLayer, tileLocaEachLayer,
 						numPENM, desiredPESizeNM, desiredTileSizeCM, desiredPESizeCM, CMTileheight, CMTilewidth, NMTileheight, NMTilewidth, numArrayWriteParallel,
@@ -423,7 +422,6 @@ int main(int argc, char * argv[]) {
 						&coreLatencyADC, &coreLatencyAccum, &coreLatencyOther, &coreEnergyADC, &coreEnergyAccum, &coreEnergyOther, &layerDRAMLatency, &layerDRAMDynamicEnergy,
 						&layerReadLatencyPeakFW, &layerReadDynamicEnergyPeakFW, &layerReadLatencyPeakAG, &layerReadDynamicEnergyPeakAG,
 						&layerReadLatencyPeakWG, &layerReadDynamicEnergyPeakWG, &layerWriteLatencyPeakWU, &layerWriteDynamicEnergyPeakWU);
-			cout << "after: " << layerReadLatency << endl;
 
 			double numTileOtherLayer = 0;
 			double layerLeakageEnergy = 0;
