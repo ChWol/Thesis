@@ -870,13 +870,12 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		globalBuffer->CalculatePower(globalBuffer->interface_width, numBitToLoadOut/globalBuffer->interface_width,
 								globalBuffer->interface_width, numBitToLoadIn/globalBuffer->interface_width);
 		// since multi-core buffer has improve the parallelism
+		cout << "test: " << MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width));
 		globalBuffer->readLatency /= MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width));
 		globalBuffer->writeLatency /= MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width));
 		// each time, only a part of the ic is used to transfer data to a part of the tiles
 		globalBuffer->readLatency *= ceil(totalNumTile/(numTileEachLayer[0][l]*numTileEachLayer[1][l]));
 		globalBuffer->writeLatency *= ceil(totalNumTile/(numTileEachLayer[0][l]*numTileEachLayer[1][l]));
-
-		cout << "buffer: " << globalBuffer->readLatency << ", " << globalBuffer->writeLatency << endl;
 
 	} else {   // novel Mapping
 		for (int i=0; i<ceil((double) netStructure[l][2]*(double) numRowPerSynapse/(double) desiredPESizeNM); i++) {       // # of tiles in row
@@ -1011,7 +1010,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 	}
 
 	// training: FW(up and down)->2; AG(up and down)->2; WG(up and down)->2
-	cout << "buffer2: " << globalBuffer->readLatency << ", " << globalBuffer->writeLatency << endl;
 	*bufferLatency += (globalBuffer->readLatency + globalBuffer->writeLatency)*((param->trainingEstimation)==true? ((layerNumber!=0)==true? 6:4):1);
 	*bufferDynamicEnergy += (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy)*((param->trainingEstimation)==true? ((layerNumber!=0)==true? 6:4):1);
 	*icLatency += GhTree->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
@@ -1096,10 +1094,8 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		globalBuffer->CalculatePower(globalBuffer->interface_width, dataLoadWeight/globalBuffer->interface_width,
 								globalBuffer->interface_width, dataLoadWeight/globalBuffer->interface_width);
 		// since multi-core buffer has improve the parallelism
-		cout << "buffer3: " << globalBuffer->readLatency << ", " << globalBuffer->writeLatency << endl;
 		globalBuffer->readLatency /= MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width));
 		globalBuffer->writeLatency /= MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width));
-		cout << "buffer4: " << globalBuffer->readLatency << ", " << globalBuffer->writeLatency << endl;
 
 		// calculation of weight gradient
 		if (param->rule == "dfa") {
