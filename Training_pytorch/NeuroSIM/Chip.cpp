@@ -870,8 +870,8 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		globalBuffer->CalculatePower(globalBuffer->interface_width, numBitToLoadOut/globalBuffer->interface_width,
 								globalBuffer->interface_width, numBitToLoadIn/globalBuffer->interface_width);
 		// since multi-core buffer has improve the parallelism
-		globalBuffer->readLatency /= MAX(MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width), 1), 1);
-		globalBuffer->writeLatency /= MAX(MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width), 1), 1);
+		globalBuffer->readLatency /= MAX(MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width)), 1);
+		globalBuffer->writeLatency /= MAX(MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width)), 1);
 		// each time, only a part of the ic is used to transfer data to a part of the tiles
 		globalBuffer->readLatency *= ceil(totalNumTile/(numTileEachLayer[0][l]*numTileEachLayer[1][l]));
 		globalBuffer->writeLatency *= ceil(totalNumTile/(numTileEachLayer[0][l]*numTileEachLayer[1][l]));
