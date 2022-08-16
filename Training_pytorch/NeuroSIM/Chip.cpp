@@ -413,7 +413,7 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 		globalBusWidth /= 2;
 	}
 	// define bufferSize for inference operation
-	int bufferSize = param->numBitInput*maxLayerInput;
+	double bufferSize = param->numBitInput*maxLayerInput;
 
 	// consider limited buffer to store gradient of weight: only part of the weight matrix is processed at a specific cycle
 	// we could set a bufferOverheadConstraint to limit the overhead and speed of computation and weight-update
