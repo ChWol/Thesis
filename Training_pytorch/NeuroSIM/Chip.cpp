@@ -468,6 +468,8 @@ void ChipInitialize(InputParameter& inputParameter, Technology& tech, MemCell& c
 		}
 	}
 
+    cout << "davor: " << bufferSize << endl;
+    cout << "here: " << param->globalBufferCoreSizeRow << ", " << param->globalBufferCoreSizeCol << endl;
 	//globalBuffer->Initialize(param->numBitInput*maxLayerInput, globalBusWidth, 1, param->unitLengthWireResistance, param->clkFreq, param->globalBufferType);
 	numBufferCore = ceil(bufferSize/(param->globalBufferCoreSizeRow*param->globalBufferCoreSizeCol));
 	//numBufferCore = ceil(1.5*numBufferCore);
@@ -870,8 +872,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		globalBuffer->CalculatePower(globalBuffer->interface_width, numBitToLoadOut/globalBuffer->interface_width,
 								globalBuffer->interface_width, numBitToLoadIn/globalBuffer->interface_width);
 		// since multi-core buffer has improve the parallelism
-		cout << "num: " << numBufferCore << endl;
-		cout << "buffer: " << globalBusWidth << ", " << globalBuffer->interface_width << endl;
 		globalBuffer->readLatency /= MAX(MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width)), 1);
 		globalBuffer->writeLatency /= MAX(MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width)), 1);
 		// each time, only a part of the ic is used to transfer data to a part of the tiles
