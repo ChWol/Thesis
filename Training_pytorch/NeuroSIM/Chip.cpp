@@ -876,6 +876,8 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		globalBuffer->readLatency *= ceil(totalNumTile/(numTileEachLayer[0][l]*numTileEachLayer[1][l]));
 		globalBuffer->writeLatency *= ceil(totalNumTile/(numTileEachLayer[0][l]*numTileEachLayer[1][l]));
 
+		cout << "buffer: " << globalBuffer->readLatency << ", " << globalBuffer->writeLatency << endl;
+
 	} else {   // novel Mapping
 		for (int i=0; i<ceil((double) netStructure[l][2]*(double) numRowPerSynapse/(double) desiredPESizeNM); i++) {       // # of tiles in row
 			for (int j=0; j<ceil((double) netStructure[l][5]*(double) numColPerSynapse/(double) desiredPESizeNM); j++) {   // # of tiles in Column
@@ -1009,6 +1011,7 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 	}
 
 	// training: FW(up and down)->2; AG(up and down)->2; WG(up and down)->2
+	cout << "buffer2: " << globalBuffer->readLatency << ", " << globalBuffer->writeLatency << endl;
 	*bufferLatency += (globalBuffer->readLatency + globalBuffer->writeLatency)*((param->trainingEstimation)==true? ((layerNumber!=0)==true? 6:4):1);
 	*bufferDynamicEnergy += (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy)*((param->trainingEstimation)==true? ((layerNumber!=0)==true? 6:4):1);
 	*icLatency += GhTree->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:1);
@@ -1019,9 +1022,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 	*readLatency += GhTree->readLatency;
 	*readDynamicEnergy += GhTree->readDynamicEnergy;
 
-    cout << "Before: " << *readLatencyAG << endl;
-    cout << "buffer: " << globalBuffer->readLatency << ", " << globalBuffer->writeLatency << endl;
-    cout << "training: " << param->trainingEstimation << ", " << layerNumber << endl;
 	*readLatencyAG += (globalBuffer->readLatency + globalBuffer->writeLatency)*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:0);
 	*readDynamicEnergyAG += (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy)*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:0);
 	*readLatencyAG += GhTree->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
@@ -1096,8 +1096,10 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		globalBuffer->CalculatePower(globalBuffer->interface_width, dataLoadWeight/globalBuffer->interface_width,
 								globalBuffer->interface_width, dataLoadWeight/globalBuffer->interface_width);
 		// since multi-core buffer has improve the parallelism
+		cout << "buffer3: " << globalBuffer->readLatency << ", " << globalBuffer->writeLatency << endl;
 		globalBuffer->readLatency /= MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width));
 		globalBuffer->writeLatency /= MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width));
+		cout << "buffer4: " << globalBuffer->readLatency << ", " << globalBuffer->writeLatency << endl;
 
 		// calculation of weight gradient
 		if (param->rule == "dfa") {
