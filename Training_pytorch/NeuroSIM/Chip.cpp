@@ -708,7 +708,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 	*readLatency = 0;
 	*readDynamicEnergy = 0;
 	*readLatencyAG = 0;
-	cout << "one: " << *readLatencyAG << endl;
 	*readDynamicEnergyAG = 0;
 	*readLatencyPeakFW = 0;
 	*readDynamicEnergyPeakFW = 0;
@@ -782,7 +781,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 
 				if (param->trainingEstimation) {
 					*readLatencyAG = MAX(tileReadLatencyAG, (*readLatencyAG));
-					cout << "two: " << *readLatencyAG << endl;
 					*readDynamicEnergyAG += tileReadDynamicEnergyAG;
 					// accumulate write latency as array need to be write sequentially (worst case)
 					// limitation by on-chip buffer, write latency will be divided by numArrayWriteParallel (real case)
@@ -842,7 +840,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 
 			if ((param->trainingEstimation) && (layerNumber!=0)) {
 				*readLatencyAG += Gaccumulation->readLatency;
-				cout << "three: " << *readLatencyAG << endl;
 				*readDynamicEnergyAG += Gaccumulation->readDynamicEnergy;
 				*readLatencyPeakAG += Gaccumulation->readLatency;
 				*readDynamicEnergyPeakAG += Gaccumulation->readDynamicEnergy;
@@ -914,7 +911,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 				*readDynamicEnergyPeakFW += tileReadDynamicEnergyPeakFW;
 				if (param->trainingEstimation) {
 					*readLatencyAG = MAX(tileReadLatencyAG, (*readLatencyAG));
-					cout << "four: " << *readLatencyAG << endl;
 					*readDynamicEnergyAG += tileReadDynamicEnergyAG;
 					// accumulate write latency as array need to be write sequentially (worst case)
 					// limitation by on-chip buffer, write latency will be divided by numArrayWriteParallel (real case)
@@ -974,7 +970,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 			*readDynamicEnergyPeakFW += Gaccumulation->readDynamicEnergy;
 			if ((param->trainingEstimation) && (layerNumber!=0)) {
 				*readLatencyAG += Gaccumulation->readLatency;
-				cout << "five: " << *readLatencyAG << endl;
 				*readDynamicEnergyAG += Gaccumulation->readDynamicEnergy;
 				*readLatencyPeakAG += Gaccumulation->readLatency;
 				*readDynamicEnergyPeakAG += Gaccumulation->readDynamicEnergy;
@@ -1024,11 +1019,12 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 	*readLatency += GhTree->readLatency;
 	*readDynamicEnergy += GhTree->readDynamicEnergy;
 
+    cout << "Before: " << *readLatencyAG << endl;
+    cout << "buffer: " << globalBuffer->readLatency << ", " << globalBuffer->writeLatency << endl;
+    cout << "training: " << param->trainingEstimation << ", " << layerNumber << endl;
 	*readLatencyAG += (globalBuffer->readLatency + globalBuffer->writeLatency)*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:0);
-	cout << "six: " << *readLatencyAG << endl;
 	*readDynamicEnergyAG += (globalBuffer->readDynamicEnergy + globalBuffer->writeDynamicEnergy)*((param->trainingEstimation)&&(layerNumber!=0)==true? 2:0);
 	*readLatencyAG += GhTree->readLatency*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
-	cout << "seven: " << *readLatencyAG << endl;
 	*readDynamicEnergyAG += GhTree->readDynamicEnergy*((param->trainingEstimation)&&(layerNumber!=0)==true? 1:0);
 
 	*readLatencyWG = (globalBuffer->readLatency + globalBuffer->writeLatency)*((param->trainingEstimation)==true? 2:0);
