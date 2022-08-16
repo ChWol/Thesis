@@ -870,6 +870,8 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		globalBuffer->CalculatePower(globalBuffer->interface_width, numBitToLoadOut/globalBuffer->interface_width,
 								globalBuffer->interface_width, numBitToLoadIn/globalBuffer->interface_width);
 		// since multi-core buffer has improve the parallelism
+		cout << "num: " << numBufferCore << endl;
+		cout << "buffer: " << globalBusWidth << ", " << globalBuffer->interface_width << endl;
 		globalBuffer->readLatency /= MAX(MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width)), 1);
 		globalBuffer->writeLatency /= MAX(MIN(numBufferCore, ceil(globalBusWidth/globalBuffer->interface_width)), 1);
 		// each time, only a part of the ic is used to transfer data to a part of the tiles
@@ -1056,7 +1058,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		*readLatency += (dRAM->readLatency)*2;
 		*readDynamicEnergy += (dRAM->readDynamicEnergy)*2;
 		*readLatencyAG += (dRAM->readLatency)*2*((layerNumber!=0)==true? 1:0);
-		cout << "eight: " << *readLatencyAG << endl;
 		*readDynamicEnergyAG += (dRAM->readDynamicEnergy)*2*((layerNumber!=0)==true? 1:0);
 		*readLatencyWG += (dRAM->readLatency)*2;
 		*readDynamicEnergyWG += (dRAM->readDynamicEnergy)*2;
@@ -1067,7 +1068,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		*readLatency *= param->batchSize;
 		*readDynamicEnergy *= param->batchSize;
 		*readLatencyAG *= param->batchSize;
-		cout << "nine: " << *readLatencyAG << endl;
 		*readDynamicEnergyAG *= param->batchSize;
 
 		*readLatencyPeakFW *= param->batchSize;
@@ -1204,7 +1204,6 @@ double ChipCalculatePerformance(InputParameter& inputParameter, Technology& tech
 		*readLatency *= param->numIteration;
 		*readDynamicEnergy *= param->numIteration;
 		*readLatencyAG *= param->numIteration;
-		cout << "ten: " << *readLatencyAG << endl;
 		*readDynamicEnergyAG *= param->numIteration;
 		*readLatencyWG *= param->numIteration;
 		*readDynamicEnergyWG *= param->numIteration;
