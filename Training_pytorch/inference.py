@@ -21,7 +21,7 @@ parser = argparse.ArgumentParser(description='Evaluation of Biologically-Plausib
                                              'Hardware Architectures')
 parser.add_argument('--dataset', default='mnist', help='dataset for training')
 parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training')
-parser.add_argument('--epochs', type=int, default=1, help='number of epochs to train')
+parser.add_argument('--epochs', type=int, default=50, help='number of epochs to train')
 parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
 parser.add_argument('--seed', type=int, default=117, help='random seed')
 parser.add_argument('--log_interval', type=int, default=100, help='how many batches to wait before logging training '
@@ -72,7 +72,7 @@ if args.memcelltype == 1:
     args.cellBit = 1
 
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
-args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs', 'onoffratio', 'cellBit', 'subArray', 'ADCprecision', 'neurosim'])
+args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs', 'onoffratio', 'subArray', 'ADCprecision', 'neurosim', 'memcelltype'])
 
 wandb.init(project=args.dataset.upper() + "-Inference", config=args, entity='duke-tum')
 wandb.run.name = "{} ({}): {}".format(args.network, args.rule, wandb.run.id)
