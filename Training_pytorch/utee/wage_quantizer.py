@@ -34,7 +34,7 @@ def C(x, bits):
 def W(x, grad, bits_W, sigmaC2C):
     # add cycle-to-cycle variation here
     c2c = torch.normal(torch.zeros_like(x), sigmaC2C * 2 * torch.ones_like(x))
-    x = x + c2c * torch.sign(torch.abs(grad))
+    x = x + c2c * torch.sign(grad)
     return C(x, bits_W)
 
 
