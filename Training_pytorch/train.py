@@ -162,7 +162,7 @@ try:
                     output = model(data)
                     error = wage_util.SSE(output, target)
                     loss = (0.5 * (error ** 2)).sum()
-                    loss = wage_quantizer.QE(loss, args.wl_error)
+                    error = wage_quantizer.QE(error, args.wl_error)
                     model.direct_feedback_alignment(error)
             else:
                 output = model(data)
