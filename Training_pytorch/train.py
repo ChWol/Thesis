@@ -143,8 +143,8 @@ try:
     if args.rule == 'bp':
         for param in model.parameters():
             param.requires_grad = False
-        # for param in model.features[-1].parameters():
-        #     param.requires_grad = True
+        for param in model.features[-1].parameters():
+            param.requires_grad = True
 
     for epoch in range(args.epochs):
         split_time = time.time()
