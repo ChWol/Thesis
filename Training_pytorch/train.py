@@ -143,6 +143,7 @@ try:
     if args.rule == 'bp':
         for param in model.parameters():
             param.requires_grad = False
+        print(model.features)
         for param in model.features[-1].parameters():
             param.requires_grad = True
 
