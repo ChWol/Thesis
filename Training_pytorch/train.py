@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser(description='Evaluation of Biologically-Plausible Learning Rules on Neuromorphic '
                                              'Hardware Architectures')
-parser.add_argument('--dataset', default='mnist', help='dataset for training')
+parser.add_argument('--dataset', default='fashion', help='dataset for training')
 parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training')
 parser.add_argument('--epochs', type=int, default=50, help='number of epochs to train')
 parser.add_argument('--grad_scale', type=float, default=1, help='learning rate for wage delta calculation')
@@ -43,14 +43,14 @@ parser.add_argument('--t', default=0)
 parser.add_argument('--v', default=0)
 parser.add_argument('--detect', default=0)
 parser.add_argument('--target', default=0)
-parser.add_argument('--nonlinearityLTP', type=float, default=0.01, help='nonlinearity in LTP')
-parser.add_argument('--nonlinearityLTD', type=float, default=-0.01, help='nonlinearity in LTD (negative if LTP and LTD '
+parser.add_argument('--nonlinearityLTP', type=float, default=1.75, help='nonlinearity in LTP')
+parser.add_argument('--nonlinearityLTD', type=float, default=1.46, help='nonlinearity in LTD (negative if LTP and LTD '
                                                                         'are asymmetric)')
 parser.add_argument('--d2dVari', type=float, default=0, help='device-to-device variation')
 parser.add_argument('--c2cVari', type=float, default=0.003, help='cycle-to-cycle variation')
-parser.add_argument('--network', type=int, default=3)
+parser.add_argument('--network', type=int, default=5)
 parser.add_argument('--hidden', type=int, default=1024)
-parser.add_argument('--technode', type=int, default='32')
+parser.add_argument('--technode', type=int, default=22)
 parser.add_argument('--memcelltype', type=int, default=3)
 parser.add_argument('--activation', default='relu')
 parser.add_argument('--rule', default='bp')
