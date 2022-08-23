@@ -139,7 +139,6 @@ try:
 
     neurosim_time = 0
     energy = 0
-
     for epoch in range(args.epochs):
         split_time = time.time()
         model.train()
@@ -171,22 +170,15 @@ try:
                 loss = (0.5 * (error ** 2)).sum()
                 loss.backward()
 
-            if args.rule == 'bp' and epoch < 5:
-                for i, param in enumerate(model.parameters()):
-                    #if i != len(model.named_parameters())-1:
-                    param.grad.data = torch.zeros_like(param.grad.data)
-
             j = 0
             for name, param in list(model.named_parameters())[::-1]:
                 velocity[j] = gamma * velocity[j] + alpha * param.grad.data
                 param.grad.data = velocity[j]
-                '''
                 param.grad.data = wage_quantizer.QG(param.data, args.wl_weight, param.grad.data, args.wl_grad,
                                                     grad_scale,
                                                     torch.from_numpy(paramALTP[j]).cuda(),
                                                     torch.from_numpy(paramALTD[j]).cuda(), args.max_level,
                                                     args.max_level)
-                                                    '''
                 j = j + 1
 
             optimizer.step()
