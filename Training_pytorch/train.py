@@ -172,7 +172,7 @@ try:
                 loss.backward()
 
             if args.rule == 'bp' and epoch < 5:
-                for i, param in enumerate(model.named_parameters()):
+                for i, param in enumerate(model.parameters()):
                     #if i != len(model.named_parameters())-1:
                     param.grad.data = torch.zeros_like(param.grad.data)
 
