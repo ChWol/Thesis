@@ -139,9 +139,20 @@ try:
 
     neurosim_time = 0
     energy = 0
+
+    if args.rule == 'bp':
+        for param in model.parameters():
+            param.requires_grad = False
+        # for param in model.features[-1].parameters():
+        #     param.requires_grad = True
+
     for epoch in range(args.epochs):
         split_time = time.time()
         model.train()
+
+        if epoch == 5 and args.rule == 'bp':
+            for param in model.parameters():
+                param.requires_grad = True
 
         velocity = {}
         i = 0
