@@ -163,6 +163,14 @@ def get_model(num_classes, depth, hidden):
             network['classifier'].append(('L', num_classes, 1, 'same', 1))
         else:
             network['classifier'].append(('L', hidden, 1, 'same', 1))
+    if depth == -1:
+        network['classifier'] = [
+            ('L', 512, 1, 'same', 1),
+            ('L', 4096, 1, 'same', 1),
+            ('L', 512, 1, 'same', 1),
+            ('L', 512, 1, 'same', 1),
+            ('L', num_classes, 1, 'same', 1),
+        ]
     return network
 
 
