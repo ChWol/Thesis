@@ -97,7 +97,7 @@ if args.cuda:
 
 print('====================')
 print('Path', args.logdir)
-model_path = (args.logdir + '/best-{}.pth').format(args.epochs - 1)
+model_path = (args.logdir + '/latest.pth')
 
 # models loader and model
 if args.dataset == 'cifar10':
