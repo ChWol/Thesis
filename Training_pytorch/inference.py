@@ -146,10 +146,13 @@ for i, (data, target) in enumerate(test_loader):
     with torch.no_grad():
         data, target = Variable(data), Variable(target)
         output = model(data)
+        print(output)
         test_loss_i = (0.5 * (wage_util.SSE(output, target) ** 2)).sum()
         test_loss += test_loss_i.data
+        print(test_loss)
         pred = output.data.max(1)[1]
         correct += pred.cpu().eq(indx_target).sum()
+        print(correct)
     if i == 0:
         hook.remove_hook_list(hook_handle_list)
 
