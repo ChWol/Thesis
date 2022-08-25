@@ -80,9 +80,6 @@ wandb.run.name = "{} ({}): {}".format(args.network, args.rule, wandb.run.id)
 misc.logger.init(args.logdir, 'test_log' + current_time)
 logger = misc.logger.info
 
-args.inference = 1
-
-
 misc.ensure_dir(args.logdir)
 logger("=================FLAGS==================")
 for k, v in args.__dict__.items():
@@ -98,6 +95,8 @@ if args.cuda:
 print('====================')
 print('Path', args.logdir)
 model_path = (args.logdir + '/latest.pth')
+
+args.inference = 1
 
 # models loader and model
 if args.dataset == 'cifar10':
