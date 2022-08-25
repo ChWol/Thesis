@@ -264,6 +264,8 @@ try:
             correct = 0
             logger("testing phase")
             for i, (data, target) in enumerate(test_loader):
+                print(model)
+                print(args)
                 if i == 0:
                     if args.activation == 'sigmoid':
                         relu = 0

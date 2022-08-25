@@ -29,9 +29,7 @@ class MODEL(nn.Module):
         for layer in self.classifier:
             if isinstance(layer, QLinear):
                 layer.input = x
-                print(x)
                 x = layer(x)
-                print(x)
                 layer.output = x
             else:
                 x = layer(x)

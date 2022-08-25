@@ -114,8 +114,6 @@ elif args.dataset == 'fashion':
 else:
     raise ValueError("Unknown dataset type")
 
-print(args)
-
 if args.cuda:
     model.cuda()
 
@@ -128,6 +126,8 @@ trained_with_quantization = True
 
 # for models, target in test_loader:
 for i, (data, target) in enumerate(test_loader):
+    print(model)
+    print(args)
     if i == 0:
         if args.activation == 'sigmoid':
             relu = 0
