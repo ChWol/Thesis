@@ -114,7 +114,7 @@ elif args.dataset == 'fashion':
 else:
     raise ValueError("Unknown dataset type")
 
-print(model)
+print(args)
 
 if args.cuda:
     model.cuda()
