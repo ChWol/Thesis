@@ -208,7 +208,9 @@ try:
                                 wandb.Image(plt.imshow(weights_np, cmap='viridis'), caption="Weight")],
                             "Epoch": epoch + 1
                         })
-                    wandb.log({"Weight avg of {}".format(name): torch.mean(param),
+                    wandb.log({"Gradient median of {}".format(name): torch.median(param.grad),
+                               "Zero entries of {}".format(name): torch.numel(param.grad)-torch.count_nonzero(param.grad),
+                               "Weight avg of {}".format(name): torch.mean(param),
                                "Weight avg_abs of {}".format(name): torch.mean(torch.abs(param)),
                                "Weight std of {}".format(name): torch.std(param),
                                "Gradient avg of {}".format(name): torch.mean(param.grad),
